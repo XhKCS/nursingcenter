@@ -32,7 +32,46 @@ public class UserController {
         } else {
             rb = new ResponseBean<>(500, "No data");
         }
-
         return rb;
     }
+
+    @RequestMapping("getById")
+    public ResponseBean<User> getById(int userId) {
+        User user = userMapper.selectById(userId);
+        ResponseBean<User> rb = null;
+
+        if (user != null) {
+            rb = new ResponseBean<>(user);
+        } else {
+            rb = new ResponseBean<>(500, "数据库中没有该id的用户");
+        }
+        return rb;
+    }
+
+    @RequestMapping("getByAccount")
+    public ResponseBean<User> getByAccount(String account) {
+        User user = userMapper.getByAccount(account);
+        ResponseBean<User> rb = null;
+
+        if (user != null) {
+            rb = new ResponseBean<>(user);
+        } else {
+            rb = new ResponseBean<>(500, "数据库中没有该id的用户");
+        }
+        return rb;
+    }
+
+    @RequestMapping("getByName")
+    public ResponseBean<User> getByName(String name) {
+        User user = userMapper.getByName(name);
+        ResponseBean<User> rb = null;
+
+        if (user != null) {
+            rb = new ResponseBean<>(user);
+        } else {
+            rb = new ResponseBean<>(500, "数据库中没有该id的用户");
+        }
+        return rb;
+    }
+
 }

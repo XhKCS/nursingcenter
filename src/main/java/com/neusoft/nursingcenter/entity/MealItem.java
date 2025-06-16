@@ -11,15 +11,27 @@ public class MealItem {
 
     private Integer foodId;
 
+    private String foodName;
+
+    private String foodType;
+
+    private String foodDescription;
+
+    private String foodImageUrl;
+
     private String weekDay; //周一 / 周二 /.../ 周日
 
     private Integer status; // 1-启用 / 0-停用
 
     public MealItem() {}
 
-    public MealItem(Integer id, Integer foodId, String weekDay, Integer status) {
+    public MealItem(Integer id, Integer foodId, String foodName, String foodType, String foodDescription, String foodImageUrl, String weekDay, Integer status) {
         this.id = id;
         this.foodId = foodId;
+        this.foodName = foodName;
+        this.foodType = foodType;
+        this.foodDescription = foodDescription;
+        this.foodImageUrl = foodImageUrl;
         this.weekDay = weekDay;
         this.status = status;
     }
@@ -38,6 +50,38 @@ public class MealItem {
 
     public void setFoodId(Integer foodId) {
         this.foodId = foodId;
+    }
+
+    public String getFoodName() {
+        return foodName;
+    }
+
+    public void setFoodName(String foodName) {
+        this.foodName = foodName;
+    }
+
+    public String getFoodType() {
+        return foodType;
+    }
+
+    public void setFoodType(String foodType) {
+        this.foodType = foodType;
+    }
+
+    public String getFoodDescription() {
+        return foodDescription;
+    }
+
+    public void setFoodDescription(String foodDescription) {
+        this.foodDescription = foodDescription;
+    }
+
+    public String getFoodImageUrl() {
+        return foodImageUrl;
+    }
+
+    public void setFoodImageUrl(String foodImageUrl) {
+        this.foodImageUrl = foodImageUrl;
     }
 
     public String getWeekDay() {
