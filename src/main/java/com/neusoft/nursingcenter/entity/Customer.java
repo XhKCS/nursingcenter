@@ -1,9 +1,12 @@
 package com.neusoft.nursingcenter.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 @TableName("customer")
 public class Customer {
+    @TableId(value="customer_id",type=IdType.AUTO)
     private Integer customerId;
 
     private Integer customerType; // 0-自理老人  1-护理老人
@@ -26,7 +29,7 @@ public class Customer {
 
     private String phoneNumber;
 
-    private String building;
+    private String building; //楼栋
 
     private String roomNumber; //房间号
 
