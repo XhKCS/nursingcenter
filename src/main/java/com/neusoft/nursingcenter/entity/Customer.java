@@ -2,19 +2,23 @@ package com.neusoft.nursingcenter.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 
-@TableName("user")
+@TableName("customer")
 public class Customer {
-    private int customerId;
+    private Integer customerId;
 
-    private int customerType; // 0-自理老人  1-护理老人
+    private Integer customerType; // 0-自理老人  1-护理老人
 
-    private int nursingLevelId;
+    private Integer nurseId; //所属护工的id，外键
+
+    private String nursingLevelName; //所属护理级别的名称，外键
 
     private String name;
 
     private String idCard; // 身份证号
 
-    private int age;
+    private Integer age;
+
+    private Integer gender; //性别  0-女性  1-男性
 
     private String bloodType;
 
@@ -32,17 +36,19 @@ public class Customer {
 
     private String expirationDate; //合同到期时间
 
-    private boolean isDeleted; //是否已删除
+    private Boolean isDeleted; //是否已删除
 
     public Customer() {}
 
-    public Customer(int customerId, int customerType, int nursingLevelId, String name, String idCard, int age, String bloodType, String relative, String phoneNumber, String building, String roomNumber, String bedNumber, String checkinDate, String expirationDate, boolean isDeleted) {
+    public Customer(Integer customerId, Integer customerType, Integer nurseId, String nursingLevelName, String name, String idCard, Integer age, Integer gender, String bloodType, String relative, String phoneNumber, String building, String roomNumber, String bedNumber, String checkinDate, String expirationDate, Boolean isDeleted) {
         this.customerId = customerId;
         this.customerType = customerType;
-        this.nursingLevelId = nursingLevelId;
+        this.nurseId = nurseId;
+        this.nursingLevelName = nursingLevelName;
         this.name = name;
         this.idCard = idCard;
         this.age = age;
+        this.gender = gender;
         this.bloodType = bloodType;
         this.relative = relative;
         this.phoneNumber = phoneNumber;
@@ -54,28 +60,36 @@ public class Customer {
         this.isDeleted = isDeleted;
     }
 
-    public int getCustomerId() {
+    public Integer getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(int customerId) {
+    public void setCustomerId(Integer customerId) {
         this.customerId = customerId;
     }
 
-    public int getCustomerType() {
+    public Integer getCustomerType() {
         return customerType;
     }
 
-    public void setCustomerType(int customerType) {
+    public void setCustomerType(Integer customerType) {
         this.customerType = customerType;
     }
 
-    public int getNursingLevelId() {
-        return nursingLevelId;
+    public Integer getNurseId() {
+        return nurseId;
     }
 
-    public void setNursingLevelId(int nursingLevelId) {
-        this.nursingLevelId = nursingLevelId;
+    public void setNurseId(Integer nurseId) {
+        this.nurseId = nurseId;
+    }
+
+    public String getNursingLevelName() {
+        return nursingLevelName;
+    }
+
+    public void setNursingLevelName(String nursingLevelName) {
+        this.nursingLevelName = nursingLevelName;
     }
 
     public String getName() {
@@ -94,12 +108,20 @@ public class Customer {
         this.idCard = idCard;
     }
 
-    public int getAge() {
+    public Integer getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(Integer age) {
         this.age = age;
+    }
+
+    public Integer getGender() {
+        return gender;
+    }
+
+    public void setGender(Integer gender) {
+        this.gender = gender;
     }
 
     public String getBloodType() {
@@ -166,11 +188,11 @@ public class Customer {
         this.expirationDate = expirationDate;
     }
 
-    public boolean isDeleted() {
+    public Boolean getDeleted() {
         return isDeleted;
     }
 
-    public void setDeleted(boolean deleted) {
+    public void setDeleted(Boolean deleted) {
         isDeleted = deleted;
     }
 
@@ -179,10 +201,12 @@ public class Customer {
         return "Customer{" +
                 "customerId=" + customerId +
                 ", customerType=" + customerType +
-                ", nursingLevelId=" + nursingLevelId +
+                ", nurseId=" + nurseId +
+                ", nursingLevelName='" + nursingLevelName + '\'' +
                 ", name='" + name + '\'' +
                 ", idCard='" + idCard + '\'' +
                 ", age=" + age +
+                ", gender=" + gender +
                 ", bloodType='" + bloodType + '\'' +
                 ", relative='" + relative + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +

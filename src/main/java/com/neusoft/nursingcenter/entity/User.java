@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 @TableName("user")
 public class User {
     @TableId(value="user_id",type= IdType.AUTO)
-    private int userId;
+    private Integer userId;
 
     private String account; //账号
 
@@ -17,26 +17,26 @@ public class User {
 
     private String phoneNumber;
 
-    private int sex; // 0-女性  1-男性
+    private Integer gender; // 0-女性  1-男性
 
     private String email;
 
-    private int userType; // 0-管理员  1-护工
+    private Integer userType; // 0-管理员  1-护工
 
     public User() {}
 
-    public User(int userId, String account, String password, String name, String phoneNumber, int sex, String email, int userType) {
+    public User(int userId, String account, String password, String name, String phoneNumber, int gender, String email, int userType) {
         this.userId = userId;
         this.account = account;
         this.password = password;
         this.name = name;
         this.phoneNumber = phoneNumber;
-        this.sex = sex;
+        this.gender = gender;
         this.email = email;
         this.userType = userType;
     }
 
-    public int getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
@@ -76,12 +76,12 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public int getSex() {
-        return sex;
+    public Integer getGender() {
+        return gender;
     }
 
-    public void setSex(int sex) {
-        this.sex = sex;
+    public void setGender(int gender) {
+        this.gender = gender;
     }
 
     public String getEmail() {
@@ -92,7 +92,7 @@ public class User {
         this.email = email;
     }
 
-    public int getUserType() {
+    public Integer getUserType() {
         return userType;
     }
 
@@ -108,7 +108,7 @@ public class User {
                 ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
-                ", sex=" + sex +
+                ", gender=" + gender +
                 ", email='" + email + '\'' +
                 ", userType=" + userType +
                 '}';
