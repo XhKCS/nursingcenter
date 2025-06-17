@@ -11,15 +11,18 @@ public class Bed {
 
     private Integer roomId; //所属房间Id，外键
 
+    private String roomNumber; //所属房间号，外键
+
     private String bedNumber; //床位号
 
     private Integer status; //状态：0-空闲 / 1-外出 / 2-有人
 
     public Bed() {}
 
-    public Bed(Integer id, Integer roomId, String bedNumber, Integer status) {
+    public Bed(Integer id, Integer roomId, String roomNumber, String bedNumber, Integer status) {
         this.id = id;
         this.roomId = roomId;
+        this.roomNumber = roomNumber;
         this.bedNumber = bedNumber;
         this.status = status;
     }
@@ -38,6 +41,14 @@ public class Bed {
 
     public void setRoomId(Integer roomId) {
         this.roomId = roomId;
+    }
+
+    public String getRoomNumber() {
+        return roomNumber;
+    }
+
+    public void setRoomNumber(String roomNumber) {
+        this.roomNumber = roomNumber;
     }
 
     public String getBedNumber() {

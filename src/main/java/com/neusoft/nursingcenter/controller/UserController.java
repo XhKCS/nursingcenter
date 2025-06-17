@@ -69,8 +69,8 @@ public class UserController {
         return rb;
     }
 
-    @RequestMapping("/getAll")
-    public ResponseBean<List<User>> getAll() {
+    @RequestMapping("/listAll")
+    public ResponseBean<List<User>> listAll() {
         List<User> userList = userMapper.selectList(null);
         ResponseBean<List<User>> rb = null;
 
@@ -83,8 +83,8 @@ public class UserController {
     }
 
     @RequestMapping("getById")
-    public ResponseBean<User> getById(@RequestBody Map<String,Integer> request) {
-        int userId = request.get("userId");
+    public ResponseBean<User> getById(@RequestBody Map<String, Object> request) {
+        int userId = (int) request.get("userId");
         User user = userMapper.selectById(userId);
         ResponseBean<User> rb = null;
 
@@ -97,31 +97,18 @@ public class UserController {
     }
 
     @RequestMapping("getByAccount")
-    public ResponseBean<User> getByAccount(@RequestBody Map<String,String> request) {
-        String account = request.get("account");
+    public ResponseBean<User> getByAccount(@RequestBody Map<String, Object> request) {
+        String account = (String) request.get("account");
         User user = userMapper.getByAccount(account);
         ResponseBean<User> rb = null;
 
         if (user != null) {
             rb = new ResponseBean<>(user);
         } else {
-            rb = new ResponseBean<>(500, "数据库中没有该id的用户");
+            rb = new ResponseBean<>(500, "数据库中没有该账号的用户");
         }
         return rb;
     }
 
-    @RequestMapping("getByName")
-    public ResponseBean<User> getByName(@RequestBody Map<String,String> request) {
-        String name = request.get("name");
-        User user = userMapper.getByName(name);
-        ResponseBean<User> rb = null;
-
-        if (user != null) {
-            rb = new ResponseBean<>(user);
-        } else {
-            rb = new ResponseBean<>(500, "数据库中没有该id的用户");
-        }
-        return rb;
-    }
 
 }
