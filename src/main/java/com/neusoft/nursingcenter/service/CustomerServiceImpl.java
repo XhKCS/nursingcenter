@@ -6,9 +6,11 @@ import com.neusoft.nursingcenter.entity.Customer;
 import com.neusoft.nursingcenter.mapper.BedMapper;
 import com.neusoft.nursingcenter.mapper.BedUsageRecordMapper;
 import com.neusoft.nursingcenter.mapper.CustomerMapper;
+import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
