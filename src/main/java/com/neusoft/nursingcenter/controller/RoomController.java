@@ -67,7 +67,7 @@ public class RoomController {
         if (roomList.size() > 0) {
             rb = new ResponseBean<>(roomList);
         } else {
-            rb = new ResponseBean<>(500, "不存在该楼层的房间数据");
+            rb = new ResponseBean<>(500, "No data");
         }
         return rb;
     }
