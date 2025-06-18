@@ -1,0 +1,75 @@
+package com.neusoft.nursingcenter.controller;
+
+import com.neusoft.nursingcenter.entity.Bed;
+import com.neusoft.nursingcenter.entity.ResponseBean;
+import com.neusoft.nursingcenter.mapper.BedMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/bed")
+public class BedController {
+    @Autowired
+    private BedMapper bedMapper;
+
+    @RequestMapping("/listByRoomId")
+    public ResponseBean<List<Bed>> listByRoomId(@RequestBody Map<String, Object> request) {
+        int roomId = (int) request.get("roomId");
+        List<Bed> bedList = bedMapper.listBedsByRoomId(roomId);
+        ResponseBean<List<Bed>> rb = null;
+
+        if (bedList.size() > 0) {
+            rb = new ResponseBean<>(bedList);
+        } else {
+            rb = new ResponseBean<>(500, "No data");
+        }
+        return rb;
+    }
+
+    @RequestMapping("/listByRoomNumber")
+    public ResponseBean<List<Bed>> listByRoomNumber(@RequestBody Map<String, Object> request) {
+        String roomNumber = (String) request.get("roomNumber");
+        List<Bed> bedList = bedMapper.listBedsByRoomNumber(roomNumber);
+        ResponseBean<List<Bed>> rb = null;
+
+        if (bedList.size() > 0) {
+            rb = new ResponseBean<>(bedList);
+        } else {
+            rb = new ResponseBean<>(500, "No data");
+        }
+        return rb;
+    }
+
+    @RequestMapping("/listSpareByRoomNumber")
+    public ResponseBean<List<Bed>> listSpareByRoomNumber(@RequestBody Map<String, Object> request) {
+        String roomNumber = (String) request.get("roomNumber");
+        List<Bed> bedList = bedMapper.listSpareBedsByRoomNumber(roomNumber);
+        ResponseBean<List<Bed>> rb = null;
+
+        if (bedList.size() > 0) {
+            rb = new ResponseBean<>(bedList);
+        } else {
+            rb = new ResponseBean<>(500, "No data");
+        }
+        return rb;
+    }
+
+    @RequestMapping("/listByStatus")
+    public ResponseBean<List<Bed>> listByStatus(@RequestBody Map<String, Object> request) {
+        int status = (int) request.get("status");
+        List<Bed> bedList = bedMapper.listBedsByStatus(status);
+        ResponseBean<List<Bed>> rb = null;
+
+        if (bedList.size() > 0) {
+            rb = new ResponseBean<>(bedList);
+        } else {
+            rb = new ResponseBean<>(500, "No data");
+        }
+        return rb;
+    }
+}

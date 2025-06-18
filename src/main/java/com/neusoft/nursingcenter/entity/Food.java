@@ -15,13 +15,16 @@ public class Food {
 
     private String description;
 
+    private String imageUrl; //图片url
+
     public Food() {}
 
-    public Food(Integer id, String name, String type, String description) {
+    public Food(Integer id, String name, String type, String description, String imageUrl) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.description = description;
+        this.imageUrl = imageUrl;
     }
 
     public Integer getId() {
@@ -54,5 +57,13 @@ public class Food {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
