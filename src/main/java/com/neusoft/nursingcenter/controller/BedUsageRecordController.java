@@ -1,6 +1,10 @@
 package com.neusoft.nursingcenter.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.neusoft.nursingcenter.entity.BedUsageRecord;
+import com.neusoft.nursingcenter.entity.PageResponseBean;
 import com.neusoft.nursingcenter.entity.ResponseBean;
 import com.neusoft.nursingcenter.mapper.BedUsageRecordMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +35,26 @@ public class BedUsageRecordController {
         return rb;
     }
 
+    @RequestMapping("/page")
+    public PageResponseBean<List<BedUsageRecord>> page(@RequestBody Map<String, Object> request) {
+        Long current = (Long) request.get("current"); //当前页面
+        Long size = (Long) request.get("size"); //一页的行数
+
+        IPage<BedUsageRecord> page = new Page<>(current, size);
+        IPage<BedUsageRecord> result = bedUsageRecordMapper.selectPage(page, null);
+        List<BedUsageRecord> list = result.getRecords();
+        long total = result.getTotal();
+        PageResponseBean<List<BedUsageRecord>> rb = null;
+
+        if (total > 0) {
+            rb = new PageResponseBean<>(list);
+            rb.setTotal(total);
+        } else {
+            rb = new PageResponseBean<>(500, "No data");
+        }
+        return rb;
+    }
+
     @RequestMapping("/listAll")
     public ResponseBean<List<BedUsageRecord>> listAll() {
         List<BedUsageRecord> bedUsageRecordList = bedUsageRecordMapper.selectList(null);
@@ -40,6 +64,29 @@ public class BedUsageRecordController {
             rb = new ResponseBean<>(bedUsageRecordList);
         } else {
             rb = new ResponseBean<>(500, "No data");
+        }
+        return rb;
+    }
+
+    @RequestMapping("/pageByCustomerId")
+    public PageResponseBean<List<BedUsageRecord>> pageByCustomerId(@RequestBody Map<String, Object> request) {
+        int customerId = (int) request.get("customerId");
+        Long current = (Long) request.get("current"); //当前页面
+        Long size = (Long) request.get("size"); //一页的行数
+
+        IPage<BedUsageRecord> page = new Page<>(current, size);
+        QueryWrapper<BedUsageRecord> qw = new QueryWrapper<>();
+        qw.eq("customer_id", customerId);
+        IPage<BedUsageRecord> result = bedUsageRecordMapper.selectPage(page, null);
+        List<BedUsageRecord> list = result.getRecords();
+        long total = result.getTotal();
+        PageResponseBean<List<BedUsageRecord>> rb = null;
+
+        if (total > 0) {
+            rb = new PageResponseBean<>(list);
+            rb.setTotal(total);
+        } else {
+            rb = new PageResponseBean<>(500, "No data");
         }
         return rb;
     }
@@ -113,9 +160,9 @@ public class BedUsageRecordController {
 
         ResponseBean<String> rb = null;
         if (result > 0) {
-            rb = new ResponseBean<>("删除成功");
+            rb = new ResponseBean<>("添加成功");
         } else {
-            rb = new ResponseBean<>(500, "删除失败");
+            rb = new ResponseBean<>(500, "添加失败");
         }
         return rb;
     }
@@ -137,9 +184,9 @@ public class BedUsageRecordController {
         bedUsageRecord.setStatus(status);
         int result = bedUsageRecordMapper.updateById(bedUsageRecord);
         if (result > 0) {
-            rb = new ResponseBean<>("更新成功");
+            rb = new ResponseBean<>("修改成功");
         } else {
-            rb = new ResponseBean<>(500, "更新失败");
+            rb = new ResponseBean<>(500, "修改失败");
         }
         return rb;
     }

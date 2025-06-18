@@ -73,6 +73,7 @@ public class BedController {
         return rb;
     }
 
+    // 获取指定房间内空闲的床位
     @RequestMapping("/listSpareByRoomNumber")
     public ResponseBean<List<Bed>> listSpareByRoomNumber(@RequestBody Map<String, Object> request) {
         String roomNumber = (String) request.get("roomNumber");

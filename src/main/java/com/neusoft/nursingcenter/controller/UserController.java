@@ -1,5 +1,7 @@
 package com.neusoft.nursingcenter.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.neusoft.nursingcenter.entity.PageResponseBean;
 import com.neusoft.nursingcenter.entity.ResponseBean;
 import com.neusoft.nursingcenter.entity.User;
@@ -66,6 +68,26 @@ public class UserController {
         //清空session中存储的user对象
         httpServletRequest.getSession().setAttribute("user", null);
         rb = new ResponseBean<>("已退出登录");
+        return rb;
+    }
+
+    @RequestMapping("/page")
+    public PageResponseBean<List<User>> page(@RequestBody Map<String, Object> request) {
+        Long current = (Long) request.get("current"); //当前页面
+        Long size = (Long) request.get("size"); //一页的行数
+
+        IPage<User> page = new Page<>(current, size);
+        IPage<User> result = userMapper.selectPage(page, null);
+        List<User> userList = result.getRecords();
+        long total = result.getTotal();
+        PageResponseBean<List<User>> rb = null;
+
+        if (total > 0) {
+            rb = new PageResponseBean<>(userList);
+            rb.setTotal(total);
+        } else {
+            rb = new PageResponseBean<>(500, "No data");
+        }
         return rb;
     }
 

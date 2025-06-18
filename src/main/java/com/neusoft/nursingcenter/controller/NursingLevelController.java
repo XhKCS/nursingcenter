@@ -1,6 +1,10 @@
 package com.neusoft.nursingcenter.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.neusoft.nursingcenter.entity.NursingLevel;
+import com.neusoft.nursingcenter.entity.PageResponseBean;
 import com.neusoft.nursingcenter.entity.ResponseBean;
 import com.neusoft.nursingcenter.entity.User;
 import com.neusoft.nursingcenter.mapper.NursingLevelMapper;
@@ -18,6 +22,30 @@ public class NursingLevelController {
     @Autowired
     NursingLevelMapper nursingLevelMapper;
 
+    @RequestMapping("/pageByStatus")
+    public PageResponseBean<List<NursingLevel>> pageByStatus(@RequestBody Map<String, Object> request) {
+        int status = (int) request.get("status");
+        Long current = (Long) request.get("current"); //当前页面
+        Long size = (Long) request.get("size"); //一页的行数
+        // 筛选条件
+        QueryWrapper<NursingLevel> qw = new QueryWrapper<>();
+        qw.eq("status", status);
+
+        IPage<NursingLevel> page = new Page<>(current, size);
+        IPage<NursingLevel> result = nursingLevelMapper.selectPage(page, qw);
+        List<NursingLevel> levelList = result.getRecords();
+        long total = result.getTotal();
+        PageResponseBean<List<NursingLevel>> rb = null;
+
+        if (total > 0) {
+            rb = new PageResponseBean<>(levelList);
+            rb.setTotal(total);
+        } else {
+            rb = new PageResponseBean<>(500, "No data");
+        }
+        return rb;
+    }
+
     @RequestMapping("/listByStatus")
     public ResponseBean<List<NursingLevel>> listByStatus(@RequestBody Map<String, Object> request) {
         int status = (int) request.get("status");
@@ -28,6 +56,26 @@ public class NursingLevelController {
             rb = new ResponseBean<>(levelList);
         } else {
             rb = new ResponseBean<>(500, "No data");
+        }
+        return rb;
+    }
+
+    @RequestMapping("/page")
+    public PageResponseBean<List<NursingLevel>> page(@RequestBody Map<String, Object> request) {
+        Long current = (Long) request.get("current"); //当前页面
+        Long size = (Long) request.get("size"); //一页的行数
+
+        IPage<NursingLevel> page = new Page<>(current, size);
+        IPage<NursingLevel> result = nursingLevelMapper.selectPage(page, null);
+        List<NursingLevel> levelList = result.getRecords();
+        long total = result.getTotal();
+        PageResponseBean<List<NursingLevel>> rb = null;
+
+        if (total > 0) {
+            rb = new PageResponseBean<>(levelList);
+            rb.setTotal(total);
+        } else {
+            rb = new PageResponseBean<>(500, "No data");
         }
         return rb;
     }
