@@ -23,9 +23,11 @@ public class NursingProgram {
 
     private String description;
 
+    private Boolean isDeleted; //是否已删除
+
     public NursingProgram() {}
 
-    public NursingProgram(Integer id, String programCode, String name, Double price, Integer status, String executionPeriod, Integer executionTimes, String description) {
+    public NursingProgram(Integer id, String programCode, String name, Double price, Integer status, String executionPeriod, Integer executionTimes, String description, Boolean isDeleted) {
         this.id = id;
         this.programCode = programCode;
         this.name = name;
@@ -34,6 +36,7 @@ public class NursingProgram {
         this.executionPeriod = executionPeriod;
         this.executionTimes = executionTimes;
         this.description = description;
+        this.isDeleted = isDeleted;
     }
 
     public Integer getId() {
@@ -98,5 +101,13 @@ public class NursingProgram {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Boolean getDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        isDeleted = deleted;
     }
 }

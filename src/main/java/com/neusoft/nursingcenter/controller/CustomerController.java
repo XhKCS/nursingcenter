@@ -26,11 +26,11 @@ public class CustomerController {
 	@Autowired
 	private CustomerMapper customerMapper;
 	
-	@GetMapping("/getPagedCustomers")
+	@GetMapping("/page")
 	public PageResponseBean<List<Customer>> getPagedCustomers(@RequestBody Map<String, Object> request){
-		Long cur = (Long) request.get("cur");
-		Long number = (Long) request.get("number");
-		IPage<Customer> page = new Page<>(cur,number);
+		Long current = (Long) request.get("current");
+		Long size = (Long) request.get("size");
+		IPage<Customer> page = new Page<>(current, size);
 		IPage<Customer> result = customerMapper.selectPage(page,null);
 		List<Customer> list =result.getRecords();
 		Long total =result.getTotal();
@@ -45,14 +45,14 @@ public class CustomerController {
 		return prb;
 	}
 	
-	@GetMapping("/getPagedCustomersByName")
+	@GetMapping("/pageByName")
 	public PageResponseBean<List<Customer>> getPagedCustomersByName(@RequestBody Map<String, Object> request){
-		// Long cur,Long number,String name
-		Long cur = (Long) request.get("cur");
-		Long number = (Long) request.get("number");
+		// Long current, Long size, String name
+		Long current = (Long) request.get("current");
+		Long size = (Long) request.get("size");
 		String name = (String) request.get("name");
 		
-		IPage<Customer> page = new Page<>(cur,number);
+		IPage<Customer> page = new Page<>(current,size);
 		QueryWrapper<Customer> qw = new QueryWrapper<>();
 		qw.like("name", name);
 		IPage<Customer> result = customerMapper.selectPage(page,qw);
@@ -69,7 +69,7 @@ public class CustomerController {
 		return prb;
 	}
 	
-	@PostMapping("/addCustomer")
+	@PostMapping("/add")
 	public ResponseBean<Integer> addCustomer(@RequestBody Customer customer) {
 		Integer result = customerMapper.insert(customer);
 		ResponseBean<Integer> rb = null;
@@ -81,7 +81,7 @@ public class CustomerController {
 		return rb;
 	}
 	
-	@PostMapping("/updateCustomer")
+	@PostMapping("/update")
 	public ResponseBean<Integer> updateCustomer(@RequestBody Customer data) {
 		Integer result = customerMapper.updateById(data);
 		ResponseBean<Integer> rb = null;
@@ -93,7 +93,7 @@ public class CustomerController {
 		return rb;
 	}
 	
-	@PostMapping("/deleteCustomer")
+	@PostMapping("/deleteById")
 	public ResponseBean<Integer> deleteCustomer(@RequestBody Map<String, Object> request) {
 		int id = (int) request.get("id");
 		Customer customer = customerMapper.selectById(id);

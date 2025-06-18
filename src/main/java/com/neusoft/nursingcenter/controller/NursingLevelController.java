@@ -1,6 +1,10 @@
 package com.neusoft.nursingcenter.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.neusoft.nursingcenter.entity.NursingLevel;
+import com.neusoft.nursingcenter.entity.PageResponseBean;
 import com.neusoft.nursingcenter.entity.ResponseBean;
 import com.neusoft.nursingcenter.entity.User;
 import com.neusoft.nursingcenter.mapper.NursingLevelMapper;
@@ -18,13 +22,71 @@ public class NursingLevelController {
     @Autowired
     NursingLevelMapper nursingLevelMapper;
 
-    @RequestMapping("/listAll")
-    public ResponseBean<List<NursingLevel>> listAll() {
-        List<NursingLevel> userList = nursingLevelMapper.selectList(null);
+    @RequestMapping("/pageByStatus")
+    public PageResponseBean<List<NursingLevel>> pageByStatus(@RequestBody Map<String, Object> request) {
+        int status = (int) request.get("status");
+        Long current = (Long) request.get("current"); //当前页面
+        Long size = (Long) request.get("size"); //一页的行数
+        // 筛选条件
+        QueryWrapper<NursingLevel> qw = new QueryWrapper<>();
+        qw.eq("status", status);
+
+        IPage<NursingLevel> page = new Page<>(current, size);
+        IPage<NursingLevel> result = nursingLevelMapper.selectPage(page, qw);
+        List<NursingLevel> levelList = result.getRecords();
+        long total = result.getTotal();
+        PageResponseBean<List<NursingLevel>> rb = null;
+
+        if (total > 0) {
+            rb = new PageResponseBean<>(levelList);
+            rb.setTotal(total);
+        } else {
+            rb = new PageResponseBean<>(500, "No data");
+        }
+        return rb;
+    }
+
+    @RequestMapping("/listByStatus")
+    public ResponseBean<List<NursingLevel>> listByStatus(@RequestBody Map<String, Object> request) {
+        int status = (int) request.get("status");
+        List<NursingLevel> levelList = nursingLevelMapper.listByStatus(status);
         ResponseBean<List<NursingLevel>> rb = null;
 
-        if (userList.size() > 0) {
-            rb = new ResponseBean<>(userList);
+        if (levelList.size() > 0) {
+            rb = new ResponseBean<>(levelList);
+        } else {
+            rb = new ResponseBean<>(500, "No data");
+        }
+        return rb;
+    }
+
+    @RequestMapping("/page")
+    public PageResponseBean<List<NursingLevel>> page(@RequestBody Map<String, Object> request) {
+        Long current = (Long) request.get("current"); //当前页面
+        Long size = (Long) request.get("size"); //一页的行数
+
+        IPage<NursingLevel> page = new Page<>(current, size);
+        IPage<NursingLevel> result = nursingLevelMapper.selectPage(page, null);
+        List<NursingLevel> levelList = result.getRecords();
+        long total = result.getTotal();
+        PageResponseBean<List<NursingLevel>> rb = null;
+
+        if (total > 0) {
+            rb = new PageResponseBean<>(levelList);
+            rb.setTotal(total);
+        } else {
+            rb = new PageResponseBean<>(500, "No data");
+        }
+        return rb;
+    }
+
+    @RequestMapping("/listAll")
+    public ResponseBean<List<NursingLevel>> listAll() {
+        List<NursingLevel> levelList = nursingLevelMapper.selectList(null);
+        ResponseBean<List<NursingLevel>> rb = null;
+
+        if (levelList.size() > 0) {
+            rb = new ResponseBean<>(levelList);
         } else {
             rb = new ResponseBean<>(500, "No data");
         }
@@ -54,7 +116,52 @@ public class NursingLevelController {
         if (nursingLevel != null) {
             rb = new ResponseBean<>(nursingLevel);
         } else {
-            rb = new ResponseBean<>(500, "数据库中没有该id的护理级别");
+            rb = new ResponseBean<>(500, "数据库中没有该名称的护理级别");
+        }
+        return rb;
+    }
+
+    @RequestMapping("add")
+    public ResponseBean<String> add(@RequestBody Map<String,Object> request) {
+        String name = (String) request.get("name");
+        int status = (int) request.get("status");
+        NursingLevel check = nursingLevelMapper.getByName(name);
+        ResponseBean<String> rb = null;
+
+        if (check != null) {
+            rb = new ResponseBean<>(500, "不能添加重名的护理级别");
+            return rb;
+        }
+
+        NursingLevel nursingLevelToAdd = new NursingLevel(0, name, status);
+        int result = nursingLevelMapper.insert(nursingLevelToAdd);
+        if (result > 0) {
+            rb = new ResponseBean<>("添加成功");
+        } else {
+            rb = new ResponseBean<>(500, "添加失败");
+        }
+        return rb;
+    }
+
+    @RequestMapping("update")
+    public ResponseBean<String> update(@RequestBody Map<String,Object> request) {
+        int id = (int) request.get("id");
+        int status = (int) request.get("status");
+        NursingLevel nursingLevelToUpdate = nursingLevelMapper.selectById(id);
+        ResponseBean<String> rb = null;
+
+        if (nursingLevelToUpdate == null) {
+            rb = new ResponseBean<>(500, "不存在该id的护理级别");
+            return rb;
+        }
+
+        // 只能修改状态
+        nursingLevelToUpdate.setStatus(status);
+        int result = nursingLevelMapper.updateById(nursingLevelToUpdate);
+        if (result > 0) {
+            rb = new ResponseBean<>("修改成功");
+        } else {
+            rb = new ResponseBean<>(500, "修改失败");
         }
         return rb;
     }

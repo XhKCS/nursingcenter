@@ -17,6 +17,34 @@ public class BedController {
     @Autowired
     private BedMapper bedMapper;
 
+    @RequestMapping("getByNumber")
+    public ResponseBean<Bed> getBedByNumber(@RequestBody Map<String, Object> request) {
+        String bedNumber = (String) request.get("bedNumber");
+        Bed bed = bedMapper.getBedByNumber(bedNumber);
+
+        ResponseBean<Bed> rb = null;
+        if (bed != null) {
+            rb = new ResponseBean<>(bed);
+        } else {
+            rb = new ResponseBean<>(500, "不存在该床位号的床位");
+        }
+        return rb;
+    }
+
+    @RequestMapping("getById")
+    public ResponseBean<Bed> getBedById(@RequestBody Map<String, Object> request) {
+        int id = (int) request.get("id");
+        Bed bed = bedMapper.selectById(id);
+
+        ResponseBean<Bed> rb = null;
+        if (bed != null) {
+            rb = new ResponseBean<>(bed);
+        } else {
+            rb = new ResponseBean<>(500, "不存在该id的床位");
+        }
+        return rb;
+    }
+
     @RequestMapping("/listByRoomId")
     public ResponseBean<List<Bed>> listByRoomId(@RequestBody Map<String, Object> request) {
         int roomId = (int) request.get("roomId");
@@ -45,6 +73,7 @@ public class BedController {
         return rb;
     }
 
+    // 获取指定房间内空闲的床位
     @RequestMapping("/listSpareByRoomNumber")
     public ResponseBean<List<Bed>> listSpareByRoomNumber(@RequestBody Map<String, Object> request) {
         String roomNumber = (String) request.get("roomNumber");
