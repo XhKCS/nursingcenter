@@ -3,6 +3,7 @@ package com.neusoft.nursingcenter.controller;
 import java.util.List;
 import java.util.Map;
 
+import com.neusoft.nursingcenter.service.CustomerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,17 +26,23 @@ import com.neusoft.nursingcenter.mapper.CustomerMapper;
 public class CustomerController {
 	@Autowired
 	private CustomerMapper customerMapper;
+
+	@Autowired
+	private CustomerServiceImpl customerService;
 	
 	@GetMapping("/page")
-	public PageResponseBean<List<Customer>> getPagedCustomers(@RequestBody Map<String, Object> request){
-		Long current = (Long) request.get("current");
-		Long size = (Long) request.get("size");
+	public PageResponseBean<List<Customer>> page(@RequestBody Map<String, Object> request){
+		int current = (int) request.get("current"); //当前页面
+		int size = (int) request.get("size"); //一页的行数
+
 		IPage<Customer> page = new Page<>(current, size);
-		IPage<Customer> result = customerMapper.selectPage(page,null);
+		QueryWrapper<Customer> qw = new QueryWrapper<>();
+		qw.eq("is_deleted", 0); //要筛选没有被删除的
+		IPage<Customer> result = customerMapper.selectPage(page, qw);
+
 		List<Customer> list =result.getRecords();
-		Long total =result.getTotal();
-		
-		PageResponseBean<List<Customer>> prb =null;
+		long total =result.getTotal();
+		PageResponseBean<List<Customer>> prb = null;
 		if(total > 0) {
 			prb = new PageResponseBean<>(list);
 			prb.setTotal(total);
@@ -44,21 +51,26 @@ public class CustomerController {
 		}
 		return prb;
 	}
-	
-	@GetMapping("/pageByName")
-	public PageResponseBean<List<Customer>> getPagedCustomersByName(@RequestBody Map<String, Object> request){
-		// Long current, Long size, String name
-		Long current = (Long) request.get("current");
-		Long size = (Long) request.get("size");
+
+	// 用于入住登记页的多条件组合的分页查询
+	// 组合条件：客户姓名、客户类型（自理老人 / 护理老人）
+	@GetMapping("/pageWithConditions")
+	public PageResponseBean<List<Customer>> pageByName(@RequestBody Map<String, Object> request){
+		// int current, int size, String name, int customerType
+		int current = (int) request.get("current"); //当前页面
+		int size = (int) request.get("size"); //一页的行数
 		String name = (String) request.get("name");
+		int customerType = (int) request.get("customerType");
 		
 		IPage<Customer> page = new Page<>(current,size);
 		QueryWrapper<Customer> qw = new QueryWrapper<>();
 		qw.like("name", name);
+		qw.eq("customer_type", customerType);
+		qw.eq("is_deleted", 0); //要筛选没有被删除的
 		IPage<Customer> result = customerMapper.selectPage(page,qw);
+
 		List<Customer> list =result.getRecords();
-		Long total =result.getTotal();
-		
+		long total =result.getTotal();
 		PageResponseBean<List<Customer>> prb =null;
 		if(total > 0) {
 			prb = new PageResponseBean<>(list);
@@ -68,42 +80,61 @@ public class CustomerController {
 		}
 		return prb;
 	}
-	
+
+	// 事务
 	@PostMapping("/add")
-	public ResponseBean<Integer> addCustomer(@RequestBody Customer customer) {
-		Integer result = customerMapper.insert(customer);
+	public ResponseBean<Integer> add(@RequestBody Customer customer) {
 		ResponseBean<Integer> rb = null;
-		if(result > 0) {
-			rb = new ResponseBean<>(result);
-		}else {
-			rb = new ResponseBean<>(500,"Fail to add");
+
+		try {
+			int result = customerService.addCustomer(customer);
+			if(result > 0) {
+				rb = new ResponseBean<>(result);
+			}else {
+				rb = new ResponseBean<>(500,"Fail to update");
+			}
+		} catch (Exception e) {
+			rb = new ResponseBean<>(500, e.getMessage());
 		}
 		return rb;
 	}
-	
+
+	// 事务
+	// 注意前端修改客户信息时是不允许修改其所属的房间和床位的！床位这部分的修改只能在床位管理模块进行
 	@PostMapping("/update")
-	public ResponseBean<Integer> updateCustomer(@RequestBody Customer data) {
-		Integer result = customerMapper.updateById(data);
+	public ResponseBean<Integer> update(@RequestBody Customer customer) {
 		ResponseBean<Integer> rb = null;
-		if(result > 0) {
-			rb = new ResponseBean<>(result);
-		}else {
-			rb = new ResponseBean<>(500,"Fail to update");
+
+		try {
+			int result = customerService.updateCustomer(customer);
+			if(result > 0) {
+				rb = new ResponseBean<>(result);
+			}else {
+				rb = new ResponseBean<>(500,"Fail to update");
+			}
+		} catch (Exception e) {
+			rb = new ResponseBean<>(500, e.getMessage());
 		}
 		return rb;
 	}
-	
+
+	// 事务
 	@PostMapping("/deleteById")
-	public ResponseBean<Integer> deleteCustomer(@RequestBody Map<String, Object> request) {
-		int id = (int) request.get("id");
-		Customer customer = customerMapper.selectById(id);
-		customer.setDeleted(true);
-		Integer result = customerMapper.updateById(customer);
-		ResponseBean<Integer> rb =null;
-		if(result > 0) {
-			rb = new ResponseBean<>(result);
-		}else {
-			rb = new ResponseBean<>(500,"Fail to delete");
+	public ResponseBean<Integer> deleteById(@RequestBody Map<String, Object> request) {
+		// 逻辑删除
+		// 注意删除时需要将该用户正在使用的床位使用记录也删除；并将对应床位状态修改为空闲；该复杂操作需要用到Service
+		int customerId = (int) request.get("customerId");
+
+		ResponseBean<Integer> rb = null;
+		try {
+			int result = customerService.deleteCustomerById(customerId);
+			if(result > 0) {
+				rb = new ResponseBean<>(result);
+			}else {
+				rb = new ResponseBean<>(500,"Fail to delete");
+			}
+		} catch (Exception e) {
+			rb = new ResponseBean<>(500, e.getMessage());
 		}
 		
 		return rb;
