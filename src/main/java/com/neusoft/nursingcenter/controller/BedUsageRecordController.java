@@ -24,24 +24,58 @@ public class BedUsageRecordController {
     @RequestMapping("/getCurrentUsingRecord")
     public ResponseBean<BedUsageRecord> getCurrentUsingRecord(@RequestBody Map<String, Object> request) {
         int customerId = (int) request.get("customerId");
-        BedUsageRecord bedUsageRecord = bedUsageRecordMapper.getCurrentUsingRecord(customerId);
+        // 正常情况下，一个客户应该只有一条正在使用的床位详情
+        BedUsageRecord currentUsingRecord = bedUsageRecordMapper.getCurrentUsingRecord(customerId);
 
         ResponseBean<BedUsageRecord> rb = null;
-        if (bedUsageRecord != null) {
-            rb = new ResponseBean<>(bedUsageRecord);
+        if (currentUsingRecord != null) {
+            rb = new ResponseBean<>(currentUsingRecord);
         } else {
             rb = new ResponseBean<>(500, "No data");
         }
         return rb;
     }
 
+    // 无条件分页查询，只看当前页与每一页的size
     @RequestMapping("/page")
     public PageResponseBean<List<BedUsageRecord>> page(@RequestBody Map<String, Object> request) {
-        Long current = (Long) request.get("current"); //当前页面
-        Long size = (Long) request.get("size"); //一页的行数
+        int current = (int) request.get("current"); //当前页面
+        int size = (int) request.get("size"); //一页的行数
 
         IPage<BedUsageRecord> page = new Page<>(current, size);
-        IPage<BedUsageRecord> result = bedUsageRecordMapper.selectPage(page, null);
+        QueryWrapper<BedUsageRecord> qw = new QueryWrapper<>();
+        qw.eq("is_deleted", 0);
+        IPage<BedUsageRecord> result = bedUsageRecordMapper.selectPage(page, qw);
+        List<BedUsageRecord> list = result.getRecords();
+        long total = result.getTotal();
+        PageResponseBean<List<BedUsageRecord>> rb = null;
+
+        if (total > 0) {
+            rb = new PageResponseBean<>(list);
+            rb.setTotal(total);
+        } else {
+            rb = new PageResponseBean<>(500, "No data");
+        }
+        return rb;
+    }
+
+    // 用于床位管理页的多条件组合的分页查询
+    // 组合条件：床位状态、客户姓名、开始日期（入住日期）
+    @RequestMapping("/pageWithConditions")
+    public PageResponseBean<List<BedUsageRecord>> pageByCustomerId(@RequestBody Map<String, Object> request) {
+        int status = (int) request.get("status");
+        String customerName = (String) request.get("customerName"); //绑定前端搜索框值变量，默认为空字符串
+        String startDate = (String) request.get("startDate"); //绑定前端日期控件值变量，默认为空字符串
+        int current = (int) request.get("current"); //当前页面，前端应该有默认值
+        int size = (int) request.get("size"); //一页的行数，前端应该有默认值
+
+        IPage<BedUsageRecord> page = new Page<>(current, size);
+        QueryWrapper<BedUsageRecord> qw = new QueryWrapper<>();
+        qw.eq("status", status);
+        qw.like("customer_name", customerName);
+        qw.like("start_date", startDate);
+        qw.eq("is_deleted", 0);
+        IPage<BedUsageRecord> result = bedUsageRecordMapper.selectPage(page, qw);
         List<BedUsageRecord> list = result.getRecords();
         long total = result.getTotal();
         PageResponseBean<List<BedUsageRecord>> rb = null;
@@ -57,6 +91,8 @@ public class BedUsageRecordController {
 
     @RequestMapping("/listAll")
     public ResponseBean<List<BedUsageRecord>> listAll() {
+        QueryWrapper<BedUsageRecord> qw = new QueryWrapper<>();
+        qw.eq("is_deleted", 0);
         List<BedUsageRecord> bedUsageRecordList = bedUsageRecordMapper.selectList(null);
 
         ResponseBean<List<BedUsageRecord>> rb = null;
@@ -64,29 +100,6 @@ public class BedUsageRecordController {
             rb = new ResponseBean<>(bedUsageRecordList);
         } else {
             rb = new ResponseBean<>(500, "No data");
-        }
-        return rb;
-    }
-
-    @RequestMapping("/pageByCustomerId")
-    public PageResponseBean<List<BedUsageRecord>> pageByCustomerId(@RequestBody Map<String, Object> request) {
-        int customerId = (int) request.get("customerId");
-        Long current = (Long) request.get("current"); //当前页面
-        Long size = (Long) request.get("size"); //一页的行数
-
-        IPage<BedUsageRecord> page = new Page<>(current, size);
-        QueryWrapper<BedUsageRecord> qw = new QueryWrapper<>();
-        qw.eq("customer_id", customerId);
-        IPage<BedUsageRecord> result = bedUsageRecordMapper.selectPage(page, null);
-        List<BedUsageRecord> list = result.getRecords();
-        long total = result.getTotal();
-        PageResponseBean<List<BedUsageRecord>> rb = null;
-
-        if (total > 0) {
-            rb = new PageResponseBean<>(list);
-            rb.setTotal(total);
-        } else {
-            rb = new PageResponseBean<>(500, "No data");
         }
         return rb;
     }
@@ -134,6 +147,7 @@ public class BedUsageRecordController {
         return rb;
     }
 
+    // 逻辑删除
     @RequestMapping("deleteById")
     public ResponseBean<String> deleteById(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
@@ -150,12 +164,14 @@ public class BedUsageRecordController {
 
     @RequestMapping("add")
     public ResponseBean<String> addRecord(@RequestBody Map<String, Object> request) {
-        int bedId = (int) request.get("bedId");
+        String bedNumber = (String) request.get("bedNumber");
         int customerId = (int) request.get("customerId");
+        String customerName = (String) request.get("customerName");
+        int customerGender = (int) request.get("customerGender");
         String startDate = (String) request.get("startDate");
         String endDate = (String) request.get("endDate");
         int status = (int) request.get("status"); //一般来说新增的床位使用记录是“使用中”，也就是1
-        BedUsageRecord bedUsageRecord = new BedUsageRecord(0, bedId, customerId, startDate, endDate, status, false);
+        BedUsageRecord bedUsageRecord = new BedUsageRecord(0, bedNumber, customerId, customerName, customerGender, startDate, endDate, status, false);
         int result = bedUsageRecordMapper.insert(bedUsageRecord);
 
         ResponseBean<String> rb = null;
