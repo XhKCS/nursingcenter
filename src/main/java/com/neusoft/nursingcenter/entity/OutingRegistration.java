@@ -11,6 +11,8 @@ public class OutingRegistration {
 
     private Integer customerId;
 
+    private String customerName;
+
     private String outingReason; //外出事由
 
     private String outingDate; //外出日期
@@ -35,9 +37,10 @@ public class OutingRegistration {
 
     public OutingRegistration() {}
 
-    public OutingRegistration(Integer id, Integer customerId, String outingReason, String outingDate, String expectedReturnDate, String actualReturnDate, String escortName, String escortPhone, String escortRelation, Integer reviewStatus, String reviewTime, Integer reviewerId, String rejectReason) {
+    public OutingRegistration(Integer id, Integer customerId, String customerName, String outingReason, String outingDate, String expectedReturnDate, String actualReturnDate, String escortName, String escortPhone, String escortRelation, Integer reviewStatus, String reviewTime, Integer reviewerId, String rejectReason) {
         this.id = id;
         this.customerId = customerId;
+        this.customerName = customerName;
         this.outingReason = outingReason;
         this.outingDate = outingDate;
         this.expectedReturnDate = expectedReturnDate;
@@ -65,6 +68,14 @@ public class OutingRegistration {
 
     public void setCustomerId(Integer customerId) {
         this.customerId = customerId;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 
     public String getOutingReason() {

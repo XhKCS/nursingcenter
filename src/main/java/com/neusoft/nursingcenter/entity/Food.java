@@ -15,15 +15,18 @@ public class Food {
 
     private String description;
 
+    private double price;
+
     private String imageUrl; //图片url
 
     public Food() {}
 
-    public Food(Integer id, String name, String type, String description, String imageUrl) {
+    public Food(Integer id, String name, String type, String description, double price, String imageUrl) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.description = description;
+        this.price = price;
         this.imageUrl = imageUrl;
     }
 
@@ -57,6 +60,14 @@ public class Food {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 
     public String getImageUrl() {

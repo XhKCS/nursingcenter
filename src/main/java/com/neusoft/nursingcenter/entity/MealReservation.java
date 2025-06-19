@@ -13,17 +13,20 @@ public class MealReservation {
 
     private Integer mealItemId;
 
-    private Integer foodId;
+    private Integer purchaseCount; //购买数量
+
+    private String purchaseTime; //购买时间
 
     private Boolean isDeleted;
 
     public MealReservation() {}
 
-    public MealReservation(Integer id, Integer customerId, Integer mealItemId, Integer foodId, Boolean isDeleted) {
+    public MealReservation(Integer id, Integer customerId, Integer mealItemId, Integer purchaseCount, String purchaseTime, Boolean isDeleted) {
         this.id = id;
         this.customerId = customerId;
         this.mealItemId = mealItemId;
-        this.foodId = foodId;
+        this.purchaseCount = purchaseCount;
+        this.purchaseTime = purchaseTime;
         this.isDeleted = isDeleted;
     }
 
@@ -51,12 +54,20 @@ public class MealReservation {
         this.mealItemId = mealItemId;
     }
 
-    public Integer getFoodId() {
-        return foodId;
+    public Integer getPurchaseCount() {
+        return purchaseCount;
     }
 
-    public void setFoodId(Integer foodId) {
-        this.foodId = foodId;
+    public void setPurchaseCount(Integer purchaseCount) {
+        this.purchaseCount = purchaseCount;
+    }
+
+    public String getPurchaseTime() {
+        return purchaseTime;
+    }
+
+    public void setPurchaseTime(String purchaseTime) {
+        this.purchaseTime = purchaseTime;
     }
 
     public Boolean getDeleted() {

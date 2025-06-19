@@ -22,10 +22,10 @@ public class DietConfigItemController {
     @Autowired
     private DietConfigItemMapper dietConfigItemMapper;
 
-    @GetMapping("/page")
+    @RequestMapping ("/page")
     public PageResponseBean<List<DietConfigItem>> getPagedCustomersByName(@RequestBody Map<String, Object> request){
-        Long current = (Long) request.get("current");
-        Long size = (Long) request.get("size");
+        int current = (int) request.get("current");
+        int size = (int) request.get("size");
         Integer customerId = (Integer) request.get("customerId");
 
         QueryWrapper<DietConfigItem> qw = new QueryWrapper<>();
@@ -34,7 +34,7 @@ public class DietConfigItemController {
         IPage<DietConfigItem> page = new Page<>(current,size);
         IPage<DietConfigItem> result = dietConfigItemMapper.selectPage(page,qw);
         List<DietConfigItem> list =result.getRecords();
-        Long total =result.getTotal();
+        long total =result.getTotal();
 
         PageResponseBean<List<DietConfigItem>> prb =null;
         if(total > 0) {
@@ -48,7 +48,7 @@ public class DietConfigItemController {
 
     @PostMapping("/add")
     public ResponseBean<Integer> add(@RequestBody DietConfigItem dietConfigItem) {
-        Integer result = dietConfigItemMapper.insert(dietConfigItem);
+        int result = dietConfigItemMapper.insert(dietConfigItem);
         ResponseBean<Integer> rb = null;
         if(result > 0) {
             rb = new ResponseBean<>(result);
@@ -60,7 +60,7 @@ public class DietConfigItemController {
 
     @PostMapping("/update")
     public ResponseBean<Integer> update(@RequestBody DietConfigItem data) {
-        Integer result = dietConfigItemMapper.updateById(data);
+        int result = dietConfigItemMapper.updateById(data);
         ResponseBean<Integer> rb = null;
         if(result > 0) {
             rb = new ResponseBean<>(result);
@@ -73,7 +73,7 @@ public class DietConfigItemController {
     @PostMapping("/delete")
     public ResponseBean<Integer> delete(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
-        Integer result = dietConfigItemMapper.deleteById(id);
+        int result = dietConfigItemMapper.deleteById(id);
         ResponseBean<Integer> rb =null;
         if(result > 0) {
             rb = new ResponseBean<>(result);
