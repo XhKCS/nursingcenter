@@ -15,6 +15,8 @@ public class CustomerNursingService {
 
     private Integer programId; //护理项目id
 
+    private String programName; //护理项目名称
+
     private String purchaseDate; //购买日期
 
     private Integer totalCount; //购买总数量
@@ -27,11 +29,12 @@ public class CustomerNursingService {
 
     public CustomerNursingService() {}
 
-    public CustomerNursingService(Integer id, Integer customerId, Integer levelId, Integer programId, String purchaseDate, Integer totalCount, Integer usedCount, String expirationDate, Boolean isDeleted) {
+    public CustomerNursingService(Integer id, Integer customerId, Integer levelId, Integer programId, String programName, String purchaseDate, Integer totalCount, Integer usedCount, String expirationDate, Boolean isDeleted) {
         this.id = id;
         this.customerId = customerId;
         this.levelId = levelId;
         this.programId = programId;
+        this.programName = programName;
         this.purchaseDate = purchaseDate;
         this.totalCount = totalCount;
         this.usedCount = usedCount;
@@ -69,6 +72,14 @@ public class CustomerNursingService {
 
     public void setProgramId(Integer programId) {
         this.programId = programId;
+    }
+
+    public String getProgramName() {
+        return programName;
+    }
+
+    public void setProgramName(String programName) {
+        this.programName = programName;
     }
 
     public String getPurchaseDate() {
