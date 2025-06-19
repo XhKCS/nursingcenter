@@ -1,10 +1,10 @@
 package com.neusoft.nursingcenter.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.neusoft.nursingcenter.entity.*;
-import com.neusoft.nursingcenter.mapper.FoodMapper;
+import com.neusoft.nursingcenter.mapper.NursingRecordMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,31 +13,29 @@ import java.util.Map;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/food")
-public class FoodController {
+@RequestMapping("/nursingRecord")
+public class NursingRecordController {
+
     @Autowired
-    private FoodMapper foodMapper;
+    private NursingRecordMapper nursingRecordMapper;
 
     @PostMapping("/page")
-    public PageResponseBean<List<Food>> page (@RequestBody Map<String, Object> request){
+    public PageResponseBean<List<NursingRecord>> page (@RequestBody Map<String, Object> request){
         int current = (int)request.get("current");
         int size = (int)request.get("size");
-        String name = (String)request.get("name");
-        String type = (String)request.get("type");
+        Integer customerId = (Integer)request.get("customerId");
 
-        QueryWrapper<Food> qw = new QueryWrapper<>();
-        qw.like("name", name);
-        qw.eq("type",type);
+        LambdaQueryWrapper<NursingRecord> qw = new LambdaQueryWrapper<>();
+        qw.eq(null != customerId,NursingRecord :: getCustomerId,customerId);
+        qw.eq(NursingRecord :: getDeleted,false);
 
-        IPage<Food> page = new Page<>(current,size);
-        IPage<Food> result = foodMapper.selectPage(page,qw);
-//        System.out.println(result);
-        List<Food> list = result.getRecords();
-//        System.out.println("size: "+list.size());
+        IPage<NursingRecord> page = new Page<>(current,size);
+        IPage<NursingRecord> result = nursingRecordMapper.selectPage(page,qw);
+
+        List<NursingRecord> list = result.getRecords();
         long total = result.getTotal();
-        System.out.println(total);
 
-        PageResponseBean<List<Food>> prb = null;
+        PageResponseBean<List<NursingRecord>> prb = null;
         if(total > 0){
             prb = new PageResponseBean<>(list);
             prb.setTotal(total);
@@ -48,8 +46,8 @@ public class FoodController {
     }
 
     @PostMapping("/add")
-    public ResponseBean<Integer> add(@RequestBody Food food) {
-        Integer result = foodMapper.insert(food);
+    public ResponseBean<Integer> add(@RequestBody NursingRecord nursingRecord) {
+        Integer result = nursingRecordMapper.insert(nursingRecord);
         ResponseBean<Integer> rb = null;
         if(result > 0) {
             rb = new ResponseBean<>(result);
@@ -59,22 +57,12 @@ public class FoodController {
         return rb;
     }
 
-    @PostMapping("/update")
-    public ResponseBean<Integer> update(@RequestBody Food data) {
-        Integer result = foodMapper.updateById(data);
-        ResponseBean<Integer> rb = null;
-        if(result > 0) {
-            rb = new ResponseBean<>(result);
-        }else {
-            rb = new ResponseBean<>(500,"Fail to update");
-        }
-        return rb;
-    }
-
     @PostMapping("/delete")
     public ResponseBean<Integer> delete(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
-        Integer result = foodMapper.deleteById(id);
+        NursingRecord nursingRecord = nursingRecordMapper.selectById(id);
+        nursingRecord.setDeleted(true);
+        Integer result = nursingRecordMapper.updateById(nursingRecord);
         ResponseBean<Integer> rb =null;
         if(result > 0) {
             rb = new ResponseBean<>(result);
