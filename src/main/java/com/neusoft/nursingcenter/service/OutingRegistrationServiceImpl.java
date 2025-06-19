@@ -46,7 +46,7 @@ public class OutingRegistrationServiceImpl implements OutingRegistrationService{
         IPage<OutingRegistration> page = new Page<>(current,size);
         IPage<OutingRegistration> result = outingRegistrationMapper.selectPage(page,qw);
         List<OutingRegistration> list = result.getRecords();
-        Long total = result.getTotal();
+        long total = result.getTotal();
 
         PageResponseBean<List<OutingRegistration>> prb = null;
         if(total > 0){

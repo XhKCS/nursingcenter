@@ -28,7 +28,7 @@ public class NursingProgramController {
     @Autowired
     private NursingProgramServiceImpl nursingProgramService;
 
-    @RequestMapping("/page")
+    @RequestMapping("/pageAll")
     public PageResponseBean<List<NursingProgram>> page(@RequestBody Map<String, Object> request) {
         Long current = (Long) request.get("current"); //当前页面
         Long size = (Long) request.get("size"); //一页的行数
@@ -63,7 +63,7 @@ public class NursingProgramController {
 
     // 多条件组合分页查询
     // 组合条件：项目名称、状态
-    @RequestMapping("/pageWithConditions")
+    @RequestMapping("/page")
     public PageResponseBean<List<NursingProgram>> pageByStatus(@RequestBody Map<String, Object> request) {
         int status = (int) request.get("status");
         String name = (String) request.get("name");

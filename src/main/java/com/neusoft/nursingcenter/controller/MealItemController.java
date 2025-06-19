@@ -24,10 +24,12 @@ public class MealItemController {
         int size = (int)request.get("size");
         String foodName = (String)request.get("foodName");
         String foodType = (String)request.get("foodType");
+        String weekDay = (String) request.get("weekDay");
 
         QueryWrapper<MealItem> qw = new QueryWrapper<>();
         qw.like("foodName",foodName);
         qw.eq("foodType",foodType);
+        qw.eq("week_day", weekDay);
 
         IPage<MealItem> page = new Page<>(current,size);
         IPage<MealItem> result = mealItemMapper.selectPage(page,qw);

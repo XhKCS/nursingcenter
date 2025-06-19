@@ -15,6 +15,8 @@ public class CustomerNursingService {
 
     private Integer programId; //护理项目id
 
+    private String programCode; //护理项目编号
+
     private String programName; //护理项目名称
 
     private String purchaseDate; //购买日期
@@ -29,11 +31,12 @@ public class CustomerNursingService {
 
     public CustomerNursingService() {}
 
-    public CustomerNursingService(Integer id, Integer customerId, Integer levelId, Integer programId, String programName, String purchaseDate, Integer totalCount, Integer usedCount, String expirationDate, Boolean isDeleted) {
+    public CustomerNursingService(Integer id, Integer customerId, Integer levelId, Integer programId, String programCode, String programName, String purchaseDate, Integer totalCount, Integer usedCount, String expirationDate, Boolean isDeleted) {
         this.id = id;
         this.customerId = customerId;
         this.levelId = levelId;
         this.programId = programId;
+        this.programCode = programCode;
         this.programName = programName;
         this.purchaseDate = purchaseDate;
         this.totalCount = totalCount;
@@ -72,6 +75,14 @@ public class CustomerNursingService {
 
     public void setProgramId(Integer programId) {
         this.programId = programId;
+    }
+
+    public String getProgramCode() {
+        return programCode;
+    }
+
+    public void setProgramCode(String programCode) {
+        this.programCode = programCode;
     }
 
     public String getProgramName() {

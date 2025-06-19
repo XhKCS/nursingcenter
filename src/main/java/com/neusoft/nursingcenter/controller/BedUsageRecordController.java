@@ -39,7 +39,7 @@ public class BedUsageRecordController {
     }
 
     // 无条件分页查询，只看当前页与每一页的size
-    @RequestMapping("/page")
+    @RequestMapping("/pageAll")
     public PageResponseBean<List<BedUsageRecord>> page(@RequestBody Map<String, Object> request) {
         int current = (int) request.get("current"); //当前页面
         int size = (int) request.get("size"); //一页的行数
@@ -63,7 +63,7 @@ public class BedUsageRecordController {
 
     // 用于床位管理页的多条件组合的分页查询
     // 组合条件：床位状态、客户姓名、开始日期（入住日期）
-    @RequestMapping("/pageWithConditions")
+    @RequestMapping("/page")
     public PageResponseBean<List<BedUsageRecord>> pageByCustomerId(@RequestBody Map<String, Object> request) {
         int status = (int) request.get("status");
         String customerName = (String) request.get("customerName"); //绑定前端搜索框值变量，默认为空字符串
