@@ -17,6 +17,8 @@ public class MealItem {
 
     private String foodDescription;
 
+    private double foodPrice;
+
     private String foodImageUrl;
 
     private String weekDay; //周一 / 周二 /.../ 周日
@@ -25,12 +27,13 @@ public class MealItem {
 
     public MealItem() {}
 
-    public MealItem(Integer id, Integer foodId, String foodName, String foodType, String foodDescription, String foodImageUrl, String weekDay, Integer status) {
+    public MealItem(Integer id, Integer foodId, String foodName, String foodType, String foodDescription, double foodPrice, String foodImageUrl, String weekDay, Integer status) {
         this.id = id;
         this.foodId = foodId;
         this.foodName = foodName;
         this.foodType = foodType;
         this.foodDescription = foodDescription;
+        this.foodPrice = foodPrice;
         this.foodImageUrl = foodImageUrl;
         this.weekDay = weekDay;
         this.status = status;
@@ -74,6 +77,14 @@ public class MealItem {
 
     public void setFoodDescription(String foodDescription) {
         this.foodDescription = foodDescription;
+    }
+
+    public double getFoodPrice() {
+        return foodPrice;
+    }
+
+    public void setFoodPrice(double foodPrice) {
+        this.foodPrice = foodPrice;
     }
 
     public String getFoodImageUrl() {

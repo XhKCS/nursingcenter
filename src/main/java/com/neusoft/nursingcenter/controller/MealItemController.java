@@ -18,10 +18,10 @@ public class MealItemController {
     @Autowired
     private MealItemMapper mealItemMapper;
 
-    @GetMapping("/page")
+    @RequestMapping("/page")
     public PageResponseBean<List<MealItem>> page (@RequestBody Map<String, Object> request){
-        Long current = (Long)request.get("current");
-        Long size = (Long)request.get("size");
+        int current = (int)request.get("current");
+        int size = (int)request.get("size");
         String foodName = (String)request.get("foodName");
         String foodType = (String)request.get("foodType");
 
@@ -32,7 +32,7 @@ public class MealItemController {
         IPage<MealItem> page = new Page<>(current,size);
         IPage<MealItem> result = mealItemMapper.selectPage(page,qw);
         List<MealItem> list = result.getRecords();
-        Long total = result.getTotal();
+        long total = result.getTotal();
 
         PageResponseBean<List<MealItem>> prb = null;
         if(total > 0){
@@ -46,8 +46,13 @@ public class MealItemController {
 
     @PostMapping("/add")
     public ResponseBean<Integer> add(@RequestBody MealItem mealItem) {
-        Integer result = mealItemMapper.insert(mealItem);
         ResponseBean<Integer> rb = null;
+        MealItem check = mealItemMapper.getByFoodIdAndWeekDay(mealItem.getFoodId(), mealItem.getWeekDay());
+        if (check != null) {
+            rb = new ResponseBean<>(500, "相同周期内不能存在重名的膳食安排");
+            return rb;
+        }
+        int result = mealItemMapper.insert(mealItem);
         if(result > 0) {
             rb = new ResponseBean<>(result);
         }else {
@@ -58,8 +63,13 @@ public class MealItemController {
 
     @PostMapping("/update")
     public ResponseBean<Integer> update(@RequestBody MealItem data) {
-        Integer result = mealItemMapper.updateById(data);
         ResponseBean<Integer> rb = null;
+        MealItem check = mealItemMapper.getByFoodIdAndWeekDay(data.getFoodId(), data.getWeekDay());
+        if (check != null && check.getId() != data.getId()) {
+            rb = new ResponseBean<>(500, "相同周期内不能存在重名的膳食安排");
+            return rb;
+        }
+        int result = mealItemMapper.updateById(data);
         if(result > 0) {
             rb = new ResponseBean<>(result);
         }else {
@@ -71,7 +81,7 @@ public class MealItemController {
     @PostMapping("/delete")
     public ResponseBean<Integer> delete(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
-        Integer result = mealItemMapper.deleteById(id);
+        int result = mealItemMapper.deleteById(id);
         ResponseBean<Integer> rb =null;
         if(result > 0) {
             rb = new ResponseBean<>(result);

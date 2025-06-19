@@ -30,7 +30,7 @@ public class CustomerController {
 	@Autowired
 	private CustomerServiceImpl customerService;
 	
-	@GetMapping("/page")
+	@RequestMapping("/page")
 	public PageResponseBean<List<Customer>> page(@RequestBody Map<String, Object> request){
 		int current = (int) request.get("current"); //当前页面
 		int size = (int) request.get("size"); //一页的行数
@@ -54,7 +54,7 @@ public class CustomerController {
 
 	// 用于入住登记页的多条件组合的分页查询
 	// 组合条件：客户姓名、客户类型（自理老人 / 护理老人）
-	@GetMapping("/pageWithConditions")
+	@RequestMapping("/pageWithConditions")
 	public PageResponseBean<List<Customer>> pageWithConditions(@RequestBody Map<String, Object> request){
 		// int current, int size, String name, int customerType
 		int current = (int) request.get("current"); //当前页面

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.neusoft.nursingcenter.entity.*;
 import com.neusoft.nursingcenter.mapper.FoodMapper;
+import com.neusoft.nursingcenter.service.FoodServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +18,9 @@ import java.util.Map;
 public class FoodController {
     @Autowired
     private FoodMapper foodMapper;
+
+    @Autowired
+    private FoodServiceImpl foodService;
 
     @PostMapping("/page")
     public PageResponseBean<List<Food>> page (@RequestBody Map<String, Object> request){
@@ -47,10 +51,30 @@ public class FoodController {
         return prb;
     }
 
+    @PostMapping("/listByType")
+    public ResponseBean<List<Food>> listByType(@RequestBody Map<String, Object> request) {
+        String type = (String) request.get("type");
+        List<Food> foodList = foodMapper.listByType(type);
+        ResponseBean<List<Food>> rb = null;
+        if (foodList.size() > 0) {
+            rb = new ResponseBean<>(foodList);
+        } else {
+            rb = new ResponseBean<>(500, "No data");
+        }
+        return rb;
+    }
+
+    // 要先检查重名
     @PostMapping("/add")
     public ResponseBean<Integer> add(@RequestBody Food food) {
-        Integer result = foodMapper.insert(food);
         ResponseBean<Integer> rb = null;
+        Food check = foodMapper.getByName(food.getName());
+        if (check != null) {
+            rb = new ResponseBean<>(500, "不能添加重名的食品");
+            return rb;
+        }
+
+        int result = foodMapper.insert(food);
         if(result > 0) {
             rb = new ResponseBean<>(result);
         }else {
@@ -59,29 +83,38 @@ public class FoodController {
         return rb;
     }
 
+    // 需要级联更新
     @PostMapping("/update")
     public ResponseBean<Integer> update(@RequestBody Food data) {
-        Integer result = foodMapper.updateById(data);
         ResponseBean<Integer> rb = null;
-        if(result > 0) {
-            rb = new ResponseBean<>(result);
-        }else {
-            rb = new ResponseBean<>(500,"Fail to update");
+        try {
+            int result = foodService.updateFood(data);
+            if(result > 0) {
+                rb = new ResponseBean<>(result);
+            }else {
+                rb = new ResponseBean<>(500,"Fail to update");
+            }
+        } catch (Exception e) {
+            rb = new ResponseBean<>(500, e.getMessage());
         }
         return rb;
     }
 
+    // 需要级联删除
     @PostMapping("/delete")
     public ResponseBean<Integer> delete(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
-        Integer result = foodMapper.deleteById(id);
-        ResponseBean<Integer> rb =null;
-        if(result > 0) {
-            rb = new ResponseBean<>(result);
-        }else {
-            rb = new ResponseBean<>(500,"Fail to delete");
+        ResponseBean<Integer> rb = null;
+        try {
+            int result = foodService.deleteFoodById(id);
+            if(result > 0) {
+                rb = new ResponseBean<>(result);
+            }else {
+                rb = new ResponseBean<>(500,"Fail to update");
+            }
+        } catch (Exception e) {
+            rb = new ResponseBean<>(500, e.getMessage());
         }
-
         return rb;
     }
 }
