@@ -4,7 +4,8 @@ import com.neusoft.nursingcenter.entity.ResponseBean;
 import com.neusoft.nursingcenter.entity.User;
 
 public interface UserService {
-//    ResponseBean<User> getUser(User user);
+    int deleteUser(int userId);
 
+    int updateUser(User user);
 
 }

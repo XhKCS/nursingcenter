@@ -9,9 +9,13 @@ public class BedUsageRecord {
     @TableId(value="id",type=IdType.AUTO)
     private Integer id;
 
-    private Integer bedId;
+    private String bedNumber; //床位号
 
     private Integer customerId;
+
+    private String customerName;
+
+    private Integer customerGender; //0-女性  1-男性
 
     private String startDate;
 
@@ -23,10 +27,12 @@ public class BedUsageRecord {
 
     public BedUsageRecord() {}
 
-    public BedUsageRecord(Integer id, Integer bedId, Integer customerId, String startDate, String endDate, Integer status, Boolean isDeleted) {
+    public BedUsageRecord(Integer id, String bedNumber, Integer customerId, String customerName, Integer customerGender, String startDate, String endDate, Integer status, Boolean isDeleted) {
         this.id = id;
-        this.bedId = bedId;
+        this.bedNumber = bedNumber;
         this.customerId = customerId;
+        this.customerName = customerName;
+        this.customerGender = customerGender;
         this.startDate = startDate;
         this.endDate = endDate;
         this.status = status;
@@ -41,12 +47,12 @@ public class BedUsageRecord {
         this.id = id;
     }
 
-    public Integer getBedId() {
-        return bedId;
+    public String getBedNumber() {
+        return bedNumber;
     }
 
-    public void setBedId(Integer bedId) {
-        this.bedId = bedId;
+    public void setBedNumber(String bedNumber) {
+        this.bedNumber = bedNumber;
     }
 
     public Integer getCustomerId() {
@@ -55,6 +61,22 @@ public class BedUsageRecord {
 
     public void setCustomerId(Integer customerId) {
         this.customerId = customerId;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public Integer getCustomerGender() {
+        return customerGender;
+    }
+
+    public void setCustomerGender(Integer customerGender) {
+        this.customerGender = customerGender;
     }
 
     public String getStartDate() {

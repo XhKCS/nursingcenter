@@ -13,15 +13,14 @@ public class LevelWithProgram {
 
     private Integer programId;
 
-    private Boolean isDeleted;
+//    private Boolean isDeleted;
 
     public LevelWithProgram() {}
 
-    public LevelWithProgram(Integer id, Integer levelId, Integer programId, Boolean isDeleted) {
+    public LevelWithProgram(Integer id, Integer levelId, Integer programId) {
         this.id = id;
         this.levelId = levelId;
         this.programId = programId;
-        this.isDeleted = isDeleted;
     }
 
     public Integer getId() {
@@ -48,11 +47,11 @@ public class LevelWithProgram {
         this.programId = programId;
     }
 
-    public Boolean getDeleted() {
-        return isDeleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        isDeleted = deleted;
-    }
+//    public Boolean getDeleted() {
+//        return isDeleted;
+//    }
+//
+//    public void setDeleted(Boolean deleted) {
+//        isDeleted = deleted;
+//    }
 }
