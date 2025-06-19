@@ -35,9 +35,9 @@ public class FoodController {
 
         IPage<Food> page = new Page<>(current,size);
         IPage<Food> result = foodMapper.selectPage(page,qw);
-        System.out.println(result);
+//        System.out.println(result);
         List<Food> list = result.getRecords();
-        System.out.println("size: "+list.size());
+//        System.out.println("size: "+list.size());
         long total = result.getTotal();
         System.out.println(total);
 
