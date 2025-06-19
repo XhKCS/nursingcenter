@@ -62,9 +62,14 @@ public class CheckoutRegistrationServiceImpl implements CheckoutRegistrationServ
         ResponseBean<Integer> rb = null;
         if(result > 0) {
             if(data.getReviewStatus()==1){
-//                ResponseBean<Integer> crb = customerService.delete();
+               if(customerService.deleteCustomerById(data.getCustomerId()) > 0){
+                   rb = new ResponseBean<>(result);
+               }else {
+                   rb = new ResponseBean<>(500,"Fail to update");
+               }
+            }else {
+                rb = new ResponseBean<>(result);
             }
-            rb = new ResponseBean<>(result);
 
         }else {
             rb = new ResponseBean<>(500,"Fail to update");

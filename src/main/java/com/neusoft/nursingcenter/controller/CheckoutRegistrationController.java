@@ -42,14 +42,7 @@ public class CheckoutRegistrationController {
 
     @PostMapping("/update")
     public ResponseBean<Integer> update(@RequestBody CheckoutRegistration data) {
-        Integer result = checkoutRegistrationMapper.updateById(data);
-        ResponseBean<Integer> rb = null;
-        if(result > 0) {
-            rb = new ResponseBean<>(result);
-        }else {
-            rb = new ResponseBean<>(500,"Fail to update");
-        }
-        return rb;
+       return checkoutRegistrationService.update(data);
     }
 
     @PostMapping("/delete")
