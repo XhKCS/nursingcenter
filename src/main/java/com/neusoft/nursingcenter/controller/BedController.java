@@ -3,7 +3,7 @@ package com.neusoft.nursingcenter.controller;
 import com.neusoft.nursingcenter.entity.Bed;
 import com.neusoft.nursingcenter.entity.ResponseBean;
 import com.neusoft.nursingcenter.mapper.BedMapper;
-import com.neusoft.nursingcenter.service.BedServiceImpl;
+import com.neusoft.nursingcenter.service.BedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +19,7 @@ public class BedController {
     private BedMapper bedMapper;
 
     @Autowired
-    private BedServiceImpl bedService;
+    private BedService bedService;
 
     @RequestMapping("getByNumber")
     public ResponseBean<Bed> getBedByNumber(@RequestBody Map<String, Object> request) {

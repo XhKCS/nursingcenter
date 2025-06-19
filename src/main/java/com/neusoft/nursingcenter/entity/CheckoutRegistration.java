@@ -11,6 +11,8 @@ public class CheckoutRegistration {
 
     private Integer customerId;
 
+    private String customerName;
+
     private Integer checkoutType; //退住类型：0-正常退住 / 1-死亡退住 / 2-保留床位
 
     private String checkoutReason; //退住原因
@@ -27,9 +29,10 @@ public class CheckoutRegistration {
 
     public CheckoutRegistration() {}
 
-    public CheckoutRegistration(Integer id, Integer customerId, Integer checkoutType, String checkoutReason, String checkoutDate, Integer reviewStatus, String reviewTime, Integer reviewerId, String rejectReason) {
+    public CheckoutRegistration(Integer id, Integer customerId, String customerName, Integer checkoutType, String checkoutReason, String checkoutDate, Integer reviewStatus, String reviewTime, Integer reviewerId, String rejectReason) {
         this.id = id;
         this.customerId = customerId;
+        this.customerName = customerName;
         this.checkoutType = checkoutType;
         this.checkoutReason = checkoutReason;
         this.checkoutDate = checkoutDate;
@@ -53,6 +56,14 @@ public class CheckoutRegistration {
 
     public void setCustomerId(Integer customerId) {
         this.customerId = customerId;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 
     public Integer getCheckoutType() {

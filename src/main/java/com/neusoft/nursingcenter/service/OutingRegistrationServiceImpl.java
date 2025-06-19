@@ -1,6 +1,7 @@
 package com.neusoft.nursingcenter.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.neusoft.nursingcenter.entity.Customer;
@@ -30,15 +31,17 @@ public class OutingRegistrationServiceImpl implements OutingRegistrationService{
         int size = (int)request.get("size");
         String name = (String)request.get("name");
 
-        LambdaQueryWrapper<Customer> cqw = new LambdaQueryWrapper<>();
-        cqw.like(null != name,Customer :: getName,name);
-
-        List<Customer> clist = customerMapper.selectList(cqw);
-
-        LambdaQueryWrapper<OutingRegistration> qw = new LambdaQueryWrapper<>();
-        for (Customer customer : clist){
-            qw.or().eq(OutingRegistration :: getCustomerId,customer.getCustomerId());
-        }
+//        LambdaQueryWrapper<Customer> cqw = new LambdaQueryWrapper<>();
+//        cqw.like(null != name,Customer :: getName,name);
+//
+//        List<Customer> clist = customerMapper.selectList(cqw);
+//
+//        LambdaQueryWrapper<OutingRegistration> qw = new LambdaQueryWrapper<>();
+//        for (Customer customer : clist){
+//            qw.or().eq(OutingRegistration :: getCustomerId,customer.getCustomerId());
+//        }
+        QueryWrapper<OutingRegistration> qw = new QueryWrapper<>();
+        qw.like("customer_name", name);
 
         IPage<OutingRegistration> page = new Page<>(current,size);
         IPage<OutingRegistration> result = outingRegistrationMapper.selectPage(page,qw);

@@ -27,6 +27,7 @@ public class OutingRegistrationController {
     @Autowired
     private OutingRegistrationService outingRegistrationService;
 
+    // request需包含参数：int current, int size, String name
     @PostMapping("/page")
     public PageResponseBean<List<OutingRegistration>> page (@RequestBody Map<String, Object> request){
         return outingRegistrationService.page(request);

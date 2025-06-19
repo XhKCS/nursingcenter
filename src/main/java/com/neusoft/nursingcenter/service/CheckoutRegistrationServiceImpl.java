@@ -1,6 +1,7 @@
 package com.neusoft.nursingcenter.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.neusoft.nursingcenter.entity.*;
@@ -8,6 +9,7 @@ import com.neusoft.nursingcenter.mapper.CheckoutRegistrationMapper;
 import com.neusoft.nursingcenter.mapper.CustomerMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
@@ -31,20 +33,22 @@ public class CheckoutRegistrationServiceImpl implements CheckoutRegistrationServ
         int size = (int)request.get("size");
         String name = (String)request.get("name");
 
-        LambdaQueryWrapper<Customer> cqw = new LambdaQueryWrapper<>();
-        cqw.like(null != name,Customer :: getName,name);
-
-        List<Customer> clist = customerMapper.selectList(cqw);
-
-        LambdaQueryWrapper<CheckoutRegistration> qw = new LambdaQueryWrapper<>();
-        for (Customer customer : clist){
-            qw.or().eq(CheckoutRegistration :: getCustomerId,customer.getCustomerId());
-        }
+//        LambdaQueryWrapper<Customer> cqw = new LambdaQueryWrapper<>();
+//        cqw.like(null != name,Customer :: getName,name);
+//
+//        List<Customer> clist = customerMapper.selectList(cqw);
+//
+//        LambdaQueryWrapper<CheckoutRegistration> qw = new LambdaQueryWrapper<>();
+//        for (Customer customer : clist){
+//            qw.or().eq(CheckoutRegistration :: getCustomerId,customer.getCustomerId());
+//        }
+        QueryWrapper<CheckoutRegistration> qw = new QueryWrapper<>();
+        qw.like("customer_name", name);
 
         IPage<CheckoutRegistration> page = new Page<>(current,size);
         IPage<CheckoutRegistration> result = checkoutRegistrationMapper.selectPage(page,qw);
         List<CheckoutRegistration> list = result.getRecords();
-        Long total = result.getTotal();
+        long total = result.getTotal();
 
         PageResponseBean<List<CheckoutRegistration>> prb = null;
         if(total > 0){
@@ -56,16 +60,18 @@ public class CheckoutRegistrationServiceImpl implements CheckoutRegistrationServ
         return prb;
     }
 
+    @Transactional
     @Override
+    // 如果退住申请通过了，就将对应客户逻辑删除
     public ResponseBean<Integer> update(@RequestBody CheckoutRegistration data) {
-        Integer result = checkoutRegistrationMapper.updateById(data);
+        int result = checkoutRegistrationMapper.updateById(data);
         ResponseBean<Integer> rb = null;
         if(result > 0) {
             if(data.getReviewStatus()==1){
                if(customerService.deleteCustomerById(data.getCustomerId()) > 0){
                    rb = new ResponseBean<>(result);
                }else {
-                   rb = new ResponseBean<>(500,"Fail to update");
+                   throw new RuntimeException("修改过程中失败");
                }
             }else {
                 rb = new ResponseBean<>(result);

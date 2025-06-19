@@ -3,7 +3,7 @@ package com.neusoft.nursingcenter.controller;
 import java.util.List;
 import java.util.Map;
 
-import com.neusoft.nursingcenter.service.CustomerServiceImpl;
+import com.neusoft.nursingcenter.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +28,7 @@ public class CustomerController {
 	private CustomerMapper customerMapper;
 
 	@Autowired
-	private CustomerServiceImpl customerService;
+	private CustomerService customerService;
 	
 	@RequestMapping("/page")
 	public PageResponseBean<List<Customer>> page(@RequestBody Map<String, Object> request){

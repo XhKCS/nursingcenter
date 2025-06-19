@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.neusoft.nursingcenter.entity.*;
 import com.neusoft.nursingcenter.mapper.FoodMapper;
-import com.neusoft.nursingcenter.service.FoodServiceImpl;
+import com.neusoft.nursingcenter.service.FoodService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +20,7 @@ public class FoodController {
     private FoodMapper foodMapper;
 
     @Autowired
-    private FoodServiceImpl foodService;
+    private FoodService foodService;
 
     @PostMapping("/page")
     public PageResponseBean<List<Food>> page (@RequestBody Map<String, Object> request){
