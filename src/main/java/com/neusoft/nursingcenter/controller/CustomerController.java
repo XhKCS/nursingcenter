@@ -29,6 +29,42 @@ public class CustomerController {
 
 	@Autowired
 	private CustomerService customerService;
+
+	@RequestMapping("/listAll")
+	public ResponseBean<List<Customer>> listAll() {
+		QueryWrapper<Customer> qw = new QueryWrapper<>();
+		qw.eq("is_deleted", 0); //要筛选没有被删除的
+
+		List<Customer> customerList = customerMapper.selectList(qw);
+		ResponseBean<List<Customer>> rb = null;
+
+		if (customerList.size() > 0) {
+			rb = new ResponseBean<>(customerList);
+		} else {
+			rb = new ResponseBean<>(500, "No data");
+		}
+		return rb;
+	}
+
+	@RequestMapping("/list")
+	public ResponseBean<List<Customer>> list(@RequestBody Map<String, Object> request) {
+		String name = (String) request.get("name");
+		int customerType = (int) request.get("customerType");
+
+		QueryWrapper<Customer> qw = new QueryWrapper<>();
+		qw.like("name", name);
+		qw.eq("customer_type", customerType);
+		qw.eq("is_deleted", 0); //要筛选没有被删除的
+		List<Customer> customerList = customerMapper.selectList(qw);
+		ResponseBean<List<Customer>> rb = null;
+
+		if (customerList.size() > 0) {
+			rb = new ResponseBean<>(customerList);
+		} else {
+			rb = new ResponseBean<>(500, "No data");
+		}
+		return rb;
+	}
 	
 	@RequestMapping("/pageAll")
 	public PageResponseBean<List<Customer>> page(@RequestBody Map<String, Object> request){
