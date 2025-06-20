@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 @TableName("food")
-public class Food {
+public class    Food {
     @TableId(value="id", type= IdType.AUTO)
     private Integer id;
 
