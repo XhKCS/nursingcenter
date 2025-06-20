@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.neusoft.nursingcenter.entity.*;
+import com.neusoft.nursingcenter.mapper.FoodMapper;
 import com.neusoft.nursingcenter.mapper.MealItemMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,9 @@ import java.util.Map;
 public class MealItemController {
     @Autowired
     private MealItemMapper mealItemMapper;
+
+    @Autowired
+    private FoodMapper foodMapper;
 
     @RequestMapping("/page")
     public PageResponseBean<List<MealItem>> page (@RequestBody Map<String, Object> request){
@@ -47,13 +51,22 @@ public class MealItemController {
     }
 
     @PostMapping("/add")
-    public ResponseBean<Integer> add(@RequestBody MealItem mealItem) {
+    public ResponseBean<Integer> add(@RequestBody Map<String, Object> request) {
         ResponseBean<Integer> rb = null;
-        MealItem check = mealItemMapper.getByFoodIdAndWeekDay(mealItem.getFoodId(), mealItem.getWeekDay());
+        String foodName = (String) request.get("foodName");
+        String weekDay = (String) request.get("weekDay");
+        int status = (int) request.get("status");
+
+        Food food = foodMapper.getByName(foodName);
+        if (food == null) {
+            return new ResponseBean<>(500, "不存在该名称的食品");
+        }
+        MealItem check = mealItemMapper.getByFoodIdAndWeekDay(food.getId(), weekDay);
         if (check != null) {
             rb = new ResponseBean<>(500, "相同周期内不能存在重名的膳食安排");
             return rb;
         }
+        MealItem mealItem = new MealItem(0, food.getId(), food.getName(), food.getType(), food.getDescription(), food.getPrice(), food.getImageUrl(), weekDay, status);
         int result = mealItemMapper.insert(mealItem);
         if(result > 0) {
             rb = new ResponseBean<>(result);

@@ -68,6 +68,7 @@ public class CustomerNursingServiceController {
             rb = new ResponseBean<>(500, "不能为一个客户重复添加项目");
             return rb;
         }
+        customerNursingService.setDeleted(false);
         int result = customerNursingServiceMapper.insert(customerNursingService);
         if (result > 0) {
             rb = new ResponseBean<>(result);
@@ -77,8 +78,8 @@ public class CustomerNursingServiceController {
         return rb;
     }
 
-    @RequestMapping("/deleteById")
-    public ResponseBean<Integer> deleteById(@RequestBody Map<String, Object> request) {
+    @RequestMapping("/delete")
+    public ResponseBean<Integer> delete(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
         ResponseBean<Integer> rb = null;
         CustomerNursingService customerNursingService = customerNursingServiceMapper.selectById(id);
