@@ -35,8 +35,13 @@ public class LevelWithProgramServiceImpl implements LevelWithProgramService {
 
         List<LevelWithProgram> levelWithProgramList = levelWithProgramMapper.listByLevelId(levelId);
         QueryWrapper<NursingProgram> qw = new QueryWrapper<>();
+        boolean flag = false;
         for (LevelWithProgram lwp : levelWithProgramList) {
             qw.or().eq("id", lwp.getProgramId());
+            flag = true;
+        }
+        if (!flag) {
+            return new PageResponseBean<>(500, "No data");
         }
         IPage<NursingProgram> page = new Page<>(current,size);
         IPage<NursingProgram> result = nursingProgramMapper.selectPage(page, qw);

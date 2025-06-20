@@ -119,9 +119,23 @@ public class CustomerController {
 
 	// 事务
 	@PostMapping("/add")
-	public ResponseBean<Integer> add(@RequestBody Customer customer) {
+	public ResponseBean<Integer> add(@RequestBody Map<String, Object> request) {
 		ResponseBean<Integer> rb = null;
+		int customerType = (int) request.get("customerType");
+		String name = (String) request.get("name");
+		String idCard = (String) request.get("idCard");
+		int age = (int) request.get("age");
+		int gender = (int) request.get("gender");
+		String bloodType = (String) request.get("bloodType");
+		String relative = (String) request.get("relative");
+		String phoneNumber = (String) request.get("phoneNumber");
+//		String building = (String) request.get("building");
+		String roomNumber = (String) request.get("roomNumber");
+		String bedNumber = (String) request.get("bedNumber");
+		String checkinDate = (String) request.get("checkinDate");
+		String expirationDate = (String) request.get("expirationDate");
 
+		Customer customer = new Customer(0, customerType, 0, "", name, idCard, age, gender, bloodType, relative, phoneNumber, "606", roomNumber, bedNumber, checkinDate, expirationDate, false);
 		try {
 			int result = customerService.addCustomer(customer);
 			if(result > 0) {
@@ -130,6 +144,7 @@ public class CustomerController {
 				rb = new ResponseBean<>(500,"Fail to update");
 			}
 		} catch (Exception e) {
+			System.out.println(e.getMessage());
 			rb = new ResponseBean<>(500, e.getMessage());
 		}
 		return rb;
@@ -170,6 +185,7 @@ public class CustomerController {
 				rb = new ResponseBean<>(500,"Fail to delete");
 			}
 		} catch (Exception e) {
+			System.out.println(e.getMessage());
 			rb = new ResponseBean<>(500, e.getMessage());
 		}
 		
