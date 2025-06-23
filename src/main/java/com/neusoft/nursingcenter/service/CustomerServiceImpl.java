@@ -81,12 +81,17 @@ public class CustomerServiceImpl implements CustomerService {
 		int res1 = customerMapper.insert(customer);
 		if (res1 <= 0) {
 			throw new RuntimeException("添加客户的过程中失败");
+//			return res1;
 		}
 		// 从数据库拿到添加后的客户（已经有了customerId）
 		Customer dbCustomer = customerMapper.selectById(customer.getCustomerId());
 		// 再添加对应床位使用详情
 		BedUsageRecord currentUsingRecord = new BedUsageRecord(0, customer.getBedNumber(), customer.getCustomerId(),
 				customer.getName(), customer.getGender(), customer.getCheckinDate(), customer.getExpirationDate(), 1, false);
-		return bedUsageRecordMapper.insert(currentUsingRecord);
+		int res2 = bedUsageRecordMapper.insert(currentUsingRecord);
+		if (res2 <= 0) {
+			return res2;
+		}
+		return res1 + res2;
 	}
 }

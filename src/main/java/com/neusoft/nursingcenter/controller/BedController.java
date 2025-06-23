@@ -23,7 +23,7 @@ public class BedController {
     @Autowired
     private BedService bedService;
 
-    @RequestMapping("getByNumber")
+    @RequestMapping("/getByNumber")
     public ResponseBean<Bed> getBedByNumber(@RequestBody Map<String, Object> request) {
         String bedNumber = (String) request.get("bedNumber");
         Bed bed = bedMapper.getBedByNumber(bedNumber);
@@ -37,7 +37,7 @@ public class BedController {
         return rb;
     }
 
-    @RequestMapping("getById")
+    @RequestMapping("/getById")
     public ResponseBean<Bed> getBedById(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
         Bed bed = bedMapper.selectById(id);
@@ -66,6 +66,7 @@ public class BedController {
         return rb;
     }
 
+    // 获取指定房间内所有床位
     @RequestMapping("/listByRoomId")
     public ResponseBean<List<Bed>> listByRoomId(@RequestBody Map<String, Object> request) {
         int roomId = (int) request.get("roomId");
@@ -109,6 +110,7 @@ public class BedController {
         return rb;
     }
 
+    // 获取某个状态的所有床位
     @RequestMapping("/listByStatus")
     public ResponseBean<List<Bed>> listByStatus(@RequestBody Map<String, Object> request) {
         int status = (int) request.get("status");

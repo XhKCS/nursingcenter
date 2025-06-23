@@ -150,8 +150,8 @@ public class BedUsageRecordController {
     }
 
     // 逻辑删除
-    @RequestMapping("deleteById")
-    public ResponseBean<String> deleteById(@RequestBody Map<String, Object> request) {
+    @RequestMapping("/delete")
+    public ResponseBean<String> delete(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
         int result = bedUsageRecordMapper.deleteById(id);
 
@@ -164,8 +164,8 @@ public class BedUsageRecordController {
         return rb;
     }
 
-    @RequestMapping("add")
-    public ResponseBean<String> addRecord(@RequestBody Map<String, Object> request) {
+    @RequestMapping("/add")
+    public ResponseBean<String> add(@RequestBody Map<String, Object> request) {
         String bedNumber = (String) request.get("bedNumber");
         int customerId = (int) request.get("customerId");
         String customerName = (String) request.get("customerName");
@@ -186,7 +186,7 @@ public class BedUsageRecordController {
     }
 
     @RequestMapping("/update")
-    public ResponseBean<String> updateRecord(@RequestBody Map<String, Object> request) {
+    public ResponseBean<String> update(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
         // 一般只能修改下面两条属性
         String endDate = (String) request.get("endDate");

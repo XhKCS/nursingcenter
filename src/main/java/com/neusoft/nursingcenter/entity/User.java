@@ -9,11 +9,11 @@ public class User {
     @TableId(value="user_id", type=IdType.AUTO)
     private Integer userId;
 
-    private String account; //账号
+    private String account; //账号，也可以认为是用户名
 
     private String password;
 
-    private String name;
+    private String name; //真实姓名
 
     private String phoneNumber;
 

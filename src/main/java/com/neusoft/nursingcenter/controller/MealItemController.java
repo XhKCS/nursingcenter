@@ -77,14 +77,21 @@ public class MealItemController {
         String foodName = (String) request.get("foodName");
         String weekDay = (String) request.get("weekDay");
         int status = (int) request.get("status");
+
         Food food = foodMapper.getByName(foodName);
+        if (food == null) {
+            return new ResponseBean<>(500, "不存在该名称的食品");
+        }
+
         MealItem check = mealItemMapper.getByFoodIdAndWeekDay(food.getId(), weekDay);
         if (check != null) {
             System.out.println("相同周期内不能存在重名的膳食安排");
             rb = new ResponseBean<>(500, "相同周期内不能存在重名的膳食安排");
             return rb;
         }
-        MealItem mealItem = new MealItem(0, food.getId(), foodName, food.getType(), food.getDescription(), food.getPrice(), food.getImageUrl(), weekDay, status);
+
+        MealItem mealItem = new MealItem(0, food.getId(), food.getName(), food.getType(), food.getDescription(), food.getPrice(), food.getImageUrl(), weekDay, status);
+
         int result = mealItemMapper.insert(mealItem);
         if(result > 0) {
             rb = new ResponseBean<>(result);

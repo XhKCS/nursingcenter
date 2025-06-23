@@ -48,6 +48,7 @@ public class MealReservationController {
 
     @PostMapping("/add")
     public ResponseBean<Integer> add(@RequestBody MealReservation mealReservation) {
+        mealReservation.setDeleted(false);
         int result = mealReservationMapper.insert(mealReservation);
         ResponseBean<Integer> rb = null;
         if(result > 0) {

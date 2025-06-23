@@ -42,8 +42,8 @@ public class NursingProgramServiceImpl implements NursingProgramService{
     @Override
     @Transactional
     public int deleteProgramById(int id) {
-        NursingProgram check = nursingProgramMapper.selectById(id);
-        if (check == null) {
+        NursingProgram nursingProgram = nursingProgramMapper.selectById(id);
+        if (nursingProgram == null) {
             throw new RuntimeException("不存在该id的项目");
         }
         List<LevelWithProgram> list = levelWithProgramMapper.listByProgramId(id);
@@ -55,6 +55,7 @@ public class NursingProgramServiceImpl implements NursingProgramService{
             }
         }
         // 返回最终更新结果
-        return nursingProgramMapper.deleteById(id);
+        nursingProgram.setDeleted(true);
+        return nursingProgramMapper.updateById(nursingProgram);
     }
 }
