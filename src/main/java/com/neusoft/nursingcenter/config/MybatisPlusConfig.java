@@ -1,4 +1,4 @@
-package com.neusoft.nursingcenter;
+package com.neusoft.nursingcenter.config;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;

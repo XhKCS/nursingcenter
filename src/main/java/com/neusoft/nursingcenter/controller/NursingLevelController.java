@@ -9,10 +9,7 @@ import com.neusoft.nursingcenter.mapper.NursingLevelMapper;
 import com.neusoft.nursingcenter.mapper.NursingProgramMapper;
 import com.neusoft.nursingcenter.service.NursingLevelServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -27,7 +24,7 @@ public class NursingLevelController {
     @Autowired
     NursingLevelServiceImpl nursingLevelService;
 
-    @RequestMapping("/listProgramsByLevelId")
+    @PostMapping("/listProgramsByLevelId")
     public ResponseBean<List<NursingProgram>> listProgramsByLevelId(@RequestBody Map<String, Object> request) {
         int levelId = (int) request.get("levelId");
         List<NursingProgram> programList = nursingLevelService.listProgramsByLevelId(levelId);
@@ -41,7 +38,7 @@ public class NursingLevelController {
         return rb;
     }
 
-    @RequestMapping("/listProgramsByLevelName")
+    @PostMapping("/listProgramsByLevelName")
     public ResponseBean<List<NursingProgram>> listProgramsByLevelName(@RequestBody Map<String, Object> request) {
         String levelName = (String) request.get("levelName");
         NursingLevel nursingLevel = nursingLevelMapper.getByName(levelName);
@@ -60,7 +57,7 @@ public class NursingLevelController {
     }
 
     // 护理级别不需要多条件分页查询，只用按状态分即可
-    @RequestMapping("/pageByStatus")
+    @PostMapping("/pageByStatus")
     public PageResponseBean<List<NursingLevel>> pageByStatus(@RequestBody Map<String, Object> request) {
         int status = (int) request.get("status");
         // current和size如果用Long类型会报错，因为number自动被识别成Integer
@@ -85,7 +82,7 @@ public class NursingLevelController {
         return rb;
     }
 
-    @RequestMapping("/listByStatus")
+    @PostMapping("/listByStatus")
     public ResponseBean<List<NursingLevel>> listByStatus(@RequestBody Map<String, Object> request) {
         int status = (int) request.get("status");
         List<NursingLevel> levelList = nursingLevelMapper.listByStatus(status);
@@ -99,7 +96,7 @@ public class NursingLevelController {
         return rb;
     }
 
-    @RequestMapping("/pageAll")
+    @PostMapping("/pageAll")
     public PageResponseBean<List<NursingLevel>> pageAll(@RequestBody Map<String, Object> request) {
         int current = (int) request.get("current"); //当前页面
         int size = (int) request.get("size"); //一页的行数
@@ -119,7 +116,7 @@ public class NursingLevelController {
         return rb;
     }
 
-    @RequestMapping("/listAll")
+    @PostMapping("/listAll")
     public ResponseBean<List<NursingLevel>> listAll() {
         List<NursingLevel> levelList = nursingLevelMapper.selectList(null);
         ResponseBean<List<NursingLevel>> rb = null;
@@ -132,7 +129,7 @@ public class NursingLevelController {
         return rb;
     }
 
-    @RequestMapping("/getById")
+    @PostMapping("/getById")
     public ResponseBean<NursingLevel> getById(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
         NursingLevel nursingLevel = nursingLevelMapper.selectById(id);
@@ -146,7 +143,7 @@ public class NursingLevelController {
         return rb;
     }
 
-    @RequestMapping("/getByName")
+    @PostMapping("/getByName")
     public ResponseBean<NursingLevel> getByName(@RequestBody Map<String,Object> request) {
         String name = (String) request.get("name");
         NursingLevel nursingLevel = nursingLevelMapper.getByName(name);
@@ -160,7 +157,7 @@ public class NursingLevelController {
         return rb;
     }
 
-    @RequestMapping("/add")
+    @PostMapping("/add")
     public ResponseBean<String> add(@RequestBody Map<String,Object> request) {
         String name = (String) request.get("name");
         int status = (int) request.get("status");
@@ -182,7 +179,7 @@ public class NursingLevelController {
         return rb;
     }
 
-    @RequestMapping("/update")
+    @PostMapping("/update")
     public ResponseBean<String> update(@RequestBody Map<String,Object> request) {
         int id = (int) request.get("id");
         int status = (int) request.get("status");

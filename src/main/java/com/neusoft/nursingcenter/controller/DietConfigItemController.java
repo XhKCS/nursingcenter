@@ -22,7 +22,7 @@ public class DietConfigItemController {
     @Autowired
     private DietConfigItemMapper dietConfigItemMapper;
 
-    @RequestMapping ("/page")
+    @PostMapping("/page")
     public PageResponseBean<List<DietConfigItem>> getPagedCustomersByName(@RequestBody Map<String, Object> request){
         int current = (int) request.get("current");
         int size = (int) request.get("size");

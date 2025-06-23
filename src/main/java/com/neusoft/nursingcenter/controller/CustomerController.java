@@ -30,7 +30,7 @@ public class CustomerController {
 	@Autowired
 	private CustomerService customerService;
 
-	@RequestMapping("/listAll")
+	@PostMapping("/listAll")
 	public ResponseBean<List<Customer>> listAll() {
 		QueryWrapper<Customer> qw = new QueryWrapper<>();
 		qw.eq("is_deleted", 0); //要筛选没有被删除的
@@ -47,7 +47,7 @@ public class CustomerController {
 	}
 
 	// 组合条件：客户姓名、客户类型（自理老人 / 护理老人）
-	@RequestMapping("/list")
+	@PostMapping("/list")
 	public ResponseBean<List<Customer>> list(@RequestBody Map<String, Object> request) {
 		String name = (String) request.get("name");
 		int customerType = (int) request.get("customerType");
@@ -66,8 +66,8 @@ public class CustomerController {
 		}
 		return rb;
 	}
-	
-	@RequestMapping("/pageAll")
+
+	@PostMapping("/pageAll")
 	public PageResponseBean<List<Customer>> pageAll(@RequestBody Map<String, Object> request){
 		int current = (int) request.get("current"); //当前页面
 		int size = (int) request.get("size"); //一页的行数
@@ -91,7 +91,7 @@ public class CustomerController {
 
 	// 用于入住登记页的多条件组合的分页查询
 	// 组合条件：客户姓名、客户类型（自理老人 / 护理老人）
-	@RequestMapping("/page")
+	@PostMapping("/page")
 	public PageResponseBean<List<Customer>> page(@RequestBody Map<String, Object> request){
 		// int current, int size, String name, int customerType
 		int current = (int) request.get("current"); //当前页面

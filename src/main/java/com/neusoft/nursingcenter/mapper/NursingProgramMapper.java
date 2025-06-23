@@ -17,4 +17,6 @@ public interface NursingProgramMapper extends BaseMapper<NursingProgram> {
 
     @Select("select * from nursing_program where name=#{name} and is_deleted=0")
     NursingProgram getByName(String name);
+
+    // 注意，护理项目的移除和停用不能影响到客户已购买的护理项目，所以查客户已购买的护理项目时直接selectById即可，不用筛状态或是否已删除
 }

@@ -2,9 +2,7 @@ package com.neusoft.nursingcenter.service;
 
 import com.neusoft.nursingcenter.entity.LevelWithProgram;
 import com.neusoft.nursingcenter.entity.NursingProgram;
-import com.neusoft.nursingcenter.mapper.LevelWithProgramMapper;
-import com.neusoft.nursingcenter.mapper.NursingLevelMapper;
-import com.neusoft.nursingcenter.mapper.NursingProgramMapper;
+import com.neusoft.nursingcenter.mapper.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,9 +15,15 @@ public class NursingProgramServiceImpl implements NursingProgramService{
     private NursingProgramMapper nursingProgramMapper;
     @Autowired
     private LevelWithProgramMapper levelWithProgramMapper;
+    @Autowired
+    private NursingRecordMapper nursingRecordMapper;
+    @Autowired
+    private CustomerNursingServiceMapper customerNursingServiceMapper;
+
 
     @Override
     @Transactional
+    // 护理项目信息的更新要同步更新护理记录以及客户护理服务
     public int updateProgram(NursingProgram updatedProgram) {
        NursingProgram check = nursingProgramMapper.selectById(updatedProgram.getId());
        if (check == null) {
@@ -35,6 +39,17 @@ public class NursingProgramServiceImpl implements NursingProgramService{
                }
            }
        }
+       if (!nursingRecordMapper.listByProgramId(updatedProgram.getId()).isEmpty()) {
+           if (nursingRecordMapper.updateByNursingProgram(updatedProgram) <= 0) {
+               throw new RuntimeException("尝试同步更新护理记录时出错");
+           }
+       }
+       if (!customerNursingServiceMapper.listByProgramId(updatedProgram.getId()).isEmpty()) {
+           if (customerNursingServiceMapper.updateByNursingProgram(updatedProgram) <= 0) {
+               throw new RuntimeException("尝试同步更新客户护理服务时出错");
+           }
+       }
+
        // 返回最终更新结果
        return nursingProgramMapper.updateById(updatedProgram);
     }

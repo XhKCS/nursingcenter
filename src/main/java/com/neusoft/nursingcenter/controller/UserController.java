@@ -11,10 +11,7 @@ import com.neusoft.nursingcenter.mapper.UserMapper;
 import com.neusoft.nursingcenter.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +30,7 @@ public class UserController {
     @Autowired
     private CustomerMapper customerMapper;
 
-    @RequestMapping("/login")
+    @PostMapping("/login")
     public ResponseBean<User> login(@RequestBody Map<String, Object> request, HttpServletRequest httpServletRequest) {
         String account = (String) request.get("account");
         String password = (String) request.get("password");
@@ -54,7 +51,7 @@ public class UserController {
     }
 
     // 加载当前session中已登录的user对象
-    @RequestMapping("/load")
+    @PostMapping("/load")
     public ResponseBean<User> load(HttpServletRequest httpServletRequest) {
         ResponseBean<User> rb = null;
         if (httpServletRequest.getSession().getAttribute("user") != null) {
@@ -67,7 +64,7 @@ public class UserController {
         return rb;
     }
 
-    @RequestMapping("/logout")
+    @PostMapping("/logout")
     public ResponseBean<String> logout(HttpServletRequest httpServletRequest) {
         ResponseBean<String> rb = null;
         //清空session中存储的user对象
@@ -76,7 +73,7 @@ public class UserController {
         return rb;
     }
 
-    @RequestMapping("/page")
+    @PostMapping("/page")
     public PageResponseBean<List<User>> page(@RequestBody Map<String, Object> request) {
         Long current = (Long) request.get("current"); //当前页面
         Long size = (Long) request.get("size"); //一页的行数
@@ -96,7 +93,7 @@ public class UserController {
         return rb;
     }
 
-    @RequestMapping("/listAll")
+    @PostMapping("/listAll")
     public ResponseBean<List<User>> listAll() {
         List<User> userList = userMapper.selectList(null);
         ResponseBean<List<User>> rb = null;
@@ -109,7 +106,7 @@ public class UserController {
         return rb;
     }
 
-    @RequestMapping("/getById")
+    @PostMapping("/getById")
     public ResponseBean<User> getById(@RequestBody Map<String, Object> request) {
         int userId = (int) request.get("userId");
         User user = userMapper.selectById(userId);
@@ -123,7 +120,7 @@ public class UserController {
         return rb;
     }
 
-    @RequestMapping("/getByAccount")
+    @PostMapping("/getByAccount")
     public ResponseBean<User> getByAccount(@RequestBody Map<String, Object> request) {
         String account = (String) request.get("account");
         User user = userMapper.getByAccount(account);
@@ -138,7 +135,7 @@ public class UserController {
     }
 
     // 只能添加护工
-    @RequestMapping("/add")
+    @PostMapping("/add")
     public ResponseBean<String> add(@RequestBody User user) {
         user.setUserType(1); //通过后端请求只能添加普通用户（护工），不能添加管理员
         User check = userMapper.getByAccount(user.getAccount());
@@ -156,7 +153,7 @@ public class UserController {
     }
 
     // 也只能修改护工的信息
-    @RequestMapping("/update")
+    @PostMapping("/update")
     public ResponseBean<String> update(@RequestBody User user) {
         user.setUserType(1); //通过后端请求只能添加普通用户（护工），不能添加管理员
         User check = userMapper.getByAccount(user.getAccount());
@@ -175,7 +172,7 @@ public class UserController {
 
     // 也只能删除护工
     // 注意，如果目前存在由该护工负责护理的客户，则会提示不能删除该护工
-    @RequestMapping("/delete")
+    @PostMapping("/delete")
     public ResponseBean<String> delete(@RequestBody Map<String, Object> request) {
         int userId = (int) request.get("userId");
         List<Customer> customerList = customerMapper.listByNurseId(userId);

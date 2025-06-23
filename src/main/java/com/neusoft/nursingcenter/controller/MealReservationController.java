@@ -22,7 +22,7 @@ public class MealReservationController {
     @Autowired
     private MealReservationMapper mealReservationMapper;
 
-    @RequestMapping("/page")
+    @PostMapping("/page")
     public PageResponseBean<List<MealReservation>> getPagedCustomersByName(@RequestBody Map<String, Object> request){
         int current = (int) request.get("current");
         int size = (int) request.get("size");
