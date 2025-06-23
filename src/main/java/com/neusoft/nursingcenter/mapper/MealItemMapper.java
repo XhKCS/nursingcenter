@@ -1,6 +1,7 @@
 package com.neusoft.nursingcenter.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.neusoft.nursingcenter.config.MyBaseMapper;
 import com.neusoft.nursingcenter.entity.Food;
 import com.neusoft.nursingcenter.entity.MealItem;
 import org.apache.ibatis.annotations.*;
@@ -8,7 +9,7 @@ import org.apache.ibatis.annotations.*;
 import java.util.List;
 
 @Mapper
-public interface MealItemMapper extends BaseMapper<MealItem> {
+public interface MealItemMapper extends MyBaseMapper<MealItem> {
     @Select("select * from meal_item where food_id=#{foodId}")
     List<MealItem> listByFoodId(int foodId);
 

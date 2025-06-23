@@ -11,6 +11,7 @@ import com.neusoft.nursingcenter.service.FoodService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -84,9 +85,25 @@ public class FoodController {
 
     @PostMapping("/listByType")
     public ResponseBean<List<Food>> listByType(@RequestBody Map<String, Object> request) {
-        String type = (String) request.get("foodType");
-        List<Food> foodList = foodMapper.listByType(type);
+        List<String> types = new ArrayList<>();
+
+        if(request.get("foodType") instanceof String){
+            types.add((String) request.get("foodType"));
+        }else {
+            types = (List<String>) request.get("foodType");
+        }
+
         ResponseBean<List<Food>> rb = null;
+        if(types.isEmpty()){
+            rb = new ResponseBean<>(500, "No data");
+            return rb;
+        }
+        LambdaQueryWrapper<Food> lqw = new LambdaQueryWrapper<>();
+        for (String type :types){
+            lqw.or().eq(Food ::getType,type);
+        }
+        List<Food> foodList = foodMapper.selectList(lqw);
+
         if (foodList.size() > 0) {
             rb = new ResponseBean<>(foodList);
         } else {
