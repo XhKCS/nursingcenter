@@ -3,6 +3,7 @@ package com.neusoft.nursingcenter.controller;
 import java.util.List;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.neusoft.nursingcenter.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -97,13 +98,18 @@ public class CustomerController {
 		int current = (int) request.get("current"); //当前页面
 		int size = (int) request.get("size"); //一页的行数
 		String name = (String) request.get("name");
-		int customerType = (int) request.get("customerType");
-		
+
 		IPage<Customer> page = new Page<>(current,size);
+
 		QueryWrapper<Customer> qw = new QueryWrapper<>();
 		qw.like("name", name);
-		qw.eq("customer_type", customerType);
 		qw.eq("is_deleted", 0); //要筛选没有被删除的
+
+		if(request.get("customerType")!=null){
+			int customerType = (int) request.get("customerType");
+			qw.eq("customer_type",customerType);
+		}
+
 		IPage<Customer> result = customerMapper.selectPage(page,qw);
 
 		List<Customer> list =result.getRecords();

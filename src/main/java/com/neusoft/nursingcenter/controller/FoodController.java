@@ -1,14 +1,17 @@
 package com.neusoft.nursingcenter.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.neusoft.nursingcenter.entity.*;
 import com.neusoft.nursingcenter.mapper.FoodMapper;
+import com.neusoft.nursingcenter.mapper.MealItemMapper;
 import com.neusoft.nursingcenter.service.FoodService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +23,36 @@ public class FoodController {
     private FoodMapper foodMapper;
 
     @Autowired
+    private MealItemMapper mealItemMapper;
+
+    @Autowired
     private FoodService foodService;
+
+    @PostMapping("/getById")
+    public ResponseBean<Food> getById(@RequestBody Map<String, Object> request){
+        int id = (int)request.get("id");
+        Food food = foodMapper.selectById(id);
+        ResponseBean<Food> rb =null;
+        if(food!=null){
+            rb = new ResponseBean<>(food);
+        }else {
+            rb = new ResponseBean<>(500,"No data");
+        }
+        return rb;
+    }
+
+    @PostMapping("/getByName")
+    public ResponseBean<Food> getByName(@RequestBody Map<String, Object> request){
+        String name = (String)request.get("name");
+        Food food = foodMapper.getByName(name);
+        ResponseBean<Food> rb =null;
+        if(food!=null){
+            rb = new ResponseBean<>(food);
+        }else {
+            rb = new ResponseBean<>(500,"No data");
+        }
+        return rb;
+    }
 
     @PostMapping("/page")
     public PageResponseBean<List<Food>> page (@RequestBody Map<String, Object> request){
@@ -53,9 +85,25 @@ public class FoodController {
 
     @PostMapping("/listByType")
     public ResponseBean<List<Food>> listByType(@RequestBody Map<String, Object> request) {
-        String type = (String) request.get("type");
-        List<Food> foodList = foodMapper.listByType(type);
+        List<String> types = new ArrayList<>();
+
+        if(request.get("foodType") instanceof String){
+            types.add((String) request.get("foodType"));
+        }else {
+            types = (List<String>) request.get("foodType");
+        }
+
         ResponseBean<List<Food>> rb = null;
+        if(types.isEmpty()){
+            rb = new ResponseBean<>(500, "No data");
+            return rb;
+        }
+        LambdaQueryWrapper<Food> lqw = new LambdaQueryWrapper<>();
+        for (String type :types){
+            lqw.or().eq(Food ::getType,type);
+        }
+        List<Food> foodList = foodMapper.selectList(lqw);
+
         if (foodList.size() > 0) {
             rb = new ResponseBean<>(foodList);
         } else {
@@ -63,6 +111,35 @@ public class FoodController {
         }
         return rb;
     }
+
+//    @PostMapping("/listByTypeAndWeekDay")
+//    public ResponseBean<List<Food>> listByTypeAndWeekDay(@RequestBody Map<String, Object> request) {
+//        String weekDay = (String) request.get("weekDay");
+//        String foodType = (String) request.get("foodType");
+//
+//        LambdaQueryWrapper<MealItem> lqw = new LambdaQueryWrapper<>();
+//        lqw.eq(MealItem ::getFoodType,foodType).eq(MealItem :: getWeekDay, weekDay);
+//        List<MealItem> mList = mealItemMapper.selectList(lqw);
+//
+//        ResponseBean<List<Food>> rb = null;
+//        if(mList.isEmpty()){
+//            rb = new ResponseBean<>(500,"No data");
+//            return  rb;
+//        }
+//
+//        LambdaQueryWrapper<Food> flqw =new LambdaQueryWrapper<>();
+//        for(MealItem mealItem : mList){
+//            flqw.or().eq(Food ::getId,mealItem.getFoodId());
+//        }
+//        List<Food> foodList = foodMapper.selectList(flqw);
+//
+//        if (foodList.size() > 0) {
+//            rb = new ResponseBean<>(foodList);
+//        } else {
+//            rb = new ResponseBean<>(500, "No data");
+//        }
+//        return rb;
+//    }
 
     // 要先检查重名
     @PostMapping("/add")
