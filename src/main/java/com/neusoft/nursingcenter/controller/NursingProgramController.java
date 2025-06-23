@@ -34,7 +34,9 @@ public class NursingProgramController {
         Long size = (Long) request.get("size"); //一页的行数
 
         IPage<NursingProgram> page = new Page<>(current, size);
-        IPage<NursingProgram> result = nursingProgramMapper.selectPage(page, null);
+        QueryWrapper<NursingProgram> qw = new QueryWrapper<>();
+        qw.eq("is_deleted", 0);
+        IPage<NursingProgram> result = nursingProgramMapper.selectPage(page, qw);
         List<NursingProgram> list = result.getRecords();
         long total = result.getTotal();
         PageResponseBean<List<NursingProgram>> prb = null;
@@ -72,9 +74,10 @@ public class NursingProgramController {
 
         IPage<NursingProgram> page = new Page<>(current, size);
         QueryWrapper<NursingProgram> qw = new QueryWrapper<>();
+        qw.eq("is_deleted", 0);
         qw.eq("status", status);
         qw.like("name", name);
-        IPage<NursingProgram> result = nursingProgramMapper.selectPage(page, null);
+        IPage<NursingProgram> result = nursingProgramMapper.selectPage(page, qw);
         List<NursingProgram> list = result.getRecords();
         long total = result.getTotal();
         PageResponseBean<List<NursingProgram>> prb = null;
@@ -146,6 +149,14 @@ public class NursingProgramController {
 
     @RequestMapping("/add")
     public ResponseBean<String> add(@RequestBody NursingProgram nursingProgram) {
+        NursingProgram check = nursingProgramMapper.getByProgramCode(nursingProgram.getProgramCode());
+        if (check != null) {
+            return new ResponseBean<>(500, "护理项目编号不能重复！");
+        }
+        check = nursingProgramMapper.getByName(nursingProgram.getName());
+        if (check != null) {
+            return new ResponseBean<>(500, "护理项目名称不能重复！");
+        }
         nursingProgram.setDeleted(false);
         int result = nursingProgramMapper.insert(nursingProgram);
         ResponseBean<String> rb = null;
@@ -161,6 +172,14 @@ public class NursingProgramController {
     // 事务
     @RequestMapping("/update")
     public ResponseBean<String> update(@RequestBody NursingProgram updatedProgram) {
+        NursingProgram check = nursingProgramMapper.getByProgramCode(updatedProgram.getProgramCode());
+        if (check != null && check.getId() != updatedProgram.getId()) {
+            return new ResponseBean<>(500, "护理项目编号不能重复！");
+        }
+        check = nursingProgramMapper.getByName(updatedProgram.getName());
+        if (check != null && check.getId() != updatedProgram.getId()) {
+            return new ResponseBean<>(500, "护理项目名称不能重复！");
+        }
         updatedProgram.setDeleted(false); //修改不能够让项目被删除
         ResponseBean<String> rb = null;
         try {
@@ -177,8 +196,8 @@ public class NursingProgramController {
     }
 
     // 事务
-    @RequestMapping("/deleteById")
-    public ResponseBean<String> deleteById(@RequestBody Map<String, Object> request) {
+    @RequestMapping("/delete")
+    public ResponseBean<String> delete(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
         ResponseBean<String> rb = null;
         try {

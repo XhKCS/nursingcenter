@@ -19,7 +19,7 @@ public class CheckoutRegistration {
 
     private String checkoutDate; //退住日期
 
-    private Integer reviewStatus; //审批状态：0-不通过 / 1-通过
+    private Integer reviewStatus; //审批状态：0-已提交 / 1-不通过 / 2-通过
 
     private String reviewTime; //审批时间
 

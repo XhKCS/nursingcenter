@@ -27,7 +27,7 @@ public class OutingRegistration {
 
     private String escortRelation; //陪同人与老人的关系
 
-    private Integer reviewStatus; //审批状态：0-不通过 / 1-通过
+    private Integer reviewStatus; //审批状态：0-已提交 / 1-不通过 / 2-通过
 
     private String reviewTime; //审批时间
 

@@ -9,12 +9,12 @@ import java.util.List;
 
 @Mapper
 public interface NursingProgramMapper extends BaseMapper<NursingProgram> {
-    @Select("select * from nursing_program where status=#{status}")
+    @Select("select * from nursing_program where status=#{status} and is_deleted=0")
     List<NursingProgram> listByStatus(int status);
 
-    @Select("select * from nursing_program where program_code=#{programCode}")
+    @Select("select * from nursing_program where program_code=#{programCode} and is_deleted=0")
     NursingProgram getByProgramCode(String programCode);
 
-    @Select("select * from nursing_program where name=#{name}")
+    @Select("select * from nursing_program where name=#{name} and is_deleted=0")
     NursingProgram getByName(String name);
 }

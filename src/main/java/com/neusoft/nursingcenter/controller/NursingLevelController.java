@@ -99,8 +99,8 @@ public class NursingLevelController {
         return rb;
     }
 
-    @RequestMapping("/page")
-    public PageResponseBean<List<NursingLevel>> page(@RequestBody Map<String, Object> request) {
+    @RequestMapping("/pageAll")
+    public PageResponseBean<List<NursingLevel>> pageAll(@RequestBody Map<String, Object> request) {
         int current = (int) request.get("current"); //当前页面
         int size = (int) request.get("size"); //一页的行数
 
@@ -132,7 +132,7 @@ public class NursingLevelController {
         return rb;
     }
 
-    @RequestMapping("getById")
+    @RequestMapping("/getById")
     public ResponseBean<NursingLevel> getById(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
         NursingLevel nursingLevel = nursingLevelMapper.selectById(id);
@@ -146,7 +146,7 @@ public class NursingLevelController {
         return rb;
     }
 
-    @RequestMapping("getByName")
+    @RequestMapping("/getByName")
     public ResponseBean<NursingLevel> getByName(@RequestBody Map<String,Object> request) {
         String name = (String) request.get("name");
         NursingLevel nursingLevel = nursingLevelMapper.getByName(name);
@@ -160,7 +160,7 @@ public class NursingLevelController {
         return rb;
     }
 
-    @RequestMapping("add")
+    @RequestMapping("/add")
     public ResponseBean<String> add(@RequestBody Map<String,Object> request) {
         String name = (String) request.get("name");
         int status = (int) request.get("status");
@@ -182,7 +182,7 @@ public class NursingLevelController {
         return rb;
     }
 
-    @RequestMapping("update")
+    @RequestMapping("/update")
     public ResponseBean<String> update(@RequestBody Map<String,Object> request) {
         int id = (int) request.get("id");
         int status = (int) request.get("status");

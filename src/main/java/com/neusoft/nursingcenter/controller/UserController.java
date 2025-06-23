@@ -2,11 +2,13 @@ package com.neusoft.nursingcenter.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.neusoft.nursingcenter.entity.Customer;
 import com.neusoft.nursingcenter.entity.PageResponseBean;
 import com.neusoft.nursingcenter.entity.ResponseBean;
 import com.neusoft.nursingcenter.entity.User;
+import com.neusoft.nursingcenter.mapper.CustomerMapper;
 import com.neusoft.nursingcenter.mapper.UserMapper;
-import com.neusoft.nursingcenter.service.UserServiceImpl;
+import com.neusoft.nursingcenter.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -26,7 +28,10 @@ public class UserController {
     private UserMapper userMapper;
 
     @Autowired
-    private UserServiceImpl userService;
+    private UserService userService;
+
+    @Autowired
+    private CustomerMapper customerMapper;
 
     @RequestMapping("/login")
     public ResponseBean<User> login(@RequestBody Map<String, Object> request, HttpServletRequest httpServletRequest) {
@@ -104,7 +109,7 @@ public class UserController {
         return rb;
     }
 
-    @RequestMapping("getById")
+    @RequestMapping("/getById")
     public ResponseBean<User> getById(@RequestBody Map<String, Object> request) {
         int userId = (int) request.get("userId");
         User user = userMapper.selectById(userId);
@@ -118,7 +123,7 @@ public class UserController {
         return rb;
     }
 
-    @RequestMapping("getByAccount")
+    @RequestMapping("/getByAccount")
     public ResponseBean<User> getByAccount(@RequestBody Map<String, Object> request) {
         String account = (String) request.get("account");
         User user = userMapper.getByAccount(account);
@@ -132,5 +137,58 @@ public class UserController {
         return rb;
     }
 
+    // 只能添加护工
+    @RequestMapping("/add")
+    public ResponseBean<String> add(@RequestBody User user) {
+        user.setUserType(1); //通过后端请求只能添加普通用户（护工），不能添加管理员
+        User check = userMapper.getByAccount(user.getAccount());
+        if (check != null) {
+            return new ResponseBean<>(500, "已存在账号相同的用户");
+        }
+        int result = userMapper.insert(user);
+        ResponseBean<String> rb = null;
+        if (result > 0) {
+            rb = new ResponseBean<>("添加成功");
+        } else {
+            rb = new ResponseBean<>(500, "添加失败");
+        }
+        return rb;
+    }
 
+    // 也只能修改护工的信息
+    @RequestMapping("/update")
+    public ResponseBean<String> update(@RequestBody User user) {
+        user.setUserType(1); //通过后端请求只能添加普通用户（护工），不能添加管理员
+        User check = userMapper.getByAccount(user.getAccount());
+        if (check != null && check.getUserId() != user.getUserId()) {
+            return new ResponseBean<>(500, "已存在账号相同的用户");
+        }
+        int result = userMapper.insert(user);
+        ResponseBean<String> rb = null;
+        if (result > 0) {
+            rb = new ResponseBean<>("修改成功");
+        } else {
+            rb = new ResponseBean<>(500, "修改失败");
+        }
+        return rb;
+    }
+
+    // 也只能删除护工
+    // 注意，如果目前存在由该护工负责护理的客户，则会提示不能删除该护工
+    @RequestMapping("/delete")
+    public ResponseBean<String> delete(@RequestBody Map<String, Object> request) {
+        int userId = (int) request.get("userId");
+        List<Customer> customerList = customerMapper.listByNurseId(userId);
+        if (customerList.size() > 0) {
+            return new ResponseBean<>(500, "目前存在由该用户负责护理的客户，不能删除该用户！");
+        }
+        int result = userMapper.deleteById(userId);
+        ResponseBean<String> rb = null;
+        if (result > 0) {
+            rb = new ResponseBean<>("添加成功");
+        } else {
+            rb = new ResponseBean<>(500, "添加失败");
+        }
+        return rb;
+    }
 }

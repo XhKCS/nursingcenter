@@ -32,6 +32,10 @@ public class CheckoutRegistrationController {
     @PostMapping("/add")
     public ResponseBean<Integer> add(@RequestBody CheckoutRegistration checkoutRegistration) {
         int result = checkoutRegistrationMapper.insert(checkoutRegistration);
+        checkoutRegistration.setReviewStatus(0);
+        checkoutRegistration.setReviewerId(0);
+        checkoutRegistration.setReviewTime("");
+        checkoutRegistration.setRejectReason("");
         ResponseBean<Integer> rb = null;
         if(result > 0) {
             rb = new ResponseBean<>(result);
@@ -41,6 +45,7 @@ public class CheckoutRegistrationController {
         return rb;
     }
 
+    // 管理员审批
     @PostMapping("/update")
     public ResponseBean<Integer> update(@RequestBody CheckoutRegistration data) {
         ResponseBean<Integer> rb = null;
@@ -52,6 +57,7 @@ public class CheckoutRegistrationController {
         return rb;
     }
 
+    // 撤销申请
     @PostMapping("/delete")
     public ResponseBean<Integer> delete(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");

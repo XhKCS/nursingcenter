@@ -47,6 +47,7 @@ public class NursingRecordController {
 
     @PostMapping("/add")
     public ResponseBean<Integer> add(@RequestBody NursingRecord nursingRecord) {
+        nursingRecord.setDeleted(false);
         Integer result = nursingRecordMapper.insert(nursingRecord);
         ResponseBean<Integer> rb = null;
         if(result > 0) {

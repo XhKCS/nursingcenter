@@ -35,7 +35,14 @@ public class OutingRegistrationController {
 
     @PostMapping("/add")
     public ResponseBean<Integer> add(@RequestBody OutingRegistration outingRegistration) {
-        Integer result = outingRegistrationMapper.insert(outingRegistration);
+        if (outingRegistration.getActualReturnDate() == null) {
+            outingRegistration.setActualReturnDate("");
+        }
+        outingRegistration.setReviewStatus(0); //默认已提交状态
+        outingRegistration.setReviewerId(0);
+        outingRegistration.setReviewTime("");
+        outingRegistration.setRejectReason("");
+        int result = outingRegistrationMapper.insert(outingRegistration);
         ResponseBean<Integer> rb = null;
         if(result > 0) {
             rb = new ResponseBean<>(result);
@@ -45,9 +52,10 @@ public class OutingRegistrationController {
         return rb;
     }
 
+    // 管理员审批与护工登记回院时间
     @PostMapping("/update")
     public ResponseBean<Integer> update(@RequestBody OutingRegistration data) {
-        Integer result = outingRegistrationMapper.updateById(data);
+        int result = outingRegistrationMapper.updateById(data);
         ResponseBean<Integer> rb = null;
         if(result > 0) {
             rb = new ResponseBean<>(result);
@@ -57,10 +65,11 @@ public class OutingRegistrationController {
         return rb;
     }
 
+    // 撤销申请
     @PostMapping("/delete")
     public ResponseBean<Integer> delete(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
-        Integer result = outingRegistrationMapper.deleteById(id);
+        int result = outingRegistrationMapper.deleteById(id);
         ResponseBean<Integer> rb =null;
         if(result > 0) {
             rb = new ResponseBean<>(result);
