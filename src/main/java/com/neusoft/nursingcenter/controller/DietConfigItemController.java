@@ -1,5 +1,6 @@
 package com.neusoft.nursingcenter.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -27,9 +28,11 @@ public class DietConfigItemController {
         int current = (int) request.get("current");
         int size = (int) request.get("size");
         Integer customerId = (Integer) request.get("customerId");
+        String  name =(String) request.get("name");
 
-        QueryWrapper<DietConfigItem> qw = new QueryWrapper<>();
-        qw.eq("customerId", customerId);
+        LambdaQueryWrapper<DietConfigItem> qw = new LambdaQueryWrapper<DietConfigItem>();
+        qw.eq(DietConfigItem ::getCustomerId, customerId);
+        qw.like(DietConfigItem ::getName,name);
 
         IPage<DietConfigItem> page = new Page<>(current,size);
         IPage<DietConfigItem> result = dietConfigItemMapper.selectPage(page,qw);
@@ -74,6 +77,20 @@ public class DietConfigItemController {
     public ResponseBean<Integer> delete(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
         int result = dietConfigItemMapper.deleteById(id);
+        ResponseBean<Integer> rb =null;
+        if(result > 0) {
+            rb = new ResponseBean<>(result);
+        }else {
+            rb = new ResponseBean<>(500,"Fail to delete");
+        }
+
+        return rb;
+    }
+
+    @PostMapping("/deleteBatch")
+    public ResponseBean<Integer> deleteBatch(@RequestBody Map<String, Object> request) {
+        List<Integer> ids =(List<Integer>) request.get("ids");
+        int result = dietConfigItemMapper.deleteBatchIds(ids);
         ResponseBean<Integer> rb =null;
         if(result > 0) {
             rb = new ResponseBean<>(result);
