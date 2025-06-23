@@ -1,5 +1,6 @@
 package com.neusoft.nursingcenter.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 @CrossOrigin("*")
 @RestController
@@ -23,28 +26,46 @@ public class MealItemController {
     private FoodMapper foodMapper;
 
     @RequestMapping("/page")
-    public PageResponseBean<List<MealItem>> page (@RequestBody Map<String, Object> request){
-        int current = (int)request.get("current");
-        int size = (int)request.get("size");
-        String foodName = (String)request.get("foodName");
-        String foodType = (String)request.get("foodType");
-        String weekDay = (String) request.get("weekDay");
+    public PageResponseBean<List<MealItem>> page (@RequestBody Map<String, Object> request) {
+        int current = (int) request.get("current");
+        int size = (int) request.get("size");
+        String foodName = (String) request.get("foodName");
 
-        QueryWrapper<MealItem> qw = new QueryWrapper<>();
-        qw.like("foodName",foodName);
-        qw.eq("foodType",foodType);
-        qw.eq("week_day", weekDay);
+        List<String> foodType = (List<String>) request.get("foodType");
+        List<String> weekDay = (List<String>) request.get("weekDay");
 
-        IPage<MealItem> page = new Page<>(current,size);
-        IPage<MealItem> result = mealItemMapper.selectPage(page,qw);
+        LambdaQueryWrapper<MealItem> qw = new LambdaQueryWrapper<>();
+
+        qw.like(MealItem::getFoodName, foodName);
+        Consumer<LambdaQueryWrapper<MealItem>> consumerf = null;
+        if (!foodType.isEmpty()) {
+            consumerf = wrapper -> {
+                for (String f : foodType) {
+                    wrapper.or().eq(null != f, MealItem::getFoodType, f);
+                }
+            };
+            qw.and(consumerf);
+        }
+        Consumer<LambdaQueryWrapper<MealItem>> consumerw = null;
+        if (!weekDay.isEmpty()) {
+            consumerw = wrapper -> {
+                for (String w : weekDay) {
+                    wrapper.or().eq(null != w, MealItem::getWeekDay, w);
+                }
+            };
+            qw.and(consumerw);
+        }
+
+        IPage<MealItem> page = new Page<>(current, size);
+        IPage<MealItem> result = mealItemMapper.selectPage(page, qw);
         List<MealItem> list = result.getRecords();
         long total = result.getTotal();
 
         PageResponseBean<List<MealItem>> prb = null;
-        if(total > 0){
+        if (total > 0) {
             prb = new PageResponseBean<>(list);
             prb.setTotal(total);
-        }else {
+        } else {
             prb = new PageResponseBean<>(500, "No data");
         }
         return prb;
@@ -61,12 +82,16 @@ public class MealItemController {
         if (food == null) {
             return new ResponseBean<>(500, "不存在该名称的食品");
         }
+
         MealItem check = mealItemMapper.getByFoodIdAndWeekDay(food.getId(), weekDay);
         if (check != null) {
+            System.out.println("相同周期内不能存在重名的膳食安排");
             rb = new ResponseBean<>(500, "相同周期内不能存在重名的膳食安排");
             return rb;
         }
+
         MealItem mealItem = new MealItem(0, food.getId(), food.getName(), food.getType(), food.getDescription(), food.getPrice(), food.getImageUrl(), weekDay, status);
+
         int result = mealItemMapper.insert(mealItem);
         if(result > 0) {
             rb = new ResponseBean<>(result);
@@ -77,14 +102,21 @@ public class MealItemController {
     }
 
     @PostMapping("/update")
-    public ResponseBean<Integer> update(@RequestBody MealItem data) {
+    public ResponseBean<Integer> update(@RequestBody Map<String, Object> request) {
         ResponseBean<Integer> rb = null;
-        MealItem check = mealItemMapper.getByFoodIdAndWeekDay(data.getFoodId(), data.getWeekDay());
-        if (check != null && check.getId() != data.getId()) {
+        String foodName = (String) request.get("foodName");
+        String weekDay = (String) request.get("weekDay");
+        int status = (int) request.get("status");
+        int id = (int) request.get("id");
+        Food food = foodMapper.getByName(foodName);
+        MealItem check = mealItemMapper.getByFoodIdAndWeekDay(food.getId(), weekDay);
+        if (check != null && !Objects.equals(check.getId(), food.getId())) {
             rb = new ResponseBean<>(500, "相同周期内不能存在重名的膳食安排");
             return rb;
         }
-        int result = mealItemMapper.updateById(data);
+        MealItem mealItem = new MealItem(id, food.getId(), foodName, food.getType(), food.getDescription(), food.getPrice(), food.getImageUrl(), weekDay, status);
+        int result = mealItemMapper.updateById(mealItem);
+        System.out.println(result);
         if(result > 0) {
             rb = new ResponseBean<>(result);
         }else {
