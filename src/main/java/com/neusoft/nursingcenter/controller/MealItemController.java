@@ -10,6 +10,7 @@ import com.neusoft.nursingcenter.mapper.MealItemMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -74,25 +75,40 @@ public class MealItemController {
     @PostMapping("/add")
     public ResponseBean<Integer> add(@RequestBody Map<String, Object> request) {
         ResponseBean<Integer> rb = null;
-        String foodName = (String) request.get("foodName");
-        String weekDay = (String) request.get("weekDay");
+        List<String> foodNames = new ArrayList<>();
+        List<String> weekDays = new ArrayList<>();
+        if(request.get("foodName") instanceof String){
+            foodNames.add((String) request.get("foodName"));
+        }else {
+            foodNames = (List<String>) request.get("foodName");
+        }
+
+        if(request.get("weekDay") instanceof String){
+            weekDays.add((String) request.get("weekDay"));
+        }else {
+            weekDays = (List<String>) request.get("weekDay");
+        }
+
         int status = (int) request.get("status");
 
-        Food food = foodMapper.getByName(foodName);
-        if (food == null) {
-            return new ResponseBean<>(500, "不存在该名称的食品");
+        List<MealItem> mealItemList = new ArrayList<>();
+
+        for (String weekDay :weekDays){
+            for(String foodName : foodNames){
+                Food food = foodMapper.getByName(foodName);
+                MealItem check = mealItemMapper.getByFoodIdAndWeekDay(food.getId(), weekDay);
+                if (check != null) {
+                    System.out.println("相同周期内不能存在重名的膳食安排");
+                    rb = new ResponseBean<>(500, "相同周期内不能存在重名的膳食安排"+"("+foodName+"-"+weekDay+")");
+                    return rb;
+                }
+                MealItem mealItem = new MealItem(0, food.getId(), foodName, food.getType(), food.getDescription(), food.getPrice(), food.getImageUrl(), weekDay, status);
+
+                mealItemList.add(mealItem);
+            }
         }
 
-        MealItem check = mealItemMapper.getByFoodIdAndWeekDay(food.getId(), weekDay);
-        if (check != null) {
-            System.out.println("相同周期内不能存在重名的膳食安排");
-            rb = new ResponseBean<>(500, "相同周期内不能存在重名的膳食安排");
-            return rb;
-        }
-
-        MealItem mealItem = new MealItem(0, food.getId(), food.getName(), food.getType(), food.getDescription(), food.getPrice(), food.getImageUrl(), weekDay, status);
-
-        int result = mealItemMapper.insert(mealItem);
+        int result = mealItemMapper.insertBatchSomeColumn(mealItemList);
         if(result > 0) {
             rb = new ResponseBean<>(result);
         }else {
@@ -129,6 +145,20 @@ public class MealItemController {
     public ResponseBean<Integer> delete(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
         int result = mealItemMapper.deleteById(id);
+        ResponseBean<Integer> rb =null;
+        if(result > 0) {
+            rb = new ResponseBean<>(result);
+        }else {
+            rb = new ResponseBean<>(500,"Fail to delete");
+        }
+
+        return rb;
+    }
+
+    @PostMapping("/deleteBatch")
+    public ResponseBean<Integer> deleteBatch(@RequestBody Map<String, Object> request) {
+        List<Integer> ids =(List<Integer>) request.get("ids");
+        int result = mealItemMapper.deleteBatchIds(ids);
         ResponseBean<Integer> rb =null;
         if(result > 0) {
             rb = new ResponseBean<>(result);
