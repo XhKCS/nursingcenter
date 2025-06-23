@@ -187,6 +187,7 @@ public class NursingProgramController {
                 rb = new ResponseBean<>(500, "修改失败");
             }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             rb = new ResponseBean<>(500, e.getMessage());
         }
         return rb;
@@ -205,6 +206,25 @@ public class NursingProgramController {
                 rb = new ResponseBean<>(500, "删除失败");
             }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
+            rb = new ResponseBean<>(500, e.getMessage());
+        }
+        return rb;
+    }
+
+    @PostMapping("/deleteBatch")
+    public ResponseBean<String> deleteBatch(@RequestBody List<NursingProgram> programList) {
+        ResponseBean<String> rb = null;
+        try {
+            for (NursingProgram program : programList) {
+                int result = nursingProgramService.deleteProgramById(program.getId());
+                if (result <= 0) {
+                    return new ResponseBean<>(500, "删除失败");
+                }
+            }
+            rb = new ResponseBean<>("删除成功，共删除"+programList.size()+"条数据");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
             rb = new ResponseBean<>(500, e.getMessage());
         }
         return rb;
