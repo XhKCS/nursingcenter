@@ -35,6 +35,8 @@ public class CheckoutRegistrationController {
         int result = checkoutRegistrationMapper.insert(checkoutRegistration);
         Customer customer = customerMapper.selectById(checkoutRegistration.getCustomerId());
         checkoutRegistration.setCustomerName(checkoutRegistration.getCustomerName());
+        checkoutRegistration.setCheckinDate(customer.getCheckinDate());
+        checkoutRegistration.setBedNumber(customer.getBedNumber());
 
         checkoutRegistration.setReviewStatus(0);
         checkoutRegistration.setReviewerId(0);

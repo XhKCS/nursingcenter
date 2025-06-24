@@ -51,11 +51,13 @@ public class CustomerController {
 	@PostMapping("/list")
 	public ResponseBean<List<Customer>> list(@RequestBody Map<String, Object> request) {
 		String name = (String) request.get("name");
-		int customerType = (int) request.get("customerType");
 
 		QueryWrapper<Customer> qw = new QueryWrapper<>();
 		qw.like("name", name);
-		qw.eq("customer_type", customerType);
+		if(request.get("customerType")!=null){
+			int customerType = (int) request.get("customerType");
+			qw.eq("customer_type",customerType);
+		}
 		qw.eq("is_deleted", 0); //要筛选没有被删除的
 		List<Customer> customerList = customerMapper.selectList(qw);
 		ResponseBean<List<Customer>> rb = null;
