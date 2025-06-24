@@ -1,10 +1,8 @@
 package com.neusoft.nursingcenter.controller;
 
-import com.neusoft.nursingcenter.entity.CheckoutRegistration;
-import com.neusoft.nursingcenter.entity.OutingRegistration;
-import com.neusoft.nursingcenter.entity.PageResponseBean;
-import com.neusoft.nursingcenter.entity.ResponseBean;
+import com.neusoft.nursingcenter.entity.*;
 import com.neusoft.nursingcenter.mapper.CheckoutRegistrationMapper;
+import com.neusoft.nursingcenter.mapper.CustomerMapper;
 import com.neusoft.nursingcenter.service.CheckoutRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +21,9 @@ public class CheckoutRegistrationController {
     @Autowired
     private CheckoutRegistrationService  checkoutRegistrationService;
 
+    @Autowired
+    private CustomerMapper customerMapper;
+
     // request需包含参数：int current, int size, String name
     @PostMapping("/page")
     public PageResponseBean<List<CheckoutRegistration>> page (@RequestBody Map<String, Object> request){
@@ -32,6 +33,9 @@ public class CheckoutRegistrationController {
     @PostMapping("/add")
     public ResponseBean<Integer> add(@RequestBody CheckoutRegistration checkoutRegistration) {
         int result = checkoutRegistrationMapper.insert(checkoutRegistration);
+        Customer customer = customerMapper.selectById(checkoutRegistration.getCustomerId());
+        checkoutRegistration.setCustomerName(checkoutRegistration.getCustomerName());
+
         checkoutRegistration.setReviewStatus(0);
         checkoutRegistration.setReviewerId(0);
         checkoutRegistration.setReviewTime("");

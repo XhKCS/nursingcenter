@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 @Service
 public class LevelWithProgramServiceImpl implements LevelWithProgramService {
@@ -24,7 +25,7 @@ public class LevelWithProgramServiceImpl implements LevelWithProgramService {
     NursingProgramMapper nursingProgramMapper;
 
     @Override
-    public PageResponseBean<List<NursingProgram>> pageProgramsByLevelId(int levelId, int current, int size) {
+    public PageResponseBean<List<NursingProgram>> pageProgramsByLevelId(int levelId, String programName, int current, int size) {
         PageResponseBean<List<NursingProgram>> prb = null;
         // 检查该护理级别当前是否启用
         NursingLevel nursingLevel = nursingLevelMapper.selectById(levelId);
@@ -34,15 +35,17 @@ public class LevelWithProgramServiceImpl implements LevelWithProgramService {
         }
 
         List<LevelWithProgram> levelWithProgramList = levelWithProgramMapper.listByLevelId(levelId);
-        QueryWrapper<NursingProgram> qw = new QueryWrapper<>();
-        boolean flag = false;
-        for (LevelWithProgram lwp : levelWithProgramList) {
-            qw.or().eq("id", lwp.getProgramId());
-            flag = true;
-        }
-        if (!flag) {
+        if (levelWithProgramList.isEmpty()) {
             return new PageResponseBean<>(500, "No data");
         }
+        QueryWrapper<NursingProgram> qw = new QueryWrapper<>();
+        qw.like("name", programName);
+        Consumer<QueryWrapper<NursingProgram>> consumer = qw2 -> {
+            for (LevelWithProgram lwp : levelWithProgramList) {
+                qw2.or().eq("id", lwp.getProgramId());
+            }
+        };
+        qw.and(consumer);
         IPage<NursingProgram> page = new Page<>(current,size);
         IPage<NursingProgram> result = nursingProgramMapper.selectPage(page, qw);
         List<NursingProgram> list = result.getRecords();

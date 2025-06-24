@@ -8,10 +8,7 @@ import com.neusoft.nursingcenter.entity.PageResponseBean;
 import com.neusoft.nursingcenter.entity.ResponseBean;
 import com.neusoft.nursingcenter.mapper.BedUsageRecordMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -23,7 +20,7 @@ public class BedUsageRecordController {
     @Autowired
     private BedUsageRecordMapper bedUsageRecordMapper;
 
-    @RequestMapping("/getCurrentUsingRecord")
+    @PostMapping("/getCurrentUsingRecord")
     public ResponseBean<BedUsageRecord> getCurrentUsingRecord(@RequestBody Map<String, Object> request) {
         int customerId = (int) request.get("customerId");
         // 正常情况下，一个客户应该只有一条正在使用的床位详情
@@ -39,7 +36,7 @@ public class BedUsageRecordController {
     }
 
     // 无条件分页查询，只看当前页与每一页的size
-    @RequestMapping("/pageAll")
+    @PostMapping("/pageAll")
     public PageResponseBean<List<BedUsageRecord>> page(@RequestBody Map<String, Object> request) {
         int current = (int) request.get("current"); //当前页面
         int size = (int) request.get("size"); //一页的行数
@@ -63,7 +60,7 @@ public class BedUsageRecordController {
 
     // 用于床位管理页的多条件组合的分页查询
     // 组合条件：床位状态、客户姓名、开始日期（入住日期）
-    @RequestMapping("/page")
+    @PostMapping("/page")
     public PageResponseBean<List<BedUsageRecord>> pageByCustomerId(@RequestBody Map<String, Object> request) {
         int status = (int) request.get("status");
         String customerName = (String) request.get("customerName"); //绑定前端搜索框值变量，默认为空字符串
@@ -91,7 +88,7 @@ public class BedUsageRecordController {
         return rb;
     }
 
-    @RequestMapping("/listAll")
+    @PostMapping("/listAll")
     public ResponseBean<List<BedUsageRecord>> listAll() {
         QueryWrapper<BedUsageRecord> qw = new QueryWrapper<>();
         qw.eq("is_deleted", 0);
@@ -106,7 +103,7 @@ public class BedUsageRecordController {
         return rb;
     }
 
-    @RequestMapping("/listByCustomerId")
+    @PostMapping("/listByCustomerId")
     public ResponseBean<List<BedUsageRecord>> listByCustomerId(@RequestBody Map<String, Object> request) {
         int customerId = (int) request.get("customerId");
         List<BedUsageRecord> bedUsageRecordList = bedUsageRecordMapper.listByCustomerId(customerId);
@@ -120,7 +117,7 @@ public class BedUsageRecordController {
         return rb;
     }
 
-    @RequestMapping("/listByCustomerIdAndStatus")
+    @PostMapping("/listByCustomerIdAndStatus")
     public ResponseBean<List<BedUsageRecord>> listByCustomerIdAndStatus(@RequestBody Map<String, Object> request) {
         int customerId = (int) request.get("customerId");
         int status = (int) request.get("status");
@@ -135,7 +132,7 @@ public class BedUsageRecordController {
         return rb;
     }
 
-    @RequestMapping("/listByStatus")
+    @PostMapping("/listByStatus")
     public ResponseBean<List<BedUsageRecord>> listByStatus(@RequestBody Map<String, Object> request) {
         int status = (int) request.get("status");
         List<BedUsageRecord> bedUsageRecordList = bedUsageRecordMapper.listByStatus(status);
@@ -150,7 +147,7 @@ public class BedUsageRecordController {
     }
 
     // 逻辑删除
-    @RequestMapping("/delete")
+    @PostMapping("/delete")
     public ResponseBean<String> delete(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
         int result = bedUsageRecordMapper.deleteById(id);
@@ -164,7 +161,7 @@ public class BedUsageRecordController {
         return rb;
     }
 
-    @RequestMapping("/add")
+    @PostMapping("/add")
     public ResponseBean<String> add(@RequestBody Map<String, Object> request) {
         String bedNumber = (String) request.get("bedNumber");
         int customerId = (int) request.get("customerId");
@@ -185,7 +182,7 @@ public class BedUsageRecordController {
         return rb;
     }
 
-    @RequestMapping("/update")
+    @PostMapping("/update")
     public ResponseBean<String> update(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
         // 一般只能修改下面两条属性

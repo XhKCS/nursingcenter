@@ -9,10 +9,7 @@ import com.neusoft.nursingcenter.entity.ResponseBean;
 import com.neusoft.nursingcenter.mapper.NursingProgramMapper;
 import com.neusoft.nursingcenter.service.NursingProgramServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -28,10 +25,10 @@ public class NursingProgramController {
     @Autowired
     private NursingProgramServiceImpl nursingProgramService;
 
-    @RequestMapping("/pageAll")
+    @PostMapping("/pageAll")
     public PageResponseBean<List<NursingProgram>> page(@RequestBody Map<String, Object> request) {
-        Long current = (Long) request.get("current"); //当前页面
-        Long size = (Long) request.get("size"); //一页的行数
+        int current = (int) request.get("current"); //当前页面
+        int size = (int) request.get("size"); //一页的行数
 
         IPage<NursingProgram> page = new Page<>(current, size);
         QueryWrapper<NursingProgram> qw = new QueryWrapper<>();
@@ -50,7 +47,7 @@ public class NursingProgramController {
         return prb;
     }
 
-    @RequestMapping("/listAll")
+    @PostMapping("/listAll")
     public ResponseBean<List<NursingProgram>> listAll() {
         List<NursingProgram> programList = nursingProgramMapper.selectList(null);
 
@@ -65,12 +62,12 @@ public class NursingProgramController {
 
     // 多条件组合分页查询
     // 组合条件：项目名称、状态
-    @RequestMapping("/page")
+    @PostMapping("/page")
     public PageResponseBean<List<NursingProgram>> pageByStatus(@RequestBody Map<String, Object> request) {
         int status = (int) request.get("status");
         String name = (String) request.get("name");
-        Long current = (Long) request.get("current"); //当前页面
-        Long size = (Long) request.get("size"); //一页的行数
+        int current = (int) request.get("current"); //当前页面
+        int size = (int) request.get("size"); //一页的行数
 
         IPage<NursingProgram> page = new Page<>(current, size);
         QueryWrapper<NursingProgram> qw = new QueryWrapper<>();
@@ -91,7 +88,7 @@ public class NursingProgramController {
         return prb;
     }
 
-    @RequestMapping("/listByStatus")
+    @PostMapping("/listByStatus")
     public ResponseBean<List<NursingProgram>> listByStatus(@RequestBody Map<String, Object> request) {
         int status = (int) request.get("status");
         List<NursingProgram> programList = nursingProgramMapper.listByStatus(status);
@@ -105,7 +102,7 @@ public class NursingProgramController {
         return rb;
     }
 
-    @RequestMapping("/getById")
+    @PostMapping("/getById")
     public ResponseBean<NursingProgram> getById(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
         NursingProgram nursingProgram = nursingProgramMapper.selectById(id);
@@ -119,7 +116,7 @@ public class NursingProgramController {
         return rb;
     }
 
-    @RequestMapping("/getByProgramCode")
+    @PostMapping("/getByProgramCode")
     public ResponseBean<NursingProgram> getByProgramCode(@RequestBody Map<String, Object> request) {
         String programCode = (String) request.get("programCode");
         NursingProgram nursingProgram = nursingProgramMapper.getByProgramCode(programCode);
@@ -133,7 +130,7 @@ public class NursingProgramController {
         return rb;
     }
 
-    @RequestMapping("/getByName")
+    @PostMapping("/getByName")
     public ResponseBean<NursingProgram> getByName(@RequestBody Map<String, Object> request) {
         String name = (String) request.get("name");
         NursingProgram nursingProgram = nursingProgramMapper.getByName(name);
@@ -147,7 +144,7 @@ public class NursingProgramController {
         return rb;
     }
 
-    @RequestMapping("/add")
+    @PostMapping("/add")
     public ResponseBean<String> add(@RequestBody NursingProgram nursingProgram) {
         NursingProgram check = nursingProgramMapper.getByProgramCode(nursingProgram.getProgramCode());
         if (check != null) {
@@ -170,7 +167,7 @@ public class NursingProgramController {
     }
 
     // 事务
-    @RequestMapping("/update")
+    @PostMapping("/update")
     public ResponseBean<String> update(@RequestBody NursingProgram updatedProgram) {
         NursingProgram check = nursingProgramMapper.getByProgramCode(updatedProgram.getProgramCode());
         if (check != null && check.getId() != updatedProgram.getId()) {
@@ -190,13 +187,14 @@ public class NursingProgramController {
                 rb = new ResponseBean<>(500, "修改失败");
             }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             rb = new ResponseBean<>(500, e.getMessage());
         }
         return rb;
     }
 
     // 事务
-    @RequestMapping("/delete")
+    @PostMapping("/delete")
     public ResponseBean<String> delete(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
         ResponseBean<String> rb = null;
@@ -208,6 +206,25 @@ public class NursingProgramController {
                 rb = new ResponseBean<>(500, "删除失败");
             }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
+            rb = new ResponseBean<>(500, e.getMessage());
+        }
+        return rb;
+    }
+
+    @PostMapping("/deleteBatch")
+    public ResponseBean<String> deleteBatch(@RequestBody List<NursingProgram> programList) {
+        ResponseBean<String> rb = null;
+        try {
+            for (NursingProgram program : programList) {
+                int result = nursingProgramService.deleteProgramById(program.getId());
+                if (result <= 0) {
+                    return new ResponseBean<>(500, "删除失败");
+                }
+            }
+            rb = new ResponseBean<>("删除成功，共删除"+programList.size()+"条数据");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
             rb = new ResponseBean<>(500, e.getMessage());
         }
         return rb;

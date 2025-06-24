@@ -20,7 +20,7 @@ public class CustomerNursingServiceController {
     @Autowired
     private CustomerNursingServiceMapper customerNursingServiceMapper;
 
-    @RequestMapping("/page")
+    @PostMapping("/page")
     PageResponseBean<List<CustomerNursingService>> pageWithConditions(@RequestBody Map<String, Object> request) {
         int current = (int)request.get("current");
         int size = (int)request.get("size");
@@ -47,7 +47,7 @@ public class CustomerNursingServiceController {
     }
 
     // 由前端控制只能修改的字段：应该只能通过续费修改总数量
-    @RequestMapping("/update")
+    @PostMapping("/update")
     public ResponseBean<Integer> update(@RequestBody CustomerNursingService customerNursingService) {
         ResponseBean<Integer> rb = null;
         int result = customerNursingServiceMapper.updateById(customerNursingService);
@@ -60,7 +60,7 @@ public class CustomerNursingServiceController {
     }
 
     // 由前端控制只能修改的字段：应该只能通过续费修改总数量
-    @RequestMapping("/add")
+    @PostMapping("/add")
     public ResponseBean<Integer> add(@RequestBody CustomerNursingService customerNursingService) {
         ResponseBean<Integer> rb = null;
         CustomerNursingService check = customerNursingServiceMapper.getByCustomerIdAndProgramCode(customerNursingService.getCustomerId(), customerNursingService.getProgramCode());
@@ -78,7 +78,7 @@ public class CustomerNursingServiceController {
         return rb;
     }
 
-    @RequestMapping("/delete")
+    @PostMapping("/delete")
     public ResponseBean<Integer> delete(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
         ResponseBean<Integer> rb = null;

@@ -6,5 +6,5 @@ import com.neusoft.nursingcenter.entity.PageResponseBean;
 import java.util.List;
 
 public interface LevelWithProgramService {
-    PageResponseBean<List<NursingProgram>> pageProgramsByLevelId(int levelId, int current, int size);
+    PageResponseBean<List<NursingProgram>> pageProgramsByLevelId(int levelId, String programName, int current, int size);
 }

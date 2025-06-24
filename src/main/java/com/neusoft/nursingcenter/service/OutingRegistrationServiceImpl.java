@@ -4,10 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.neusoft.nursingcenter.entity.Customer;
-import com.neusoft.nursingcenter.entity.OutingRegistration;
-import com.neusoft.nursingcenter.entity.PageResponseBean;
-import com.neusoft.nursingcenter.entity.ResponseBean;
+import com.neusoft.nursingcenter.entity.*;
+import com.neusoft.nursingcenter.mapper.BedMapper;
 import com.neusoft.nursingcenter.mapper.CustomerMapper;
 import com.neusoft.nursingcenter.mapper.OutingRegistrationMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +22,9 @@ public class OutingRegistrationServiceImpl implements OutingRegistrationService{
 
     @Autowired
     CustomerMapper customerMapper;
+
+    @Autowired
+    BedMapper bedMapper;
 
     @Override
     public PageResponseBean<List<OutingRegistration>> page(Map<String, Object> request) {
@@ -56,5 +57,24 @@ public class OutingRegistrationServiceImpl implements OutingRegistrationService{
             prb = new PageResponseBean<>(500, "No data");
         }
         return prb;
+    }
+
+    @Override
+    public int update(OutingRegistration outingRegistration) {
+        if (outingRegistration.getReviewStatus() == 2) { //外出申请通过
+            Customer customer = customerMapper.selectById(outingRegistration.getCustomerId());
+            Bed usingBed = bedMapper.getBedByNumber(customer.getBedNumber());
+            if (outingRegistration.getActualReturnDate() != null && !outingRegistration.getActualReturnDate().isEmpty()) {
+                // 已登记回院，则对应床位状态仍是使用中
+                usingBed.setStatus(2); //有人
+            } else { //还未登记回院，则对应状态为外出
+                usingBed.setStatus(1); //外出
+            }
+            int res1 = bedMapper.updateById(usingBed);
+            if (res1 <= 0) {
+                throw new RuntimeException("更新对应床位状态时失败");
+            }
+        }
+        return outingRegistrationMapper.updateById(outingRegistration);
     }
 }

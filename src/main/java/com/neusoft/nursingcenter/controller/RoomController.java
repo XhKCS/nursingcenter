@@ -4,10 +4,7 @@ import com.neusoft.nursingcenter.entity.ResponseBean;
 import com.neusoft.nursingcenter.entity.Room;
 import com.neusoft.nursingcenter.mapper.RoomMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +16,7 @@ public class RoomController {
     @Autowired
     private RoomMapper roomMapper;
 
-    @RequestMapping("/getById")
+    @PostMapping("/getById")
     public ResponseBean<Room> getById(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
         Room room = roomMapper.selectById(id);
@@ -33,7 +30,7 @@ public class RoomController {
         return rb;
     }
 
-    @RequestMapping("/getByNumber")
+    @PostMapping("/getByNumber")
     public ResponseBean<Room> getByNumber(@RequestBody Map<String, Object> request) {
         String roomNumber = (String) request.get("roomNumber");
         Room room = roomMapper.getRoomByNumber(roomNumber);
@@ -47,7 +44,7 @@ public class RoomController {
         return rb;
     }
 
-    @RequestMapping("/listByFloor")
+    @PostMapping("/listByFloor")
     public ResponseBean<List<Room>> listByFloor(@RequestBody Map<String, Object> request) {
         int floor = (int) request.get("floor");
         List<Room> roomList = roomMapper.listRoomsByFloor(floor);
@@ -61,7 +58,7 @@ public class RoomController {
         return rb;
     }
 
-    @RequestMapping("/listAll")
+    @PostMapping("/listAll")
     public ResponseBean<List<Room>> listAll() {
         List<Room> roomList = roomMapper.selectList(null);
 
