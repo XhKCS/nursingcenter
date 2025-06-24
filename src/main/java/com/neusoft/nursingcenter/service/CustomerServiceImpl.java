@@ -3,9 +3,8 @@ package com.neusoft.nursingcenter.service;
 import com.neusoft.nursingcenter.entity.Bed;
 import com.neusoft.nursingcenter.entity.BedUsageRecord;
 import com.neusoft.nursingcenter.entity.Customer;
-import com.neusoft.nursingcenter.mapper.BedMapper;
-import com.neusoft.nursingcenter.mapper.BedUsageRecordMapper;
-import com.neusoft.nursingcenter.mapper.CustomerMapper;
+import com.neusoft.nursingcenter.entity.NursingLevel;
+import com.neusoft.nursingcenter.mapper.*;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +21,12 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Autowired
 	private BedMapper bedMapper;
+
+	@Autowired
+	private CustomerNursingServiceMapper customerNursingServiceMapper;
+
+	@Autowired
+	private NursingLevelMapper nursingLevelMapper;
 
 	@Override
 	@Transactional
@@ -54,13 +59,17 @@ public class CustomerServiceImpl implements CustomerService {
 
 	// 如果对客户床位信息做了修改，要保证在该方法之前已经完成对旧床位信息的处理
 	// 该方法只会对当前正在使用的床位信息做同步修改
+	//如果清除了客户的护理级别，则要将原级别下的客户护理项目服务都清除
 	@Override
 	@Transactional
 	public int updateCustomer(Customer updatedCustomer) {
 		// 先尝试找到该客户正在使用的床位使用记录
 		BedUsageRecord currentRecord = bedUsageRecordMapper.getCurrentUsingRecord(updatedCustomer.getCustomerId());
-		if (currentRecord == null) {
-			// 说明该客户当前没有用床位，那直接修改即可
+		Customer dbCustomer = customerMapper.selectById(updatedCustomer.getCustomerId());
+		NursingLevel nursingLevel = nursingLevelMapper.getByName(dbCustomer.getNursingLevelName());
+
+		if (currentRecord == null && nursingLevel == null) {
+			// 说明该客户当前没有用床位，且原本就没有护理级别，那直接修改即可
 			return customerMapper.updateById(updatedCustomer);
 		}
 		// 先修改对应床位记录的开始时间和结束时间（退住时间）
@@ -69,6 +78,15 @@ public class CustomerServiceImpl implements CustomerService {
 		int res1 = bedUsageRecordMapper.updateById(currentRecord);
 		if (res1 <= 0) {
 			throw new RuntimeException("修改过程中失败");
+		}
+
+		NursingLevel newLevel = nursingLevelMapper.getByName(updatedCustomer.getNursingLevelName());
+		//如果清除了客户的护理级别，则要将原级别下的客户护理项目服务都清除
+		if (nursingLevel != null && (newLevel == null || newLevel.getId() != nursingLevel.getId())) {
+			int res2 = customerNursingServiceMapper.deleteByCustomerIdAndLevelId(updatedCustomer.getCustomerId(), nursingLevel.getId());
+			if (res2 <= 0) {
+				throw new RuntimeException("修改过程中失败");
+			}
 		}
 		return customerMapper.updateById(updatedCustomer);
 	}
