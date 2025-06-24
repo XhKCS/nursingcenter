@@ -68,7 +68,7 @@ public class CustomerNursingServiceController {
             rb = new ResponseBean<>(500, "不能为一个客户重复添加项目");
             return rb;
         }
-        customerNursingService.setDeleted(false);
+//        customerNursingService.setDeleted(false);
         int result = customerNursingServiceMapper.insert(customerNursingService);
         if (result > 0) {
             rb = new ResponseBean<>(result);
@@ -87,8 +87,9 @@ public class CustomerNursingServiceController {
             rb = new ResponseBean<>(500, "不存在该id的数据");
             return rb;
         }
-        customerNursingService.setDeleted(true);
-        int result = customerNursingServiceMapper.updateById(customerNursingService);
+//        customerNursingService.setDeleted(true);
+//        int result = customerNursingServiceMapper.updateById(customerNursingService);
+        int result = customerNursingServiceMapper.deleteById(id);
         if (result > 0) {
             rb = new ResponseBean<>(result);
         } else {
@@ -96,4 +97,19 @@ public class CustomerNursingServiceController {
         }
         return rb;
     }
+
+    @PostMapping("/deleteByCustomerAndLevel")
+    public ResponseBean<Integer> deleteByCustomerAndLevel(@RequestBody Map<String, Object> request) {
+        int customerId = (int) request.get("customerId");
+        int levelId = (int) request.get("levelId");
+        ResponseBean<Integer> rb = null;
+        int result = customerNursingServiceMapper.deleteByCustomerIdAndLevelId(customerId, levelId);
+        if (result > 0) {
+            rb = new ResponseBean<>(result);
+        } else {
+            rb = new ResponseBean<>(500, "删除失败");
+        }
+        return rb;
+    }
+
 }

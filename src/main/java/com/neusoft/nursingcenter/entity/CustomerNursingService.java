@@ -33,11 +33,9 @@ public class CustomerNursingService {
 
     private String expirationDate; //服务到期日期
 
-    private Boolean isDeleted;
-
     public CustomerNursingService() {}
 
-    public CustomerNursingService(Integer id, Integer customerId, Integer levelId, Integer programId, String programCode, String programName, Double programPrice, String executionPeriod, Integer executionTimes, String purchaseDate, Integer totalCount, Integer usedCount, String expirationDate, Boolean isDeleted) {
+    public CustomerNursingService(Integer id, Integer customerId, Integer levelId, Integer programId, String programCode, String programName, Double programPrice, String executionPeriod, Integer executionTimes, String purchaseDate, Integer totalCount, Integer usedCount, String expirationDate) {
         this.id = id;
         this.customerId = customerId;
         this.levelId = levelId;
@@ -51,7 +49,6 @@ public class CustomerNursingService {
         this.totalCount = totalCount;
         this.usedCount = usedCount;
         this.expirationDate = expirationDate;
-        this.isDeleted = isDeleted;
     }
 
     public Integer getId() {
@@ -156,13 +153,5 @@ public class CustomerNursingService {
 
     public void setExpirationDate(String expirationDate) {
         this.expirationDate = expirationDate;
-    }
-
-    public Boolean getDeleted() {
-        return isDeleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        isDeleted = deleted;
     }
 }
