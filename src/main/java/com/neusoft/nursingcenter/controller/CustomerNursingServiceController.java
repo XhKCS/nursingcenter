@@ -1,5 +1,6 @@
 package com.neusoft.nursingcenter.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -26,15 +27,14 @@ public class CustomerNursingServiceController {
         int customerId = (int) request.get("customerId");
         String programName = (String)request.get("programName");
 
-        QueryWrapper<CustomerNursingService> qw = new QueryWrapper<>();
-        qw.eq("customerId", customerId);
-        qw.like("program_name", programName);
+        LambdaQueryWrapper<CustomerNursingService> qw = new LambdaQueryWrapper<>();
+        qw.eq(CustomerNursingService ::getCustomerId, customerId);
+        qw.like(null!=programName,CustomerNursingService::getProgramName, programName);
 
         IPage<CustomerNursingService> page = new Page<>(current,size);
         IPage<CustomerNursingService> result = customerNursingServiceMapper.selectPage(page,qw);
         List<CustomerNursingService> list = result.getRecords();
         long total = result.getTotal();
-        System.out.println(total);
 
         PageResponseBean<List<CustomerNursingService>> prb = null;
         if(total > 0){
