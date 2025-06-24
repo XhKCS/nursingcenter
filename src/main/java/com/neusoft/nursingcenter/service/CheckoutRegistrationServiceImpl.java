@@ -22,9 +22,6 @@ public class CheckoutRegistrationServiceImpl implements CheckoutRegistrationServ
     private CheckoutRegistrationMapper checkoutRegistrationMapper;
 
     @Autowired
-    private CustomerMapper customerMapper;
-
-    @Autowired
     private CustomerService customerService;
 
     @Override
@@ -67,13 +64,13 @@ public class CheckoutRegistrationServiceImpl implements CheckoutRegistrationServ
         int result = checkoutRegistrationMapper.updateById(data);
         ResponseBean<Integer> rb = null;
         if(result > 0) {
-            if(data.getReviewStatus()==1){
+            if(data.getReviewStatus() == 2) { //退住申请通过
                if(customerService.deleteCustomerById(data.getCustomerId()) > 0){
                    rb = new ResponseBean<>(result);
                }else {
                    throw new RuntimeException("修改过程中失败");
                }
-            }else {
+            } else {
                 rb = new ResponseBean<>(result);
             }
 

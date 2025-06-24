@@ -72,8 +72,8 @@ public class CustomerServiceImpl implements CustomerService {
 			// 说明该客户当前没有用床位，且原本就没有护理级别，那直接修改即可
 			return customerMapper.updateById(updatedCustomer);
 		}
-		// 先修改对应床位记录的开始时间和结束时间（退住时间）
-		currentRecord.setStartDate(updatedCustomer.getCheckinDate());
+		// 先修改对应床位记录的结束时间（退住时间）
+//		currentRecord.setStartDate(updatedCustomer.getCheckinDate());
 		currentRecord.setEndDate(updatedCustomer.getExpirationDate());
 		int res1 = bedUsageRecordMapper.updateById(currentRecord);
 		if (res1 <= 0) {

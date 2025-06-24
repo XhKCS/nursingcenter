@@ -4,10 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.neusoft.nursingcenter.entity.MealItem;
-import com.neusoft.nursingcenter.entity.OutingRegistration;
-import com.neusoft.nursingcenter.entity.PageResponseBean;
-import com.neusoft.nursingcenter.entity.ResponseBean;
+import com.neusoft.nursingcenter.entity.*;
+import com.neusoft.nursingcenter.mapper.CustomerMapper;
 import com.neusoft.nursingcenter.mapper.OutingRegistrationMapper;
 import com.neusoft.nursingcenter.service.OutingRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +25,9 @@ public class OutingRegistrationController {
     @Autowired
     private OutingRegistrationService outingRegistrationService;
 
+    @Autowired
+    private CustomerMapper customerMapper;
+
     // request需包含参数：int current, int size, String name
     @PostMapping("/page")
     public PageResponseBean<List<OutingRegistration>> page (@RequestBody Map<String, Object> request){
@@ -38,6 +39,8 @@ public class OutingRegistrationController {
         if (outingRegistration.getActualReturnDate() == null) {
             outingRegistration.setActualReturnDate("");
         }
+        Customer customer = customerMapper.selectById(outingRegistration.getCustomerId());
+        outingRegistration.setCustomerName(customer.getName());
         outingRegistration.setReviewStatus(0); //默认已提交状态
         outingRegistration.setReviewerId(0);
         outingRegistration.setReviewTime("");
@@ -53,14 +56,20 @@ public class OutingRegistrationController {
     }
 
     // 管理员审批与护工登记回院时间
+    // 注意还有修改对应床位状态
     @PostMapping("/update")
     public ResponseBean<Integer> update(@RequestBody OutingRegistration data) {
-        int result = outingRegistrationMapper.updateById(data);
         ResponseBean<Integer> rb = null;
-        if(result > 0) {
-            rb = new ResponseBean<>(result);
-        }else {
-            rb = new ResponseBean<>(500,"Fail to update");
+        try {
+            int result = outingRegistrationService.update(data);
+            if(result > 0) {
+                rb = new ResponseBean<>(result);
+            }else {
+                rb = new ResponseBean<>(500,"Fail to update");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            rb = new ResponseBean<>(500, e.getMessage());
         }
         return rb;
     }

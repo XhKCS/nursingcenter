@@ -10,4 +10,6 @@ import java.util.Map;
 
 public interface OutingRegistrationService {
     PageResponseBean<List<OutingRegistration>> page(@RequestBody Map<String, Object> request);
+
+    int update(OutingRegistration outingRegistration);
 }
