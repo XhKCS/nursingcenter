@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.neusoft.nursingcenter.entity.*;
+import com.neusoft.nursingcenter.mapper.CustomerMapper;
 import com.neusoft.nursingcenter.mapper.CustomerNursingServiceMapper;
+import com.neusoft.nursingcenter.mapper.NursingLevelMapper;
 import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,12 @@ import java.util.Map;
 public class CustomerNursingServiceController {
     @Autowired
     private CustomerNursingServiceMapper customerNursingServiceMapper;
+
+    @Autowired
+    private NursingLevelMapper nursingLevelMapper;
+
+    @Autowired
+    private CustomerMapper customerMapper;
 
     @PostMapping("/page")
     PageResponseBean<List<CustomerNursingService>> pageWithConditions(@RequestBody Map<String, Object> request) {
@@ -98,16 +106,22 @@ public class CustomerNursingServiceController {
         return rb;
     }
 
-    @PostMapping("/deleteByCustomerAndLevel")
-    public ResponseBean<Integer> deleteByCustomerAndLevel(@RequestBody Map<String, Object> request) {
-        int customerId = (int) request.get("customerId");
-        int levelId = (int) request.get("levelId");
+    // 移除客户的护理级别
+    @PostMapping("/deleteByCustomer")
+    public ResponseBean<Integer> deleteByCustomerAndLevel(@RequestBody Customer customer) {
+        NursingLevel nursingLevel = nursingLevelMapper.getByName(customer.getNursingLevelName());
         ResponseBean<Integer> rb = null;
-        int result = customerNursingServiceMapper.deleteByCustomerIdAndLevelId(customerId, levelId);
-        if (result > 0) {
-            rb = new ResponseBean<>(result);
-        } else {
-            rb = new ResponseBean<>(500, "删除失败");
+        try {
+            int res1 = customerNursingServiceMapper.deleteByCustomerIdAndLevelId(customer.getCustomerId(), nursingLevel.getId());
+            customer.setNursingLevelName(""); //所属护理级别设置为空
+            int result = customerMapper.updateById(customer);
+            if (result > 0) {
+                rb = new ResponseBean<>(result);
+            } else {
+                rb = new ResponseBean<>(500, "移除失败");
+            }
+        } catch (Exception e) {
+            rb = new ResponseBean<>(500, e.getMessage());
         }
         return rb;
     }
