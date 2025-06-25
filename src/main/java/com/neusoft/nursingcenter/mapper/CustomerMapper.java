@@ -1,5 +1,6 @@
 package com.neusoft.nursingcenter.mapper;
 
+import com.neusoft.nursingcenter.entity.NursingProgram;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -12,4 +13,7 @@ import java.util.List;
 public interface CustomerMapper extends BaseMapper<Customer>{
     @Select("select * from customer where nurse_id=#{nurseId} and is_deleted=0")
     List<Customer> listByNurseId(int nurseId);
+
+    @Select("select * from customer where name=#{name} and is_deleted=0")
+    Customer getByName(String name);
 }
