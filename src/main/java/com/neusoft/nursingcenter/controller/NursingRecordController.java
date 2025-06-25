@@ -1,9 +1,11 @@
 package com.neusoft.nursingcenter.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.neusoft.nursingcenter.entity.*;
+import com.neusoft.nursingcenter.mapper.CustomerNursingServiceMapper;
 import com.neusoft.nursingcenter.mapper.NursingRecordMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,16 +21,21 @@ public class NursingRecordController {
     @Autowired
     private NursingRecordMapper nursingRecordMapper;
 
+    @Autowired
+    private CustomerNursingServiceMapper customerNursingServiceMapper;
+
     @PostMapping("/page")
     public PageResponseBean<List<NursingRecord>> page (@RequestBody Map<String, Object> request){
         int current = (int)request.get("current");
         int size = (int)request.get("size");
         Integer customerId = (Integer)request.get("customerId");
 
-        LambdaQueryWrapper<NursingRecord> qw = new LambdaQueryWrapper<>();
-        qw.eq(null != customerId,NursingRecord :: getCustomerId,customerId);
-        qw.eq(NursingRecord :: getDeleted,false);
-
+//        LambdaQueryWrapper<NursingRecord> qw = new LambdaQueryWrapper<>();
+//        qw.eq(null != customerId,NursingRecord :: getCustomerId,customerId);
+//        qw.eq(NursingRecord :: getDeleted,false);
+        QueryWrapper<NursingRecord> qw = new QueryWrapper<>();
+        qw.eq("customer_id", customerId);
+        qw.eq("is_deleted", 0);
         IPage<NursingRecord> page = new Page<>(current,size);
         IPage<NursingRecord> result = nursingRecordMapper.selectPage(page,qw);
 
@@ -45,10 +52,22 @@ public class NursingRecordController {
         return prb;
     }
 
+    // 添加护理记录单同时，要改变对应客户护理服务的剩余数量，也就是增加usedCount
     @PostMapping("/add")
     public ResponseBean<Integer> add(@RequestBody NursingRecord nursingRecord) {
+        CustomerNursingService customerNursingService = customerNursingServiceMapper.getByCustomerIdAndProgramCode(nursingRecord.getCustomerId(), nursingRecord.getProgramCode());
+        if (customerNursingService == null) {
+            return new ResponseBean<>(500, "该客户护理服务不存在");
+        }
+        int oldCount = customerNursingService.getUsedCount();
+        customerNursingService.setUsedCount(oldCount + nursingRecord.getExecutionCount());
+        int res1 = customerNursingServiceMapper.updateById(customerNursingService);
+        if (res1 <= 0) {
+            return new ResponseBean<>(500, "更新客户护理服务信息时失败");
+        }
+
         nursingRecord.setDeleted(false);
-        Integer result = nursingRecordMapper.insert(nursingRecord);
+        int result = nursingRecordMapper.insert(nursingRecord);
         ResponseBean<Integer> rb = null;
         if(result > 0) {
             rb = new ResponseBean<>(result);
@@ -63,7 +82,7 @@ public class NursingRecordController {
         int id = (int) request.get("id");
         NursingRecord nursingRecord = nursingRecordMapper.selectById(id);
         nursingRecord.setDeleted(true);
-        Integer result = nursingRecordMapper.updateById(nursingRecord);
+        int result = nursingRecordMapper.updateById(nursingRecord);
         ResponseBean<Integer> rb =null;
         if(result > 0) {
             rb = new ResponseBean<>(result);
@@ -71,6 +90,25 @@ public class NursingRecordController {
             rb = new ResponseBean<>(500,"Fail to delete");
         }
 
+        return rb;
+    }
+
+    @PostMapping("/deleteBatch")
+    public ResponseBean<String> deleteBatch(@RequestBody List<NursingRecord> recordList) {
+        ResponseBean<String> rb = null;
+        try {
+            for (NursingRecord record : recordList) {
+                record.setDeleted(true);
+                int result = nursingRecordMapper.updateById(record);
+                if (result <= 0) {
+                    return new ResponseBean<>(500, "删除过程中失败");
+                }
+            }
+            rb = new ResponseBean<>("删除成功，共删除"+recordList.size()+"条数据");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            rb = new ResponseBean<>(500, e.getMessage());
+        }
         return rb;
     }
 }

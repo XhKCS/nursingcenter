@@ -7,6 +7,7 @@ import com.neusoft.nursingcenter.entity.*;
 import com.neusoft.nursingcenter.mapper.CustomerMapper;
 import com.neusoft.nursingcenter.mapper.CustomerNursingServiceMapper;
 import com.neusoft.nursingcenter.mapper.NursingLevelMapper;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +36,7 @@ public class CustomerNursingServiceController {
         String programName = (String)request.get("programName");
 
         QueryWrapper<CustomerNursingService> qw = new QueryWrapper<>();
-        qw.eq("customerId", customerId);
+        qw.eq("customer_id", customerId);
         qw.like("program_name", programName);
 
         IPage<CustomerNursingService> page = new Page<>(current,size);
@@ -67,7 +68,6 @@ public class CustomerNursingServiceController {
         return rb;
     }
 
-    // 由前端控制只能修改的字段：应该只能通过续费修改总数量
     @PostMapping("/add")
     public ResponseBean<Integer> add(@RequestBody CustomerNursingService customerNursingService) {
         ResponseBean<Integer> rb = null;
@@ -82,6 +82,29 @@ public class CustomerNursingServiceController {
             rb = new ResponseBean<>(result);
         } else {
             rb = new ResponseBean<>(500, "添加失败");
+        }
+        return rb;
+    }
+
+    @PostMapping("/addBatch")
+    public ResponseBean<String> addBatch(@RequestBody List<CustomerNursingService> customerNursingServiceList) {
+        ResponseBean<String> rb = null;
+        int count = 0;
+        for (CustomerNursingService service : customerNursingServiceList) {
+            CustomerNursingService check = customerNursingServiceMapper.getByCustomerIdAndProgramCode(service.getCustomerId(), service.getProgramCode());
+            System.out.println(service.getProgramName());
+            if (check == null) {
+                int res = customerNursingServiceMapper.insert(service);
+                if (res > 0) {
+                    count++;
+                    System.out.println("添加成功，count = "+count);
+                }
+            }
+        }
+        if (count > 0) {
+            rb = new ResponseBean<>("成功为客户添加了"+count+"个护理项目");
+        } else {
+            rb = new ResponseBean<>(500, "批量添加服务失败");
         }
         return rb;
     }

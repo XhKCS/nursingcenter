@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.neusoft.nursingcenter.entity.NursingLevel;
+import com.neusoft.nursingcenter.mapper.NursingLevelMapper;
 import com.neusoft.nursingcenter.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -30,6 +32,9 @@ public class CustomerController {
 
 	@Autowired
 	private CustomerService customerService;
+
+	@Autowired
+	private NursingLevelMapper nursingLevelMapper;
 
 	@PostMapping("/listAll")
 	public ResponseBean<List<Customer>> listAll() {
@@ -174,6 +179,27 @@ public class CustomerController {
 			}
 		} catch (Exception e) {
 			rb = new ResponseBean<>(500, e.getMessage());
+		}
+		return rb;
+	}
+
+	@PostMapping("/setNursingLevel")
+	public ResponseBean<Integer> setNursingLevel(@RequestBody Map<String, Object> request) {
+		ResponseBean<Integer> rb = null;
+		int customerId = (int) request.get("customerId");
+		int levelId = (int) request.get("levelId");
+		Customer customer = customerMapper.selectById(customerId);
+		NursingLevel nursingLevel = nursingLevelMapper.selectById(levelId);
+		if (customer == null || nursingLevel == null) {
+			return new ResponseBean<>(500, "客户或护理级别不存在");
+		}
+
+		customer.setNursingLevelName(nursingLevel.getName());
+		int result = customerMapper.updateById(customer);
+		if(result > 0) {
+			rb = new ResponseBean<>(result);
+		}else {
+			rb = new ResponseBean<>(500,"护理级别设置失败");
 		}
 		return rb;
 	}

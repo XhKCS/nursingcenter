@@ -219,7 +219,7 @@ public class NursingProgramController {
             for (NursingProgram program : programList) {
                 int result = nursingProgramService.deleteProgramById(program.getId());
                 if (result <= 0) {
-                    return new ResponseBean<>(500, "删除失败");
+                    return new ResponseBean<>(500, "删除过程中失败");
                 }
             }
             rb = new ResponseBean<>("删除成功，共删除"+programList.size()+"条数据");
