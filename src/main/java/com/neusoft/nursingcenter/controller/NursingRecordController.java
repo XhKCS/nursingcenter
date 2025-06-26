@@ -58,28 +58,42 @@ public class NursingRecordController {
     }
 
     // 添加护理记录单同时，要改变对应客户护理服务的剩余数量，也就是增加usedCount
+//    @PostMapping("/add")
+//    public ResponseBean<Integer> add(@RequestBody NursingRecord nursingRecord) {
+//        CustomerNursingService customerNursingService = customerNursingServiceMapper.getByCustomerIdAndProgramCode(nursingRecord.getCustomerId(), nursingRecord.getProgramCode());
+//        if (customerNursingService == null) {
+//            return new ResponseBean<>(500, "该客户护理服务不存在");
+//        }
+//        int oldCount = customerNursingService.getUsedCount();
+//        customerNursingService.setUsedCount(oldCount + nursingRecord.getExecutionCount());
+//        int res1 = customerNursingServiceMapper.updateById(customerNursingService);
+//        if (res1 <= 0) {
+//            return new ResponseBean<>(500, "更新客户护理服务信息时失败");
+//        }
+//
+//        nursingRecord.setDeleted(false);
+//        int result = nursingRecordMapper.insert(nursingRecord);
+//        ResponseBean<Integer> rb = null;
+//        if(result > 0) {
+//            rb = new ResponseBean<>(result);
+//        }else {
+//            rb = new ResponseBean<>(500,"Fail to add");
+//        }
+//        return rb;
+//    }
+
     @PostMapping("/add")
-    public ResponseBean<Integer> add(@RequestBody NursingRecord nursingRecord) {
-//        Integer result = nursingRecordService.add(request);
-
-        CustomerNursingService customerNursingService = customerNursingServiceMapper.getByCustomerIdAndProgramCode(nursingRecord.getCustomerId(), nursingRecord.getProgramCode());
-        if (customerNursingService == null) {
-            return new ResponseBean<>(500, "该客户护理服务不存在");
-        }
-        int oldCount = customerNursingService.getUsedCount();
-        customerNursingService.setUsedCount(oldCount + nursingRecord.getExecutionCount());
-        int res1 = customerNursingServiceMapper.updateById(customerNursingService);
-        if (res1 <= 0) {
-            return new ResponseBean<>(500, "更新客户护理服务信息时失败");
-        }
-
-        nursingRecord.setDeleted(false);
-        int result = nursingRecordMapper.insert(nursingRecord);
+    public ResponseBean<Integer> add(@RequestBody Map<String, Object> request) {
         ResponseBean<Integer> rb = null;
-        if(result > 0) {
-            rb = new ResponseBean<>(result);
-        }else {
-            rb = new ResponseBean<>(500,"Fail to add");
+        try {
+            int result = nursingRecordService.add(request);
+            if (result > 0) {
+                rb = new ResponseBean<>(result);
+            } else {
+                rb = new ResponseBean<>(500, "Fail to add");
+            }
+        } catch (Exception e) {
+            rb = new ResponseBean<>(500, e.getMessage());
         }
         return rb;
     }
@@ -100,20 +114,6 @@ public class NursingRecordController {
         return rb;
     }
 
-//    @PostMapping("/deleteBatch")
-//    public ResponseBean<Integer> deleteBatch(@RequestBody Map<String, Object> request) {
-//        List<Integer> ids =(List<Integer>) request.get("ids");
-//        int result = nursingRecordMapper.deleteBatchIds(ids);
-//        ResponseBean<Integer> rb =null;
-//        if(result > 0) {
-//            rb = new ResponseBean<>(result);
-//        }else {
-//            rb = new ResponseBean<>(500,"Fail to delete");
-//        }
-//
-//        return rb;
-//    }
-
     @PostMapping("/deleteBatch")
     public ResponseBean<String> deleteBatch(@RequestBody List<NursingRecord> recordList) {
         ResponseBean<String> rb = null;
@@ -132,4 +132,20 @@ public class NursingRecordController {
         }
         return rb;
     }
+
+
+    // 由于是逻辑删除，所以不能用以下方法进行批量删除
+//    @PostMapping("/deleteBatch")
+//    public ResponseBean<Integer> deleteBatch(@RequestBody Map<String, Object> request) {
+//        List<Integer> ids =(List<Integer>) request.get("ids");
+//        int result = nursingRecordMapper.deleteBatchIds(ids);
+//        ResponseBean<Integer> rb =null;
+//        if(result > 0) {
+//            rb = new ResponseBean<>(result);
+//        }else {
+//            rb = new ResponseBean<>(500,"Fail to delete");
+//        }
+//
+//        return rb;
+//    }
 }
