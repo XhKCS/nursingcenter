@@ -7,7 +7,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.neusoft.nursingcenter.entity.*;
 import com.neusoft.nursingcenter.mapper.CustomerNursingServiceMapper;
 import com.neusoft.nursingcenter.mapper.NursingRecordMapper;
+import com.neusoft.nursingcenter.mapper.*;
+import com.neusoft.nursingcenter.service.NursingRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,18 +27,20 @@ public class NursingRecordController {
     @Autowired
     private CustomerNursingServiceMapper customerNursingServiceMapper;
 
+    @Autowired
+    private NursingRecordService nursingRecordService;
+
+
     @PostMapping("/page")
     public PageResponseBean<List<NursingRecord>> page (@RequestBody Map<String, Object> request){
         int current = (int)request.get("current");
         int size = (int)request.get("size");
         Integer customerId = (Integer)request.get("customerId");
 
-//        LambdaQueryWrapper<NursingRecord> qw = new LambdaQueryWrapper<>();
-//        qw.eq(null != customerId,NursingRecord :: getCustomerId,customerId);
-//        qw.eq(NursingRecord :: getDeleted,false);
         QueryWrapper<NursingRecord> qw = new QueryWrapper<>();
-        qw.eq("customer_id", customerId);
+        qw.eq(null != customerId,"customer_id",customerId);
         qw.eq("is_deleted", 0);
+
         IPage<NursingRecord> page = new Page<>(current,size);
         IPage<NursingRecord> result = nursingRecordMapper.selectPage(page,qw);
 
@@ -55,6 +60,8 @@ public class NursingRecordController {
     // 添加护理记录单同时，要改变对应客户护理服务的剩余数量，也就是增加usedCount
     @PostMapping("/add")
     public ResponseBean<Integer> add(@RequestBody NursingRecord nursingRecord) {
+//        Integer result = nursingRecordService.add(request);
+
         CustomerNursingService customerNursingService = customerNursingServiceMapper.getByCustomerIdAndProgramCode(nursingRecord.getCustomerId(), nursingRecord.getProgramCode());
         if (customerNursingService == null) {
             return new ResponseBean<>(500, "该客户护理服务不存在");
@@ -92,6 +99,20 @@ public class NursingRecordController {
 
         return rb;
     }
+
+//    @PostMapping("/deleteBatch")
+//    public ResponseBean<Integer> deleteBatch(@RequestBody Map<String, Object> request) {
+//        List<Integer> ids =(List<Integer>) request.get("ids");
+//        int result = nursingRecordMapper.deleteBatchIds(ids);
+//        ResponseBean<Integer> rb =null;
+//        if(result > 0) {
+//            rb = new ResponseBean<>(result);
+//        }else {
+//            rb = new ResponseBean<>(500,"Fail to delete");
+//        }
+//
+//        return rb;
+//    }
 
     @PostMapping("/deleteBatch")
     public ResponseBean<String> deleteBatch(@RequestBody List<NursingRecord> recordList) {
