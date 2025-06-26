@@ -13,4 +13,5 @@ public interface UserMapper extends BaseMapper<User> {
     // 用户并没有不能重名的限制，所以不应该有通过姓名返回单个用户的方法
 //    @Select("select * from user where name=#{name}")
 //    User getByName(String name);
+
 }

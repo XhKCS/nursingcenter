@@ -73,4 +73,5 @@ public class NursingProgramServiceImpl implements NursingProgramService{
         nursingProgram.setDeleted(true);
         return nursingProgramMapper.updateById(nursingProgram);
     }
+
 }

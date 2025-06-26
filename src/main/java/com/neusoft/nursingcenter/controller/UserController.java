@@ -1,5 +1,6 @@
 package com.neusoft.nursingcenter.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.neusoft.nursingcenter.entity.Customer;
@@ -73,13 +74,40 @@ public class UserController {
         return rb;
     }
 
-    @PostMapping("/page")
-    public PageResponseBean<List<User>> page(@RequestBody Map<String, Object> request) {
-        Long current = (Long) request.get("current"); //当前页面
-        Long size = (Long) request.get("size"); //一页的行数
+    // 无条件分页查询
+    @PostMapping("/pageAll")
+    public PageResponseBean<List<User>> pageAll(@RequestBody Map<String, Object> request) {
+        int current = (int) request.get("current"); //当前页面
+        int size = (int) request.get("size"); //一页的行数
 
         IPage<User> page = new Page<>(current, size);
         IPage<User> result = userMapper.selectPage(page, null);
+        List<User> userList = result.getRecords();
+        long total = result.getTotal();
+        PageResponseBean<List<User>> rb = null;
+
+        if (total > 0) {
+            rb = new PageResponseBean<>(userList);
+            rb.setTotal(total);
+        } else {
+            rb = new PageResponseBean<>(500, "No data");
+        }
+        return rb;
+    }
+
+    // 有条件分页查询，组合条件为：name-用户姓名; userType-用户角色类型
+    @PostMapping("/page")
+    public PageResponseBean<List<User>> page(@RequestBody Map<String, Object> request) {
+        String name = (String) request.get("name");
+        int userType = (int) request.get("userType");
+        int current = (int) request.get("current"); //当前页面
+        int size = (int) request.get("size"); //一页的行数
+
+        IPage<User> page = new Page<>(current, size);
+        QueryWrapper<User> qw = new QueryWrapper<>();
+        qw.like("name", name);
+        qw.eq("user_type", userType);
+        IPage<User> result = userMapper.selectPage(page, qw);
         List<User> userList = result.getRecords();
         long total = result.getTotal();
         PageResponseBean<List<User>> rb = null;
