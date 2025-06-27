@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -44,5 +45,24 @@ public class FoodServiceImpl implements FoodService {
             }
         }
         return foodMapper.deleteById(foodId);
+    }
+
+    @Transactional
+    @Override
+    public int deleteFoodByIds(List<Integer> ids) {
+        List<MealItem> mealItemList = new ArrayList<>();
+        for(int id : ids){
+            List<MealItem> list = mealItemMapper.listByFoodId(id);
+            mealItemList.addAll(list);
+        }
+
+        if (mealItemList.size() > 0) {
+            // 需要先删除所有对应的mealItem
+            int res1 = mealItemMapper.deleteBatchIds(mealItemList);
+            if (res1 <= 0) {
+                throw new RuntimeException("删除过程中失败");
+            }
+        }
+        return foodMapper.deleteBatchIds(ids);
     }
 }
