@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.neusoft.nursingcenter.entity.*;
+import com.neusoft.nursingcenter.mapper.NursingLevelMapper;
+import com.neusoft.nursingcenter.mapper.UserMapper;
 import com.neusoft.nursingcenter.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,9 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.neusoft.nursingcenter.entity.Customer;
-import com.neusoft.nursingcenter.entity.PageResponseBean;
-import com.neusoft.nursingcenter.entity.ResponseBean;
 import com.neusoft.nursingcenter.mapper.CustomerMapper;
 
 @CrossOrigin("*")
@@ -30,6 +30,12 @@ public class CustomerController {
 
 	@Autowired
 	private CustomerService customerService;
+
+	@Autowired
+	private NursingLevelMapper nursingLevelMapper;
+
+	@Autowired
+	private UserMapper userMapper;
 
 	@PostMapping("/listAll")
 	public ResponseBean<List<Customer>> listAll() {
@@ -51,11 +57,13 @@ public class CustomerController {
 	@PostMapping("/list")
 	public ResponseBean<List<Customer>> list(@RequestBody Map<String, Object> request) {
 		String name = (String) request.get("name");
-		int customerType = (int) request.get("customerType");
 
 		QueryWrapper<Customer> qw = new QueryWrapper<>();
 		qw.like("name", name);
-		qw.eq("customer_type", customerType);
+		if(request.get("customerType")!=null){
+			int customerType = (int) request.get("customerType");
+			qw.eq("customer_type",customerType);
+		}
 		qw.eq("is_deleted", 0); //要筛选没有被删除的
 		List<Customer> customerList = customerMapper.selectList(qw);
 		ResponseBean<List<Customer>> rb = null;
@@ -102,6 +110,40 @@ public class CustomerController {
 		IPage<Customer> page = new Page<>(current,size);
 
 		QueryWrapper<Customer> qw = new QueryWrapper<>();
+		qw.like("name", name);
+		qw.eq("is_deleted", 0); //要筛选没有被删除的
+
+		if(request.get("customerType")!=null){
+			int customerType = (int) request.get("customerType");
+			qw.eq("customer_type",customerType);
+		}
+
+		IPage<Customer> result = customerMapper.selectPage(page,qw);
+
+		List<Customer> list =result.getRecords();
+		long total =result.getTotal();
+		PageResponseBean<List<Customer>> prb =null;
+		if(total > 0) {
+			prb = new PageResponseBean<>(list);
+			prb.setTotal(total);
+		}else {
+			prb = new PageResponseBean<>(500,"No data");
+		}
+		return prb;
+	}
+
+	@PostMapping("/pageByNurseId")
+	public PageResponseBean<List<Customer>> pageByNurseId(@RequestBody Map<String, Object> request){
+		// int current, int size, String name, int customerType
+		int current = (int) request.get("current"); //当前页面
+		int size = (int) request.get("size"); //一页的行数
+		int nurseId = (int) request.get("nurseId");
+		String name = (String) request.get("name");
+
+		IPage<Customer> page = new Page<>(current,size);
+
+		QueryWrapper<Customer> qw = new QueryWrapper<>();
+		qw.eq("nurse_id", nurseId);
 		qw.like("name", name);
 		qw.eq("is_deleted", 0); //要筛选没有被删除的
 
@@ -171,6 +213,85 @@ public class CustomerController {
 				rb = new ResponseBean<>(500,"Fail to update");
 			}
 		} catch (Exception e) {
+			rb = new ResponseBean<>(500, e.getMessage());
+		}
+		return rb;
+	}
+
+	@PostMapping("/setNursingLevel")
+	public ResponseBean<String> setNursingLevel(@RequestBody Map<String, Object> request) {
+		ResponseBean<String> rb = null;
+		int customerId = (int) request.get("customerId");
+		int levelId = (int) request.get("levelId");
+		Customer customer = customerMapper.selectById(customerId);
+		NursingLevel nursingLevel = nursingLevelMapper.selectById(levelId);
+		if (customer == null || nursingLevel == null) {
+			return new ResponseBean<>(500, "客户或护理级别不存在");
+		}
+
+		customer.setNursingLevelName(nursingLevel.getName());
+		int result = customerMapper.updateById(customer);
+		if(result > 0) {
+			rb = new ResponseBean<>("客户护理级别设置成功");
+		}else {
+			rb = new ResponseBean<>(500,"护理级别设置失败");
+		}
+		return rb;
+	}
+
+	@PostMapping("/assignNurse")
+	public ResponseBean<String> assignNurse(@RequestBody Map<String, Object> request) {
+		ResponseBean<String> rb = null;
+		int customerId = (int) request.get("customerId");
+		int nurseId = (int) request.get("nurseId");
+		Customer customer = customerMapper.selectById(customerId);
+		User user = userMapper.selectById(nurseId);
+		if (customer == null || user == null || user.getUserType() != 1) {
+			return new ResponseBean<>(500, "客户或护工不存在");
+		}
+
+		customer.setNurseId(nurseId);
+		int result = customerMapper.updateById(customer);
+		if(result > 0) {
+			rb = new ResponseBean<>("客户管家设置成功");
+		}else {
+			rb = new ResponseBean<>(500,"客户管家设置失败");
+		}
+		return rb;
+	}
+
+	@PostMapping("/resetNurse")
+	public ResponseBean<String> resetNurse(@RequestBody Map<String, Object> request) {
+		ResponseBean<String> rb = null;
+		int customerId = (int) request.get("customerId");
+		Customer customer = customerMapper.selectById(customerId);
+		if (customer == null) {
+			return new ResponseBean<>(500, "客户不存在");
+		}
+		customer.setNurseId(0);
+		int result = customerMapper.updateById(customer);
+		if(result > 0) {
+			rb = new ResponseBean<>("客户已从原本的健康管家服务列表中移除");
+		}else {
+			rb = new ResponseBean<>(500,"移除失败");
+		}
+		return rb;
+	}
+
+	@PostMapping("/resetNurseBatch")
+	public ResponseBean<String> resetNurseBatch(@RequestBody List<Customer> customerList) {
+		ResponseBean<String> rb = null;
+		try {
+			for (Customer customer : customerList) {
+				customer.setNurseId(0);
+				int result = customerMapper.updateById(customer);
+				if (result <= 0) {
+					return new ResponseBean<>(500, "移除过程中失败");
+				}
+			}
+			rb = new ResponseBean<>("移除成功，共移除"+customerList.size()+"条数据");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
 			rb = new ResponseBean<>(500, e.getMessage());
 		}
 		return rb;

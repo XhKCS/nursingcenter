@@ -21,6 +21,10 @@ public class CustomerNursingService {
 
     private Double programPrice; //护理项目价格
 
+    private String executionPeriod; //执行周期，如：每天 / 每周
+
+    private Integer executionTimes; // 每个周期的执行次数
+
     private String purchaseDate; //购买日期
 
     private Integer totalCount; //购买总数量
@@ -29,11 +33,9 @@ public class CustomerNursingService {
 
     private String expirationDate; //服务到期日期
 
-    private Boolean isDeleted;
-
     public CustomerNursingService() {}
 
-    public CustomerNursingService(Integer id, Integer customerId, Integer levelId, Integer programId, String programCode, String programName, Double programPrice, String purchaseDate, Integer totalCount, Integer usedCount, String expirationDate, Boolean isDeleted) {
+    public CustomerNursingService(Integer id, Integer customerId, Integer levelId, Integer programId, String programCode, String programName, Double programPrice, String executionPeriod, Integer executionTimes, String purchaseDate, Integer totalCount, Integer usedCount, String expirationDate) {
         this.id = id;
         this.customerId = customerId;
         this.levelId = levelId;
@@ -41,11 +43,12 @@ public class CustomerNursingService {
         this.programCode = programCode;
         this.programName = programName;
         this.programPrice = programPrice;
+        this.executionPeriod = executionPeriod;
+        this.executionTimes = executionTimes;
         this.purchaseDate = purchaseDate;
         this.totalCount = totalCount;
         this.usedCount = usedCount;
         this.expirationDate = expirationDate;
-        this.isDeleted = isDeleted;
     }
 
     public Integer getId() {
@@ -104,6 +107,22 @@ public class CustomerNursingService {
         this.programPrice = programPrice;
     }
 
+    public String getExecutionPeriod() {
+        return executionPeriod;
+    }
+
+    public void setExecutionPeriod(String executionPeriod) {
+        this.executionPeriod = executionPeriod;
+    }
+
+    public Integer getExecutionTimes() {
+        return executionTimes;
+    }
+
+    public void setExecutionTimes(Integer executionTimes) {
+        this.executionTimes = executionTimes;
+    }
+
     public String getPurchaseDate() {
         return purchaseDate;
     }
@@ -134,13 +153,5 @@ public class CustomerNursingService {
 
     public void setExpirationDate(String expirationDate) {
         this.expirationDate = expirationDate;
-    }
-
-    public Boolean getDeleted() {
-        return isDeleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        isDeleted = deleted;
     }
 }

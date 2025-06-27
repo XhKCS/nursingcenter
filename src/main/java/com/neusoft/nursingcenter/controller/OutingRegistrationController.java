@@ -41,6 +41,7 @@ public class OutingRegistrationController {
         }
         Customer customer = customerMapper.selectById(outingRegistration.getCustomerId());
         outingRegistration.setCustomerName(customer.getName());
+
         outingRegistration.setReviewStatus(0); //默认已提交状态
         outingRegistration.setReviewerId(0);
         outingRegistration.setReviewTime("");

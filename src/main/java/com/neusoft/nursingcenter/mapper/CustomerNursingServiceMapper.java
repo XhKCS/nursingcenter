@@ -9,10 +9,10 @@ import java.util.List;
 
 @Mapper
 public interface CustomerNursingServiceMapper extends BaseMapper<CustomerNursingService> {
-    @Select("select * from customer_nursing_service where customer_id=#{customerId} and is_deleted=0")
+    @Select("select * from customer_nursing_service where customer_id=#{customerId}")
     List<CustomerNursingService> listByCustomerId(int customerId);
 
-    @Select("select * from customer_nursing_service where customer_id=#{customerId} and program_code=#{programCode} and is_deleted=0")
+    @Select("select * from customer_nursing_service where customer_id=#{customerId} and program_code=#{programCode}")
     CustomerNursingService getByCustomerIdAndProgramCode(@Param("customerId") int customerId, @Param("programCode") String programCode);
 
     @Update("update customer_nursing_service set program_code=#{e.programCode}, program_name=#{e.name}, program_price=#{e.price} where program_id=#{e.id}")

@@ -21,9 +21,9 @@ public class NursingRecord {
 
     private String description;
 
-    private String nurseName;
+    private String nurseName; //护理人员
 
-    private String nursePhone;
+    private String nursePhone; //护理人员手机号
 
     private String nursingTime; //护理时间
 
