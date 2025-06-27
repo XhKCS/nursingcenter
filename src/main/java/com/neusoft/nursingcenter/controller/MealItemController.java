@@ -72,15 +72,45 @@ public class MealItemController {
         return prb;
     }
 
+    @PostMapping("/listByWeekday")
+    public ResponseBean<List<MealItem>> listByWeekday(@RequestBody Map<String, Object> request) {
+        String weekDay = (String) request.get("weekday");
+
+        List<MealItem> mealItemList = mealItemMapper.listByWeekDay(weekDay);
+
+        ResponseBean<List<MealItem>> rb = null;
+        if(!mealItemList.isEmpty()) {
+            rb = new ResponseBean<>(mealItemList);
+        }else {
+            rb = new ResponseBean<>(500,"No data");
+        }
+        return rb;
+    }
+
+    @PostMapping("/getById")
+    public ResponseBean<MealItem> getById(@RequestBody Map<String, Object> request) {
+        int id = (int) request.get("id");
+
+        MealItem mealItem = mealItemMapper.selectById(id);
+
+        ResponseBean<MealItem> rb = null;
+        if(mealItem!=null) {
+            rb = new ResponseBean<>(mealItem);
+        }else {
+            rb = new ResponseBean<>(500,"No data");
+        }
+        return rb;
+    }
+
     @PostMapping("/add")
     public ResponseBean<Integer> add(@RequestBody Map<String, Object> request) {
         ResponseBean<Integer> rb = null;
-        List<String> foodNames = new ArrayList<>();
+        List<Integer> ids = new ArrayList<>();
         List<String> weekDays = new ArrayList<>();
-        if(request.get("foodName") instanceof String){
-            foodNames.add((String) request.get("foodName"));
+        if(request.get("foodId") instanceof Integer){
+            ids.add((Integer) request.get("foodId"));
         }else {
-            foodNames = (List<String>) request.get("foodName");
+            ids = (List<Integer>) request.get("foodId");
         }
 
         if(request.get("weekDay") instanceof String){
@@ -94,15 +124,15 @@ public class MealItemController {
         List<MealItem> mealItemList = new ArrayList<>();
 
         for (String weekDay :weekDays){
-            for(String foodName : foodNames){
-                Food food = foodMapper.getByName(foodName);
-                MealItem check = mealItemMapper.getByFoodIdAndWeekDay(food.getId(), weekDay);
+            for(Integer id : ids){
+                Food food = foodMapper.selectById(id);
+                MealItem check = mealItemMapper.getByFoodIdAndWeekDay(id, weekDay);
                 if (check != null) {
                     System.out.println("相同周期内不能存在重名的膳食安排");
-                    rb = new ResponseBean<>(500, "相同周期内不能存在重名的膳食安排"+"("+foodName+"-"+weekDay+")");
+                    rb = new ResponseBean<>(500, "相同周期内不能存在重名的膳食安排"+"("+food.getName()+"-"+weekDay+")");
                     return rb;
                 }
-                MealItem mealItem = new MealItem(0, food.getId(), foodName, food.getType(), food.getDescription(), food.getPrice(), food.getImageUrl(), weekDay, status);
+                MealItem mealItem = new MealItem(0, food.getId(), food.getName(), food.getType(), food.getDescription(), food.getPrice(), food.getImageUrl(), weekDay, status);
 
                 mealItemList.add(mealItem);
             }
@@ -120,19 +150,18 @@ public class MealItemController {
     @PostMapping("/update")
     public ResponseBean<Integer> update(@RequestBody Map<String, Object> request) {
         ResponseBean<Integer> rb = null;
-        String foodName = (String) request.get("foodName");
         String weekDay = (String) request.get("weekDay");
         int status = (int) request.get("status");
+        int foodId = (int) request.get("foodId");
         int id = (int) request.get("id");
-        Food food = foodMapper.getByName(foodName);
-        MealItem check = mealItemMapper.getByFoodIdAndWeekDay(food.getId(), weekDay);
-        if (check != null && !Objects.equals(check.getId(), food.getId())) {
-            rb = new ResponseBean<>(500, "相同周期内不能存在重名的膳食安排");
+        Food food = foodMapper.selectById(foodId);
+        MealItem check = mealItemMapper.getByFoodIdAndWeekDay(foodId, weekDay);
+        if (check != null && id!=check.getId()) {
+            rb = new ResponseBean<>(500, "相同周期内不能存在同一食物膳食安排");
             return rb;
         }
-        MealItem mealItem = new MealItem(id, food.getId(), foodName, food.getType(), food.getDescription(), food.getPrice(), food.getImageUrl(), weekDay, status);
+        MealItem mealItem = new MealItem(id, foodId, food.getName(), food.getType(), food.getDescription(), food.getPrice(), food.getImageUrl(), weekDay, status);
         int result = mealItemMapper.updateById(mealItem);
-        System.out.println(result);
         if(result > 0) {
             rb = new ResponseBean<>(result);
         }else {
