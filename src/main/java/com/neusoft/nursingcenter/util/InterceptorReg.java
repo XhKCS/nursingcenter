@@ -23,6 +23,7 @@ public class InterceptorReg implements WebMvcConfigurer {
         // TODO Auto-generated method stub
         List<String> path=new ArrayList<>();
         path.add("/user/login");
+        path.add("/customer/login");
         path.add("/redisController/*");
 //		设定后端拦截器不拦截哪些映射路径
         registry.addInterceptor(mi).excludePathPatterns(path);

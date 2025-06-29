@@ -39,11 +39,13 @@ public class Customer {
 
     private String expirationDate; //合同到期时间
 
+    private String password; //客户订餐系统的密码，默认是手机号后六位
+
     private Boolean isDeleted; //是否已删除
 
     public Customer() {}
 
-    public Customer(Integer customerId, Integer customerType, Integer nurseId, String nursingLevelName, String name, String idCard, Integer age, Integer gender, String bloodType, String relative, String phoneNumber, String building, String roomNumber, String bedNumber, String checkinDate, String expirationDate, Boolean isDeleted) {
+    public Customer(Integer customerId, Integer customerType, Integer nurseId, String nursingLevelName, String name, String idCard, Integer age, Integer gender, String bloodType, String relative, String phoneNumber, String building, String roomNumber, String bedNumber, String checkinDate, String expirationDate, String password, Boolean isDeleted) {
         this.customerId = customerId;
         this.customerType = customerType;
         this.nurseId = nurseId;
@@ -60,6 +62,7 @@ public class Customer {
         this.bedNumber = bedNumber;
         this.checkinDate = checkinDate;
         this.expirationDate = expirationDate;
+        this.password = password;
         this.isDeleted = isDeleted;
     }
 
@@ -191,6 +194,14 @@ public class Customer {
         this.expirationDate = expirationDate;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public Boolean getDeleted() {
         return isDeleted;
     }
@@ -218,6 +229,7 @@ public class Customer {
                 ", bedNumber='" + bedNumber + '\'' +
                 ", checkinDate='" + checkinDate + '\'' +
                 ", expirationDate='" + expirationDate + '\'' +
+                ", password='" + password + '\'' +
                 ", isDeleted=" + isDeleted +
                 '}';
     }

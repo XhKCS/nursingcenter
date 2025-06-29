@@ -60,6 +60,7 @@ public class MealItemController {
         IPage<MealItem> page = new Page<>(current, size);
         IPage<MealItem> result = mealItemMapper.selectPage(page, qw);
         List<MealItem> list = result.getRecords();
+        System.out.println(list.toString());
         long total = result.getTotal();
 
         PageResponseBean<List<MealItem>> prb = null;

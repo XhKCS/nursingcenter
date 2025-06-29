@@ -59,12 +59,13 @@ public class UserController {
                 System.out.println("userJson：" + userJson);
                 String token = JWTTool.createToken(userJson);
                 System.out.println("生成相应token：" + token);
-                //	把令牌存入redis中一份，键为userId
-                redisDao.set(dbUser.getUserId().toString(), token, 600, TimeUnit.SECONDS);
+                //	把令牌存入redis中一份，键为user-{userId}
+                redisDao.set("user-"+dbUser.getUserId().toString(), token, 600, TimeUnit.SECONDS);
                 //	同时传递给前端一份
                 rb = new ResponseBean<>(token);
 //                httpServletRequest.getSession().setAttribute("user", dbUser);
             } catch (Exception e) {
+                System.out.println("Exception happened: " + e.getMessage());
                 rb = new ResponseBean<>(500, e.getMessage());
             }
         } else {
@@ -73,7 +74,7 @@ public class UserController {
         return rb;
     }
 
-    // 加载当前session中已登录的user对象
+    // 根据token加载当前已登录的user对象
     @PostMapping("/load")
     public ResponseBean<User> load(HttpServletRequest httpServletRequest) {
         ResponseBean<User> rb = null;
@@ -92,7 +93,7 @@ public class UserController {
                 rb = new ResponseBean<>(500, "登录已过期");
             }
         } catch (Exception e) {
-            System.out.println("Exception happened: "+e.getMessage());
+            System.out.println("Exception happened: " + e.getMessage());
             rb = new ResponseBean<>(500, e.getMessage());
         }
         return rb;
@@ -105,13 +106,21 @@ public class UserController {
         try {
             if (httpServletRequest.getHeader("token") != null) {
                 String token = httpServletRequest.getHeader("token");
-                // 获取用户json
-                String userJson = JWTTool.parseToken(token);
-                // json转化为对象
+                // 获取对象json
+                String json = JWTTool.parseToken(token);
+                // json转化为对象（User或Customer）
                 ObjectMapper om = new ObjectMapper();
-                User user = om.readValue(userJson, User.class);
-                System.out.println("退出登录的user："+user);
-                redisDao.delete(user.getUserId().toString());
+                Map<String, Object> map = om.readValue(json, Map.class);
+                if (map.containsKey("userId")) {
+                    User user = om.readValue(json, User.class);
+                    System.out.println("退出登录的user："+user.toString());
+                    redisDao.delete("user-"+user.getUserId().toString());
+                }
+                else if (map.containsKey("customerId")) {
+                    Customer customer = om.readValue(json, Customer.class);
+                    System.out.println("退出登录的customer："+customer.toString());
+                    redisDao.delete("customer-"+customer.getCustomerId().toString());
+                }
                 rb = new ResponseBean<>("已退出登录");
             }
             else {
@@ -221,7 +230,7 @@ public class UserController {
             return new ResponseBean<>(500, "已存在账号相同的用户");
         }
         // 默认密码是手机号后六位
-        String defaultPassword = user.getPhoneNumber().substring(5, 10);
+        String defaultPassword = user.getPhoneNumber().substring(5, 11);
         user.setPassword(defaultPassword);
         int result = userMapper.insert(user);
         ResponseBean<String> rb = null;

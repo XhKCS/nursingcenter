@@ -1,6 +1,7 @@
 package com.neusoft.nursingcenter.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.neusoft.nursingcenter.entity.Customer;
 import com.neusoft.nursingcenter.entity.User;
 import com.neusoft.nursingcenter.redisdao.RedisDao;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.io.PrintWriter;
+import java.util.Map;
 
 //拦截器
 @Component
@@ -36,20 +38,34 @@ public class MyInterceptor implements HandlerInterceptor {
             return false;
         }else{
             try {
-                String userJson=JWTTool.parseToken(sentToken);
-                ObjectMapper om=new ObjectMapper();
-                User user=om.readValue(userJson, User.class);
-//			从令牌中截取到userId
-//			    String userIdStr=sentToken.substring(0, sentToken.indexOf(":"));
-//    			再到redis中进行按这个userId取出相应令牌
-                String storedToken=rd.get(user.getUserId().toString());
-                if(!sentToken.equals(storedToken)) {
-//				PrintWriter属于字符型输出流子类
-                    PrintWriter pw=response.getWriter();
-                    pw.print("invalid token");
-//				字符型输出流使用后需要关闭
-                    pw.close();
-                    return false;
+                String json = JWTTool.parseToken(sentToken);
+                ObjectMapper om = new ObjectMapper();
+                Map<String, Object> map = om.readValue(json, Map.class);
+                if (map.containsKey("userId")) {
+                    User user = om.readValue(json, User.class);
+//			        从令牌中截取到userId
+//			        String userIdStr=sentToken.substring(0, sentToken.indexOf(":"));
+//    			    再到redis中按照userId的格式取出相应令牌
+                    String storedToken=rd.get("user-"+user.getUserId().toString());
+                    if(!sentToken.equals(storedToken)) {
+//				        PrintWriter属于字符型输出流子类
+				        PrintWriter pw=response.getWriter();
+                        pw.print("invalid token");
+//				        字符型输出流使用后需要关闭
+                        pw.close();
+                        return false;
+                    }
+                }
+                else if (map.containsKey("customerId")) {
+                    Customer customer = om.readValue(json, Customer.class);
+//                    再到redis中按照customerId的格式取出相应令牌
+                    String storedToken=rd.get("customer-"+customer.getCustomerId().toString());
+                    if(!sentToken.equals(storedToken)) {
+                        PrintWriter pw=response.getWriter();
+                        pw.print("invalid token");
+                        pw.close();
+                        return false;
+                    }
                 }
             } catch (Exception e) {
                 System.out.println("Exception happened: ");
