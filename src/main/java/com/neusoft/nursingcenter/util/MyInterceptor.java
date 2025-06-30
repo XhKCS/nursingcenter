@@ -26,7 +26,7 @@ public class MyInterceptor implements HandlerInterceptor {
         // TODO Auto-generated method stub
         System.out.println("访问过程经过了拦截器");
         String sentToken=request.getHeader("token");
-        System.out.println(sentToken);
+        System.out.println("sentToken: "+sentToken);
 //		如果前端不能提供令牌，则阻止前端继续访问
         if(sentToken==null) {
 //			PrintWriter属于字符型输出流子类
@@ -47,6 +47,7 @@ public class MyInterceptor implements HandlerInterceptor {
 //			        String userIdStr=sentToken.substring(0, sentToken.indexOf(":"));
 //    			    再到redis中按照userId的格式取出相应令牌
                     String storedToken=rd.get("user-"+user.getUserId().toString());
+                    System.out.println("storedToken: "+storedToken);
                     if(!sentToken.equals(storedToken)) {
 //				        PrintWriter属于字符型输出流子类
 				        PrintWriter pw=response.getWriter();
@@ -60,6 +61,7 @@ public class MyInterceptor implements HandlerInterceptor {
                     Customer customer = om.readValue(json, Customer.class);
 //                    再到redis中按照customerId的格式取出相应令牌
                     String storedToken=rd.get("customer-"+customer.getCustomerId().toString());
+                    System.out.println("storedToken: "+storedToken);
                     if(!sentToken.equals(storedToken)) {
                         PrintWriter pw=response.getWriter();
                         pw.print("invalid token");
@@ -70,8 +72,10 @@ public class MyInterceptor implements HandlerInterceptor {
             } catch (Exception e) {
                 System.out.println("Exception happened: ");
                 System.out.println(e.getMessage());
+                System.out.println(e);
                 PrintWriter pw=response.getWriter();
                 pw.print("invalid token");
+//                pw.print("Exception: "+e.getMessage());
 //				字符型输出流使用后需要关闭
                 pw.close();
                 return false;

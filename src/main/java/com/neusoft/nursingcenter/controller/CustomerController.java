@@ -154,6 +154,25 @@ public class CustomerController {
 		return rb;
 	}
 
+	@PostMapping("/listByNurseId")
+	public ResponseBean<List<Customer>>listByNurseId(@RequestBody Map<String, Object> request) {
+		int nurseId = (int) request.get("nurseId");
+
+		QueryWrapper<Customer> qw = new QueryWrapper<>();
+		qw.eq("nurse_id", nurseId);
+		qw.eq("is_deleted", 0); //要筛选没有被删除的
+
+		List<Customer> customerList = customerMapper.selectList(qw);
+		ResponseBean<List<Customer>> rb = null;
+
+		if (customerList.size() > 0) {
+			rb = new ResponseBean<>(customerList);
+		} else {
+			rb = new ResponseBean<>(500, "No data");
+		}
+		return rb;
+	}
+
 	// 组合条件：客户姓名、客户类型（自理老人 / 护理老人）
 	@PostMapping("/list")
 	public ResponseBean<List<Customer>> list(@RequestBody Map<String, Object> request) {
