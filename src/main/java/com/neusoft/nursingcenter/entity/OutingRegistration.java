@@ -9,6 +9,8 @@ public class OutingRegistration {
     @TableId(value="id", type= IdType.AUTO)
     private Integer id;
 
+    private Integer nurseId;
+
     private Integer customerId;
 
     private String customerName;
@@ -37,8 +39,9 @@ public class OutingRegistration {
 
     public OutingRegistration() {}
 
-    public OutingRegistration(Integer id, Integer customerId, String customerName, String outingReason, String outingDate, String expectedReturnDate, String actualReturnDate, String escortName, String escortPhone, String escortRelation, Integer reviewStatus, String reviewTime, Integer reviewerId, String rejectReason) {
+    public OutingRegistration(Integer id, Integer nurseId, Integer customerId, String customerName, String outingReason, String outingDate, String expectedReturnDate, String actualReturnDate, String escortName, String escortPhone, String escortRelation, Integer reviewStatus, String reviewTime, Integer reviewerId, String rejectReason) {
         this.id = id;
+        this.nurseId = nurseId;
         this.customerId = customerId;
         this.customerName = customerName;
         this.outingReason = outingReason;
@@ -60,6 +63,14 @@ public class OutingRegistration {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getNurseId() {
+        return nurseId;
+    }
+
+    public void setNurseId(Integer nurseId) {
+        this.nurseId = nurseId;
     }
 
     public Integer getCustomerId() {
