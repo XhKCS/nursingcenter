@@ -27,7 +27,9 @@
 每个请求方法具体需要哪些参数，请在相应的Controller中对应方法内部查看；
 
 ## Swagger
-Swagger测试地址：http://localhost:9000/swagger-ui/index.html
+Swagger文档及测试地址：http://localhost:9000/swagger-ui/index.html
+
+或 http://localhost:9000/doc.html
 
 ## 后端数据统一返回格式
 ### 普通数据：以`ResponseBean`的格式返回

@@ -66,7 +66,7 @@ public class CustomerController {
 				String token = JWTTool.createToken(customerJson);
 				System.out.println("生成相应token：" + token);
 				//	把令牌存入redis中一份，键为customer-{customerId}
-				redisDao.set("customer-"+dbCustomer.getCustomerId().toString(), token, 600, TimeUnit.SECONDS);
+				redisDao.set("customer-"+dbCustomer.getCustomerId().toString(), token, JWTTool.calendarInterval, TimeUnit.SECONDS);
 				//	同时传递给前端一份
 				rb = new ResponseBean<>(token);
 			} catch (Exception e) {

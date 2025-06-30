@@ -60,7 +60,7 @@ public class UserController {
                 String token = JWTTool.createToken(userJson);
                 System.out.println("生成相应token：" + token);
                 //	把令牌存入redis中一份，键为user-{userId}
-                redisDao.set("user-"+dbUser.getUserId().toString(), token, 600, TimeUnit.SECONDS);
+                redisDao.set("user-"+dbUser.getUserId().toString(), token, JWTTool.calendarInterval, TimeUnit.SECONDS);
                 //	同时传递给前端一份
                 rb = new ResponseBean<>(token);
 //                httpServletRequest.getSession().setAttribute("user", dbUser);
