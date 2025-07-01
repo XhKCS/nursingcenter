@@ -31,6 +31,7 @@ public class InterceptorReg implements WebMvcConfigurer {
         path.add("/webjars/**");
         path.add("/error");
         path.add("/doc**");
+        path.add("/ai/**");
 
 //		设定后端拦截器不拦截哪些映射路径
         registry.addInterceptor(mi).excludePathPatterns(path);

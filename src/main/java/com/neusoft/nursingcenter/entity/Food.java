@@ -3,8 +3,10 @@ package com.neusoft.nursingcenter.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @TableName("food")
+@JsonPropertyOrder({"id", "name", "type", "description", "price", "imageUrl"}) // 指定属性的顺序
 public class    Food {
     @TableId(value="id", type= IdType.AUTO)
     private Integer id;
