@@ -39,11 +39,14 @@ public class CustomerNursingServiceController {
         int current = (int)request.get("current");
         int size = (int)request.get("size");
         int customerId = (int) request.get("customerId");
+
         String programName = (String)request.get("programName");
 
         QueryWrapper<CustomerNursingService> qw = new QueryWrapper<>();
+
         qw.eq("customer_id", customerId);
-        qw.like("program_name", programName);
+        qw.like(null!=programName, "program_name", programName);
+
 
         IPage<CustomerNursingService> page = new Page<>(current,size);
         IPage<CustomerNursingService> result = customerNursingServiceMapper.selectPage(page,qw);
