@@ -1,9 +1,12 @@
 package com.neusoft.nursingcenter.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.neusoft.nursingcenter.entity.Food;
 import com.neusoft.nursingcenter.entity.MealItem;
+import com.neusoft.nursingcenter.entity.MealReservation;
 import com.neusoft.nursingcenter.mapper.FoodMapper;
 import com.neusoft.nursingcenter.mapper.MealItemMapper;
+import com.neusoft.nursingcenter.mapper.MealReservationMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +21,9 @@ public class FoodServiceImpl implements FoodService {
 
     @Autowired
     private MealItemMapper mealItemMapper;
+
+    @Autowired
+    private MealReservationMapper mealReservationMapper;
 
     @Transactional
     @Override
@@ -64,5 +70,20 @@ public class FoodServiceImpl implements FoodService {
             }
         }
         return foodMapper.deleteBatchIds(ids);
+    }
+
+    @Override
+    public int getPurchaseByIdAndTime(int foodId, String startTime, String endTime) {
+        List<MealItem> mealItemList = mealItemMapper.listByFoodId(foodId);
+        List<MealReservation> mealReservationList = new ArrayList<>();
+        for(MealItem mealItem : mealItemList){
+            QueryWrapper<MealReservation> qw = new QueryWrapper<>();
+            qw.eq("meal_item_id",mealItem.getId());
+            qw.ge(!startTime.isEmpty(),"purchase_time",startTime);
+            qw.le(!endTime.isEmpty(),"purchase_time",endTime);
+            List<MealReservation> mealReservations = mealReservationMapper.selectList(qw);
+            mealReservationList.addAll(mealReservations);
+        }
+        return mealReservationList.stream().mapToInt(MealReservation ::getPurchaseCount).sum();
     }
 }
