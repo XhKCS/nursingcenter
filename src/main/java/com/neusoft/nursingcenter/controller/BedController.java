@@ -4,9 +4,11 @@ import com.neusoft.nursingcenter.entity.Bed;
 import com.neusoft.nursingcenter.entity.ResponseBean;
 import com.neusoft.nursingcenter.mapper.BedMapper;
 import com.neusoft.nursingcenter.service.BedService;
+import com.neusoft.nursingcenter.util.WebSocket;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +24,9 @@ public class BedController {
 
     @Autowired
     private BedService bedService;
+
+//    @Resource
+//    private WebSocket webSocket;
 
     @PostMapping("/getByNumber")
     @Parameters({

