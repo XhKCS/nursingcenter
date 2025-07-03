@@ -260,7 +260,7 @@ public class CustomerController {
 		// int current, int size, String name, int customerType
 		int current = (int) request.get("current"); //当前页面
 		int size = (int) request.get("size"); //一页的行数
-		int nurseId = (int) request.get("currentNurseId");
+		int nurseId = (int) request.get("nurseId");
 		String name = (String) request.get("name");
 
 		IPage<Customer> page = new Page<>(current,size);
