@@ -50,7 +50,10 @@ public class CustomerController {
 		String phoneNumber = (String) request.get("phoneNumber");
 		String password = (String) request.get("password");
 		Customer dbCustomer = customerMapper.getByPhoneNumber(phoneNumber);
+		System.out.println("dbCustomer: "+dbCustomer);
 		ResponseBean<String> rb = null;
+		System.out.println(phoneNumber);
+		System.out.println(password);
 
 		if (dbCustomer == null) {
 			rb = new ResponseBean<>(500, "该手机号的客户不存在");
@@ -238,7 +241,7 @@ public class CustomerController {
 		// int current, int size, String name, int customerType
 		int current = (int) request.get("current"); //当前页面
 		int size = (int) request.get("size"); //一页的行数
-		int nurseId = (int) request.get("nurseId");
+		int nurseId = (int) request.get("currentNurseId");
 		String name = (String) request.get("name");
 
 		IPage<Customer> page = new Page<>(current,size);

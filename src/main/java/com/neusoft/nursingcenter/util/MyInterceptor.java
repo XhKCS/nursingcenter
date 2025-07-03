@@ -26,7 +26,7 @@ public class MyInterceptor implements HandlerInterceptor {
         // TODO Auto-generated method stub
         System.out.println("访问过程经过了拦截器");
         String sentToken=request.getHeader("token");
-        System.out.println(sentToken);
+        System.out.println("sendToken:"+sentToken);
 //		如果前端不能提供令牌，则阻止前端继续访问
         if(sentToken==null) {
 //			PrintWriter属于字符型输出流子类
@@ -47,6 +47,7 @@ public class MyInterceptor implements HandlerInterceptor {
 //			        String userIdStr=sentToken.substring(0, sentToken.indexOf(":"));
 //    			    再到redis中按照userId的格式取出相应令牌
                     String storedToken=rd.get("user-"+user.getUserId().toString());
+//                    System.out.println("stored:"+storedToken);
                     if(!sentToken.equals(storedToken)) {
 //				        PrintWriter属于字符型输出流子类
 				        PrintWriter pw=response.getWriter();
