@@ -15,19 +15,19 @@ public class RedisController {
     @Autowired
     private RedisDao redisDao;
 
-    @PostMapping("/save")
+    @GetMapping("/save")
     public String save(String key, String val) {
         redisDao.set(key, val, 300, TimeUnit.SECONDS);
         return "ok";
     }
 
-    @PostMapping("/saveWithTimeout")
+    @GetMapping("/saveWithTimeout")
     public String save(String key, String val, int timeout) {
         redisDao.set(key, val, timeout, TimeUnit.SECONDS);
         return "ok";
     }
 
-    @RequestMapping("/get")
+    @GetMapping("/get")
     public String get(String key) {
         String val = redisDao.get(key);
         return val;

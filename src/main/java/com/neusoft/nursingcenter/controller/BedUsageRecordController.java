@@ -7,6 +7,10 @@ import com.neusoft.nursingcenter.entity.BedUsageRecord;
 import com.neusoft.nursingcenter.entity.PageResponseBean;
 import com.neusoft.nursingcenter.entity.ResponseBean;
 import com.neusoft.nursingcenter.mapper.BedUsageRecordMapper;
+import com.neusoft.nursingcenter.service.BedUsageRecordService;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +23,9 @@ import java.util.Map;
 public class BedUsageRecordController {
     @Autowired
     private BedUsageRecordMapper bedUsageRecordMapper;
+
+    @Autowired
+    private BedUsageRecordService bedUsageRecordService;
 
     @PostMapping("/getCurrentUsingRecord")
     public ResponseBean<BedUsageRecord> getCurrentUsingRecord(@RequestBody Map<String, Object> request) {
@@ -146,11 +153,16 @@ public class BedUsageRecordController {
         return rb;
     }
 
-    // 逻辑删除
+    // 逻辑删除，只能删除历史床位使用记录（已失效的），不能删除客户正在使用的床位记录
     @PostMapping("/delete")
     public ResponseBean<String> delete(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
-        int result = bedUsageRecordMapper.deleteById(id);
+        BedUsageRecord bedUsageRecord = bedUsageRecordMapper.selectById(id);
+        if (bedUsageRecord == null) {
+            return new ResponseBean<>(500, "不存在该id的记录");
+        }
+        bedUsageRecord.setDeleted(true);
+        int result = bedUsageRecordMapper.updateById(bedUsageRecord);
 
         ResponseBean<String> rb = null;
         if (result > 0) {
@@ -182,21 +194,47 @@ public class BedUsageRecordController {
         return rb;
     }
 
+    // 床位调换
+    @PostMapping("/exchange")
+    @Parameters({
+            @Parameter(name = "customerId", required = true, description = "客户ID，int"),
+            @Parameter(name = "roomNumber", required = true, description = "新房间号，String"),
+            @Parameter(name = "bedNumber", required = true, description = "新床位号，String"),
+            @Parameter(name = "startDate", required = true, description = "新床位使用的开始日期，一般就传当前日期，String"),
+            @Parameter(name = "endDate", required = true, description = "新床位号使用的结束日期，可以传空字符串，String")
+    })
+    public ResponseBean<String> exchange(@RequestBody Map<String, Object> request) {
+        ResponseBean<String> rb = null;
+        try {
+           boolean result = bedUsageRecordService.exchange(request);
+           if (result) {
+               rb = new ResponseBean<>("床位调换成功");
+           } else {
+               rb = new ResponseBean<>(500, "Fail to exchange");
+           }
+        }catch (Exception e) {
+           System.out.println("Exception happened: "+e.getMessage());
+           rb = new ResponseBean<>(500, e.getMessage());
+        }
+        return rb;
+    }
+
     @PostMapping("/update")
     public ResponseBean<String> update(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
-        // 一般只能修改下面两条属性
+        // 一般只能修改结束日期
         String endDate = (String) request.get("endDate");
-        int status = (int) request.get("status"); //一般来说新增的床位使用记录是“使用中”，也就是1
         ResponseBean<String> rb = null;
         BedUsageRecord bedUsageRecord = bedUsageRecordMapper.selectById(id);
         if (bedUsageRecord == null) {
             rb = new ResponseBean<>(500, "不存在该id的记录");
             return rb;
         }
-
         bedUsageRecord.setEndDate(endDate);
-        bedUsageRecord.setStatus(status);
+//        if (request.get("status") != null) {
+//            int status = (int) request.get("status");
+//            bedUsageRecord.setStatus(status);
+//        }
         int result = bedUsageRecordMapper.updateById(bedUsageRecord);
         if (result > 0) {
             rb = new ResponseBean<>("修改成功");

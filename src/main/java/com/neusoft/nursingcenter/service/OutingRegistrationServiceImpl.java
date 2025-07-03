@@ -31,6 +31,7 @@ public class OutingRegistrationServiceImpl implements OutingRegistrationService{
         int current = (int)request.get("current");
         int size = (int)request.get("size");
         String name = (String)request.get("name");
+        Integer nurseId = (Integer) request.get("nurseId");
 
 //        LambdaQueryWrapper<Customer> cqw = new LambdaQueryWrapper<>();
 //        cqw.like(null != name,Customer :: getName,name);
@@ -43,6 +44,7 @@ public class OutingRegistrationServiceImpl implements OutingRegistrationService{
 //        }
         QueryWrapper<OutingRegistration> qw = new QueryWrapper<>();
         qw.like("customer_name", name);
+        qw.eq(null != nurseId, "nurse_id", nurseId);
 
         IPage<OutingRegistration> page = new Page<>(current,size);
         IPage<OutingRegistration> result = outingRegistrationMapper.selectPage(page,qw);

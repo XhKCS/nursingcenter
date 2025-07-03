@@ -24,7 +24,15 @@ public class InterceptorReg implements WebMvcConfigurer {
         List<String> path=new ArrayList<>();
         path.add("/user/login");
         path.add("/customer/login");
-        path.add("/redisController/*");
+        path.add("/redisController/**");
+        path.add("/v3/**");
+        path.add("/swagger-ui/**");
+        path.add("/swagger-ui.html");
+        path.add("/webjars/**");
+        path.add("/error");
+        path.add("/doc**");
+        path.add("/ai/**");
+
 //		设定后端拦截器不拦截哪些映射路径
         registry.addInterceptor(mi).excludePathPatterns(path);
         WebMvcConfigurer.super.addInterceptors(registry);

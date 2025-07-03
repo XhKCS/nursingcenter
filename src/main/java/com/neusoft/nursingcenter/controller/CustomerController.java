@@ -69,7 +69,7 @@ public class CustomerController {
 				String token = JWTTool.createToken(customerJson);
 				System.out.println("生成相应token：" + token);
 				//	把令牌存入redis中一份，键为customer-{customerId}
-				redisDao.set("customer-"+dbCustomer.getCustomerId().toString(), token, 600, TimeUnit.SECONDS);
+				redisDao.set("customer-"+dbCustomer.getCustomerId().toString(), token, JWTTool.calendarInterval, TimeUnit.SECONDS);
 				//	同时传递给前端一份
 				rb = new ResponseBean<>(token);
 			} catch (Exception e) {
@@ -144,6 +144,25 @@ public class CustomerController {
 	@PostMapping("/listAll")
 	public ResponseBean<List<Customer>> listAll() {
 		QueryWrapper<Customer> qw = new QueryWrapper<>();
+		qw.eq("is_deleted", 0); //要筛选没有被删除的
+
+		List<Customer> customerList = customerMapper.selectList(qw);
+		ResponseBean<List<Customer>> rb = null;
+
+		if (customerList.size() > 0) {
+			rb = new ResponseBean<>(customerList);
+		} else {
+			rb = new ResponseBean<>(500, "No data");
+		}
+		return rb;
+	}
+
+	@PostMapping("/listByNurseId")
+	public ResponseBean<List<Customer>>listByNurseId(@RequestBody Map<String, Object> request) {
+		int nurseId = (int) request.get("nurseId");
+
+		QueryWrapper<Customer> qw = new QueryWrapper<>();
+		qw.eq("nurse_id", nurseId);
 		qw.eq("is_deleted", 0); //要筛选没有被删除的
 
 		List<Customer> customerList = customerMapper.selectList(qw);

@@ -29,6 +29,7 @@ public class CheckoutRegistrationServiceImpl implements CheckoutRegistrationServ
         int current = (int)request.get("current");
         int size = (int)request.get("size");
         String name = (String)request.get("name");
+        Integer nurseId = (Integer) request.get("nurseId");
 
 //        LambdaQueryWrapper<Customer> cqw = new LambdaQueryWrapper<>();
 //        cqw.like(null != name,Customer :: getName,name);
@@ -41,6 +42,7 @@ public class CheckoutRegistrationServiceImpl implements CheckoutRegistrationServ
 //        }
         QueryWrapper<CheckoutRegistration> qw = new QueryWrapper<>();
         qw.like("customer_name", name);
+        qw.eq(null != nurseId, "nurse_id", nurseId);
 
         IPage<CheckoutRegistration> page = new Page<>(current,size);
         IPage<CheckoutRegistration> result = checkoutRegistrationMapper.selectPage(page,qw);

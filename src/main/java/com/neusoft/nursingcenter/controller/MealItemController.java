@@ -26,7 +26,7 @@ public class MealItemController {
     @Autowired
     private FoodMapper foodMapper;
 
-    @RequestMapping("/page")
+    @PostMapping("/page")
     public PageResponseBean<List<MealItem>> page (@RequestBody Map<String, Object> request) {
         int current = (int) request.get("current");
         int size = (int) request.get("size");
@@ -60,7 +60,7 @@ public class MealItemController {
         IPage<MealItem> page = new Page<>(current, size);
         IPage<MealItem> result = mealItemMapper.selectPage(page, qw);
         List<MealItem> list = result.getRecords();
-        System.out.println(list.toString());
+//        System.out.println(list.toString());
         long total = result.getTotal();
 
         PageResponseBean<List<MealItem>> prb = null;

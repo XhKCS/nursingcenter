@@ -9,6 +9,8 @@ public class CheckoutRegistration {
     @TableId(value="id",type= IdType.AUTO)
     private Integer id;
 
+    private Integer nurseId;
+
     private Integer customerId;
 
     private String customerName;
@@ -33,8 +35,9 @@ public class CheckoutRegistration {
 
     public CheckoutRegistration() {}
 
-    public CheckoutRegistration(Integer id, Integer customerId, String customerName, String checkinDate, String bedNumber, Integer checkoutType, String checkoutReason, String checkoutDate, Integer reviewStatus, String reviewTime, Integer reviewerId, String rejectReason) {
+    public CheckoutRegistration(Integer id, Integer nurseId, Integer customerId, String customerName, String checkinDate, String bedNumber, Integer checkoutType, String checkoutReason, String checkoutDate, Integer reviewStatus, String reviewTime, Integer reviewerId, String rejectReason) {
         this.id = id;
+        this.nurseId = nurseId;
         this.customerId = customerId;
         this.customerName = customerName;
         this.checkinDate = checkinDate;
@@ -54,6 +57,14 @@ public class CheckoutRegistration {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getNurseId() {
+        return nurseId;
+    }
+
+    public void setNurseId(Integer nurseId) {
+        this.nurseId = nurseId;
     }
 
     public Integer getCustomerId() {

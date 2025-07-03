@@ -17,7 +17,7 @@ public class JWTTool {
     //	定义令牌过期时间的单位
     private static final int calendarField= Calendar.SECOND;
     //	定义令牌的过期时间
-    private static final int calendarInterval = 600; //600秒过期
+    public static final int calendarInterval = 600; //600秒过期
 
     //	创建令牌的方法
     public static String createToken(String mobileJson){
