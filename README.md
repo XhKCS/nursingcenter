@@ -4,7 +4,8 @@
 ### 更新
 #### WebSocket
 前端页面可以通过WebSocket来与后端建立一个持久连接，接收后端主动发过来的消息；
-创建Websocket连接的路径： `ws://localhost:9000/webSocket/userId`
+
+创建Websocket连接的路径： `ws://localhost:9000/webSocket/{userId}`
 
 后端发送消息格式：`{类名}_UPDATE`
 

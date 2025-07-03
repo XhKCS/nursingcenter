@@ -25,11 +25,14 @@ public class MyInterceptor implements HandlerInterceptor {
             throws Exception {
         // TODO Auto-generated method stub
         System.out.println("访问过程经过了拦截器");
-        String sentToken=request.getHeader("token");
-        String xPass = request.getHeader("x-pass");
-        if (xPass.equals("x-passing")) {
-            return true;
+        if (request.getHeader("x-pass") != null) {
+            String xPass = request.getHeader("x-pass");
+            if (xPass.equals("x-passing")) {
+                return true;
+            }
         }
+
+        String sentToken=request.getHeader("token");
         System.out.println("sentToken: "+sentToken);
 //		如果前端不能提供令牌，则阻止前端继续访问
         if(sentToken==null) {

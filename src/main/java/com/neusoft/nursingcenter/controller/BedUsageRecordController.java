@@ -175,6 +175,7 @@ public class BedUsageRecordController {
         } else {
             rb = new ResponseBean<>(500, "删除失败");
         }
+        webSocket.sendAllMessage("BedUsageRecord_UPDATE");
         return rb;
     }
 
@@ -248,6 +249,8 @@ public class BedUsageRecordController {
         } else {
             rb = new ResponseBean<>(500, "修改失败");
         }
+        webSocket.sendAllMessage("Bed_UPDATE");
+        webSocket.sendAllMessage("BedUsageRecord_UPDATE");
         return rb;
     }
 
