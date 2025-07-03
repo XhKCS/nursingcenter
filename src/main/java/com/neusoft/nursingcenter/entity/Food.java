@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @TableName("food")
 @JsonPropertyOrder({"id", "name", "type", "description", "price", "imageUrl"}) // 指定属性的顺序
-public class    Food {
+public class Food {
     @TableId(value="id", type= IdType.AUTO)
     private Integer id;
 
@@ -78,5 +78,17 @@ public class    Food {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    @Override
+    public String toString() {
+        return "Food{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                ", imageUrl='" + imageUrl + '\'' +
+                '}';
     }
 }
