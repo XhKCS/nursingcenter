@@ -8,6 +8,8 @@ import com.neusoft.nursingcenter.entity.*;
 import com.neusoft.nursingcenter.mapper.FoodMapper;
 import com.neusoft.nursingcenter.mapper.MealItemMapper;
 import com.neusoft.nursingcenter.service.FoodService;
+import com.neusoft.nursingcenter.util.FoodStructOutputUtil;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +30,9 @@ public class FoodController {
 
     @Autowired
     private FoodService foodService;
+
+    @Resource
+    private FoodStructOutputUtil foodStructOutputUtil;
 
     @PostMapping("/getById")
     public ResponseBean<Food> getById(@RequestBody Map<String, Object> request){
@@ -259,6 +264,7 @@ public class FoodController {
         return rb;
     }
 
+
     @PostMapping("/getPurchaseByIdAndTime")
     public ResponseBean<Integer> getPurchaseByIdAndTime(@RequestBody Map<String, Object> request) {
         int foodId = (int) request.get("foodId");
@@ -274,7 +280,26 @@ public class FoodController {
         }else {
             rb = new ResponseBean<>(500,"Fail to get");
         }
+        return rb;
+    }
 
+    @PostMapping("/aiObj")
+    public ResponseBean<Food> aiCreateObj(@RequestBody Map<String, Object> request){
+        String query = (String)request.get("query");
+        ResponseBean<Food> rb =null;
+        try {
+            Food food = foodStructOutputUtil.chatObj(query);
+            if(food!=null){
+                System.out.println(food.toString());
+                rb = new ResponseBean<>(food);
+            }else {
+                rb = new ResponseBean<>(500,"No data");
+            }
+        } catch (Exception e) {
+            System.out.println("Exception happened: ");
+            e.printStackTrace();
+            rb = new ResponseBean<>(500, e.getMessage());
+        }
         return rb;
     }
 }

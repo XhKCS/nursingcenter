@@ -7,7 +7,9 @@ import com.neusoft.nursingcenter.entity.*;
 import com.neusoft.nursingcenter.mapper.LevelWithProgramMapper;
 import com.neusoft.nursingcenter.mapper.NursingLevelMapper;
 import com.neusoft.nursingcenter.mapper.NursingProgramMapper;
+import com.neusoft.nursingcenter.service.NursingLevelService;
 import com.neusoft.nursingcenter.service.NursingLevelServiceImpl;
+import com.neusoft.nursingcenter.util.WebSocket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +24,10 @@ public class NursingLevelController {
     NursingLevelMapper nursingLevelMapper;
 
     @Autowired
-    NursingLevelServiceImpl nursingLevelService;
+    NursingLevelService nursingLevelService;
+
+    @Autowired
+    WebSocket webSocket;
 
     @PostMapping("/listProgramsByLevelId")
     public ResponseBean<List<NursingProgram>> listProgramsByLevelId(@RequestBody Map<String, Object> request) {
@@ -176,6 +181,7 @@ public class NursingLevelController {
         } else {
             rb = new ResponseBean<>(500, "添加失败");
         }
+        webSocket.sendAllMessage("NursingLevel_UPDATE");
         return rb;
     }
 
@@ -199,6 +205,7 @@ public class NursingLevelController {
         } else {
             rb = new ResponseBean<>(500, "修改失败");
         }
+        webSocket.sendAllMessage("NursingLevel_UPDATE");
         return rb;
     }
 }

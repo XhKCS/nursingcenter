@@ -1,6 +1,16 @@
 # nursingcenter
 颐养中心后端
 
+### 更新
+#### WebSocket
+前端页面可以通过WebSocket来与后端建立一个持久连接，接收后端主动发过来的消息；
+
+创建Websocket连接的路径： `ws://localhost:9000/webSocket/{userId}`
+
+后端发送消息格式：`{类名}_UPDATE`
+
+例如，如果护理级别页面收到了 `NursingLevel_UPDATE` 消息，该页面前端就应该自己向后端发送请求，来更新护理级别的数据
+
 ## 前端请求方法
 请求端口统一为`9000`（8080端口容易被其他进程占用）；
 

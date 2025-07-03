@@ -8,8 +8,10 @@ import com.neusoft.nursingcenter.entity.PageResponseBean;
 import com.neusoft.nursingcenter.entity.ResponseBean;
 import com.neusoft.nursingcenter.mapper.BedUsageRecordMapper;
 import com.neusoft.nursingcenter.service.BedUsageRecordService;
+import com.neusoft.nursingcenter.util.WebSocket;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
+import jakarta.annotation.Resource;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +28,9 @@ public class BedUsageRecordController {
 
     @Autowired
     private BedUsageRecordService bedUsageRecordService;
+
+    @Resource
+    private WebSocket webSocket;
 
     @PostMapping("/getCurrentUsingRecord")
     public ResponseBean<BedUsageRecord> getCurrentUsingRecord(@RequestBody Map<String, Object> request) {
@@ -170,6 +175,7 @@ public class BedUsageRecordController {
         } else {
             rb = new ResponseBean<>(500, "删除失败");
         }
+        webSocket.sendAllMessage("BedUsageRecord_UPDATE");
         return rb;
     }
 
@@ -216,6 +222,8 @@ public class BedUsageRecordController {
            System.out.println("Exception happened: "+e.getMessage());
            rb = new ResponseBean<>(500, e.getMessage());
         }
+        webSocket.sendAllMessage("Bed_UPDATE");
+        webSocket.sendAllMessage("BedUsageRecord_UPDATE");
         return rb;
     }
 
@@ -241,6 +249,8 @@ public class BedUsageRecordController {
         } else {
             rb = new ResponseBean<>(500, "修改失败");
         }
+        webSocket.sendAllMessage("Bed_UPDATE");
+        webSocket.sendAllMessage("BedUsageRecord_UPDATE");
         return rb;
     }
 

@@ -12,6 +12,8 @@ import com.neusoft.nursingcenter.mapper.UserMapper;
 import com.neusoft.nursingcenter.redisdao.RedisDao;
 import com.neusoft.nursingcenter.service.CustomerService;
 import com.neusoft.nursingcenter.util.JWTTool;
+import com.neusoft.nursingcenter.util.WebSocket;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -44,6 +46,9 @@ public class CustomerController {
 
 	@Autowired
 	private RedisDao redisDao;
+
+	@Resource
+	private WebSocket webSocket;
 
 	@PostMapping("/login")
 	public ResponseBean<String> login(@RequestBody Map<String, Object> request, HttpServletRequest httpServletRequest) {
@@ -326,6 +331,9 @@ public class CustomerController {
 			System.out.println(e.getMessage());
 			rb = new ResponseBean<>(500, e.getMessage());
 		}
+		webSocket.sendAllMessage("Customer_UPDATE");
+		webSocket.sendAllMessage("Bed_UPDATE");
+		webSocket.sendAllMessage("BedUsageRecord_UPDATE");
 		return rb;
 	}
 
@@ -354,6 +362,7 @@ public class CustomerController {
 		} catch (Exception e) {
 			rb = new ResponseBean<>(500, e.getMessage());
 		}
+		webSocket.sendAllMessage("Customer_UPDATE");
 		return rb;
 	}
 
@@ -379,6 +388,7 @@ public class CustomerController {
 		} catch (Exception e) {
 			rb = new ResponseBean<>(500, e.getMessage());
 		}
+		webSocket.sendAllMessage("Customer_UPDATE");
 		return rb;
 	}
 
@@ -400,6 +410,7 @@ public class CustomerController {
 		}else {
 			rb = new ResponseBean<>(500,"护理级别设置失败");
 		}
+		webSocket.sendAllMessage("Customer_UPDATE");
 		return rb;
 	}
 
@@ -421,6 +432,7 @@ public class CustomerController {
 		}else {
 			rb = new ResponseBean<>(500,"客户管家设置失败");
 		}
+		webSocket.sendAllMessage("Customer_UPDATE");
 		return rb;
 	}
 
@@ -439,6 +451,7 @@ public class CustomerController {
 		}else {
 			rb = new ResponseBean<>(500,"移除失败");
 		}
+		webSocket.sendAllMessage("Customer_UPDATE");
 		return rb;
 	}
 
@@ -458,6 +471,7 @@ public class CustomerController {
 			System.out.println(e.getMessage());
 			rb = new ResponseBean<>(500, e.getMessage());
 		}
+		webSocket.sendAllMessage("Customer_UPDATE");
 		return rb;
 	}
 
@@ -480,7 +494,7 @@ public class CustomerController {
 			System.out.println(e.getMessage());
 			rb = new ResponseBean<>(500, e.getMessage());
 		}
-		
+		webSocket.sendAllMessage("Customer_UPDATE");
 		return rb;
 	}
 
