@@ -12,4 +12,6 @@ public interface FoodService {
 
     @Transactional
     int deleteFoodByIds(List<Integer> ids);
+
+    int getPurchaseByIdAndTime(int foodId,String startTime,String endTime);
 }
