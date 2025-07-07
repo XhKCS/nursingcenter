@@ -264,6 +264,25 @@ public class FoodController {
         return rb;
     }
 
+
+    @PostMapping("/getPurchaseByIdAndTime")
+    public ResponseBean<Integer> getPurchaseByIdAndTime(@RequestBody Map<String, Object> request) {
+        int foodId = (int) request.get("foodId");
+        String startTime = (String) request.get("startTime");
+        String endTime = (String) request.get("endTime");
+
+        int purchaseCount = foodService.getPurchaseByIdAndTime(foodId,startTime,endTime);
+
+        ResponseBean<Integer> rb = null;
+
+        if(purchaseCount >= 0) {
+            rb = new ResponseBean<>(purchaseCount);
+        }else {
+            rb = new ResponseBean<>(500,"Fail to get");
+        }
+        return rb;
+    }
+
     @PostMapping("/aiObj")
     public ResponseBean<String> aiCreateObj(@RequestBody Map<String, Object> request){
         String query = (String)request.get("query");

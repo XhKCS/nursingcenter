@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.neusoft.nursingcenter.entity.*;
 import com.neusoft.nursingcenter.mapper.FoodMapper;
 import com.neusoft.nursingcenter.mapper.MealItemMapper;
+import com.neusoft.nursingcenter.service.FoodService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,9 @@ public class MealItemController {
 
     @Autowired
     private FoodMapper foodMapper;
+
+    @Autowired
+    private FoodService foodService;
 
     @PostMapping("/page")
     public PageResponseBean<List<MealItem>> page (@RequestBody Map<String, Object> request) {
@@ -194,6 +198,27 @@ public class MealItemController {
             rb = new ResponseBean<>(result);
         }else {
             rb = new ResponseBean<>(500,"Fail to delete");
+        }
+
+        return rb;
+    }
+
+    @PostMapping("/getPurchaseByIdAndTime")
+    public ResponseBean<Integer> getPurchaseByIdAndTime(@RequestBody Map<String, Object> request) {
+        int mealItemId = (int) request.get("mealItemId");
+        String startTime = (String) request.get("startTime");
+        String endTime = (String) request.get("endTime");
+
+        MealItem mealItem = mealItemMapper.selectById(mealItemId);
+
+        int purchaseCount = foodService.getPurchaseByIdAndTime(mealItem.getFoodId(),startTime,endTime);
+
+        ResponseBean<Integer> rb = null;
+
+        if(purchaseCount >= 0) {
+            rb = new ResponseBean<>(purchaseCount);
+        }else {
+            rb = new ResponseBean<>(500,"Fail to get");
         }
 
         return rb;
