@@ -233,7 +233,8 @@ public class UserController {
 
     // 只能添加护工
     @PostMapping("/add")
-    public ResponseBean<String> add(@RequestBody User user) {
+    public ResponseBean<String> add(@RequestBody UserView userView) {
+        User user = new User(userView);
         user.setUserType(1); //通过后端请求只能添加普通用户（护工），不能添加管理员
         User check = userMapper.getByAccount(user.getAccount());
         if (check != null) {
@@ -254,7 +255,8 @@ public class UserController {
 
     // 也只能修改护工的信息；正常的修改不能修改密码
     @PostMapping("/update")
-    public ResponseBean<String> update(@RequestBody User user) {
+    public ResponseBean<String> update(@RequestBody UserView userView) {
+        User user = new User(userView);
         user.setUserType(1); //通过后端请求只能添加普通用户（护工），不能添加管理员
         User check = userMapper.getByAccount(user.getAccount());
         if (check != null && check.getUserId() != user.getUserId()) {
