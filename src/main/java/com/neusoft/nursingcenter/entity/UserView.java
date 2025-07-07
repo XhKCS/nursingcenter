@@ -1,17 +1,10 @@
 package com.neusoft.nursingcenter.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-
-@TableName("user")
-public class User {
-    @TableId(value="user_id", type=IdType.AUTO)
+// 专门转给前端的User对象ViewModel，隐藏了密码
+public class UserView {
     private Integer userId;
 
     private String account; //账号，也可以认为是用户名
-
-    private String password;
 
     private String name; //真实姓名
 
@@ -23,12 +16,21 @@ public class User {
 
     private Integer userType; // 0-管理员  1-护工
 
-    public User() {}
+    public UserView() {}
 
-    public User(int userId, String account, String password, String name, String phoneNumber, int gender, String email, int userType) {
+    public UserView(User user) {
+        this.userId = user.getUserId();
+        this.account = user.getAccount();
+        this.name = user.getName();
+        this.phoneNumber = user.getPhoneNumber();
+        this.gender = user.getGender();
+        this.email = user.getEmail();
+        this.userType = user.getUserType();
+    }
+
+    public UserView(Integer userId, String account, String name, String phoneNumber, Integer gender, String email, Integer userType) {
         this.userId = userId;
         this.account = account;
-        this.password = password;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.gender = gender;
@@ -36,22 +38,11 @@ public class User {
         this.userType = userType;
     }
 
-    public User(UserView userView) {
-        this.userId = userView.getUserId();
-        this.account = userView.getAccount();
-        this.password = "";
-        this.name = userView.getName();
-        this.phoneNumber = userView.getPhoneNumber();
-        this.gender = userView.getGender();
-        this.email = userView.getEmail();
-        this.userType = userView.getUserType();
-    }
-
     public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
@@ -61,14 +52,6 @@ public class User {
 
     public void setAccount(String account) {
         this.account = account;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getName() {
@@ -91,7 +74,7 @@ public class User {
         return gender;
     }
 
-    public void setGender(int gender) {
+    public void setGender(Integer gender) {
         this.gender = gender;
     }
 
@@ -107,16 +90,15 @@ public class User {
         return userType;
     }
 
-    public void setUserType(int userType) {
+    public void setUserType(Integer userType) {
         this.userType = userType;
     }
 
     @Override
     public String toString() {
-        return "User{" +
+        return "UserView{" +
                 "userId=" + userId +
                 ", account='" + account + '\'' +
-                ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", gender=" + gender +

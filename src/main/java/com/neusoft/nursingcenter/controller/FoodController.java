@@ -265,14 +265,14 @@ public class FoodController {
     }
 
     @PostMapping("/aiObj")
-    public ResponseBean<Food> aiCreateObj(@RequestBody Map<String, Object> request){
+    public ResponseBean<String> aiCreateObj(@RequestBody Map<String, Object> request){
         String query = (String)request.get("query");
-        ResponseBean<Food> rb =null;
+        ResponseBean<String> rb =null;
         try {
-            Food food = foodStructOutputUtil.chatObj(query);
-            if(food!=null){
-                System.out.println(food.toString());
-                rb = new ResponseBean<>(food);
+            String foodJson = foodStructOutputUtil.chatObj(query);
+            if(foodJson != null){
+                System.out.println(foodJson);
+                rb = new ResponseBean<>(foodJson);
             }else {
                 rb = new ResponseBean<>(500,"No data");
             }
