@@ -1,5 +1,6 @@
 package com.neusoft.nursingcenter.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.neusoft.nursingcenter.entity.Bed;
 import com.neusoft.nursingcenter.entity.ResponseBean;
 import com.neusoft.nursingcenter.mapper.BedMapper;
@@ -12,7 +13,9 @@ import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @CrossOrigin("*")
@@ -73,6 +76,33 @@ public class BedController {
             rb = new ResponseBean<>(500, "No data");
         }
         return rb;
+    }
+
+    @PostMapping("/listCounts")
+    public ResponseBean<Map<Integer, Long>> listCounts() {
+        Map<Integer, Long> result = new HashMap<>();
+        for (int i=0; i < 3; i++) {
+            QueryWrapper<Bed> qw = new QueryWrapper<>();
+            qw.eq("status", i);
+            long count = bedMapper.selectCount(qw);
+            result.put(i, count);
+        }
+        return new ResponseBean<>(result);
+    }
+
+    @PostMapping("/getAllCount")
+    public ResponseBean<Long> getAllCount() {
+        long count = bedMapper.selectCount(null);
+        return new ResponseBean<>(count);
+    }
+
+    @PostMapping("/getCountByStatus")
+    public ResponseBean<Long> getCountByStatus(@RequestBody Map<String, Object> request) {
+        int status = (int) request.get("status");
+        QueryWrapper<Bed> qw = new QueryWrapper<>();
+        qw.eq("status", status);
+        long count = bedMapper.selectCount(qw);
+        return new ResponseBean<>(count);
     }
 
     // 获取指定房间内所有床位

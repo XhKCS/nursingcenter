@@ -233,9 +233,15 @@ public class UserController {
 
     // 只能添加护工
     @PostMapping("/add")
-    public ResponseBean<String> add(@RequestBody UserView userView) {
-        User user = new User(userView);
-        user.setUserType(1); //通过后端请求只能添加普通用户（护工），不能添加管理员
+    public ResponseBean<String> add(@RequestBody Map<String, Object> request) {
+        String account = (String) request.get("account");
+        String name = (String) request.get("name");
+        String phoneNumber = (String) request.get("phoneNumber");
+        int gender = (int) request.get("gender");
+        String email = (String) request.get("email");
+        // 只能添加护工，所以userType固定为1
+        User user = new User(0, account, "", name, phoneNumber, gender, email, 1);
+//        user.setUserType(1); //通过后端请求只能添加普通用户（护工），不能添加管理员
         User check = userMapper.getByAccount(user.getAccount());
         if (check != null) {
             return new ResponseBean<>(500, "已存在账号相同的用户");

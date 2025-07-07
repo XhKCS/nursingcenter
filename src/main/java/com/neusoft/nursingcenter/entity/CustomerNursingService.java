@@ -9,7 +9,7 @@ public class CustomerNursingService {
     @TableId(value="id",type= IdType.AUTO)
     private Integer id;
 
-    private Integer customerId;
+    private Integer customerId; //客户id
 
     private Integer levelId; //护理级别id
 
