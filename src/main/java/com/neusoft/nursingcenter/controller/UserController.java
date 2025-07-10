@@ -3,10 +3,7 @@ package com.neusoft.nursingcenter.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.neusoft.nursingcenter.entity.Customer;
-import com.neusoft.nursingcenter.entity.PageResponseBean;
-import com.neusoft.nursingcenter.entity.ResponseBean;
-import com.neusoft.nursingcenter.entity.User;
+import com.neusoft.nursingcenter.entity.*;
 import com.neusoft.nursingcenter.mapper.CustomerMapper;
 import com.neusoft.nursingcenter.mapper.UserMapper;
 import com.neusoft.nursingcenter.redisdao.RedisDao;
@@ -19,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -135,7 +133,7 @@ public class UserController {
 
     // 无条件分页查询
     @PostMapping("/pageAll")
-    public PageResponseBean<List<User>> pageAll(@RequestBody Map<String, Object> request) {
+    public PageResponseBean<List<UserView>> pageAll(@RequestBody Map<String, Object> request) {
         int current = (int) request.get("current"); //当前页面
         int size = (int) request.get("size"); //一页的行数
 
@@ -143,10 +141,14 @@ public class UserController {
         IPage<User> result = userMapper.selectPage(page, null);
         List<User> userList = result.getRecords();
         long total = result.getTotal();
-        PageResponseBean<List<User>> rb = null;
+        PageResponseBean<List<UserView>> rb = null;
 
         if (total > 0) {
-            rb = new PageResponseBean<>(userList);
+            List<UserView> userViewList = new ArrayList<>();
+            for (User user : userList) {
+                userViewList.add(new UserView(user));
+            }
+            rb = new PageResponseBean<>(userViewList);
             rb.setTotal(total);
         } else {
             rb = new PageResponseBean<>(500, "No data");
@@ -156,7 +158,7 @@ public class UserController {
 
     // 有条件分页查询，组合条件为：name-用户姓名; userType-用户角色类型
     @PostMapping("/page")
-    public PageResponseBean<List<User>> page(@RequestBody Map<String, Object> request) {
+    public PageResponseBean<List<UserView>> page(@RequestBody Map<String, Object> request) {
         String name = (String) request.get("name");
         int userType = (int) request.get("userType");
         int current = (int) request.get("current"); //当前页面
@@ -169,10 +171,14 @@ public class UserController {
         IPage<User> result = userMapper.selectPage(page, qw);
         List<User> userList = result.getRecords();
         long total = result.getTotal();
-        PageResponseBean<List<User>> rb = null;
+        PageResponseBean<List<UserView>> rb = null;
 
         if (total > 0) {
-            rb = new PageResponseBean<>(userList);
+            List<UserView> userViewList = new ArrayList<>();
+            for (User user : userList) {
+                userViewList.add(new UserView(user));
+            }
+            rb = new PageResponseBean<>(userViewList);
             rb.setTotal(total);
         } else {
             rb = new PageResponseBean<>(500, "No data");
@@ -181,12 +187,16 @@ public class UserController {
     }
 
     @PostMapping("/listAll")
-    public ResponseBean<List<User>> listAll() {
+    public ResponseBean<List<UserView>> listAll() {
         List<User> userList = userMapper.selectList(null);
-        ResponseBean<List<User>> rb = null;
+        ResponseBean<List<UserView>> rb = null;
 
         if (userList.size() > 0) {
-            rb = new ResponseBean<>(userList);
+            List<UserView> userViewList = new ArrayList<>();
+            for (User user : userList) {
+                userViewList.add(new UserView(user));
+            }
+            rb = new PageResponseBean<>(userViewList);
         } else {
             rb = new ResponseBean<>(500, "No data");
         }
@@ -194,13 +204,13 @@ public class UserController {
     }
 
     @PostMapping("/getById")
-    public ResponseBean<User> getById(@RequestBody Map<String, Object> request) {
+    public ResponseBean<UserView> getById(@RequestBody Map<String, Object> request) {
         int userId = (int) request.get("userId");
         User user = userMapper.selectById(userId);
-        ResponseBean<User> rb = null;
+        ResponseBean<UserView> rb = null;
 
         if (user != null) {
-            rb = new ResponseBean<>(user);
+            rb = new ResponseBean<>(new UserView(user));
         } else {
             rb = new ResponseBean<>(500, "数据库中没有该id的用户");
         }
@@ -208,13 +218,13 @@ public class UserController {
     }
 
     @PostMapping("/getByAccount")
-    public ResponseBean<User> getByAccount(@RequestBody Map<String, Object> request) {
+    public ResponseBean<UserView> getByAccount(@RequestBody Map<String, Object> request) {
         String account = (String) request.get("account");
         User user = userMapper.getByAccount(account);
-        ResponseBean<User> rb = null;
+        ResponseBean<UserView> rb = null;
 
         if (user != null) {
-            rb = new ResponseBean<>(user);
+            rb = new ResponseBean<>(new UserView(user));
         } else {
             rb = new ResponseBean<>(500, "数据库中没有该账号的用户");
         }
@@ -223,8 +233,15 @@ public class UserController {
 
     // 只能添加护工
     @PostMapping("/add")
-    public ResponseBean<String> add(@RequestBody User user) {
-        user.setUserType(1); //通过后端请求只能添加普通用户（护工），不能添加管理员
+    public ResponseBean<String> add(@RequestBody Map<String, Object> request) {
+        String account = (String) request.get("account");
+        String name = (String) request.get("name");
+        String phoneNumber = (String) request.get("phoneNumber");
+        int gender = (int) request.get("gender");
+        String email = (String) request.get("email");
+        // 只能添加护工，所以userType固定为1
+        User user = new User(0, account, "", name, phoneNumber, gender, email, 1);
+//        user.setUserType(1); //通过后端请求只能添加普通用户（护工），不能添加管理员
         User check = userMapper.getByAccount(user.getAccount());
         if (check != null) {
             return new ResponseBean<>(500, "已存在账号相同的用户");
@@ -244,7 +261,8 @@ public class UserController {
 
     // 也只能修改护工的信息；正常的修改不能修改密码
     @PostMapping("/update")
-    public ResponseBean<String> update(@RequestBody User user) {
+    public ResponseBean<String> update(@RequestBody UserView userView) {
+        User user = new User(userView);
         user.setUserType(1); //通过后端请求只能添加普通用户（护工），不能添加管理员
         User check = userMapper.getByAccount(user.getAccount());
         if (check != null && check.getUserId() != user.getUserId()) {

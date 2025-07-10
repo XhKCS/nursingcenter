@@ -289,7 +289,7 @@ public class FoodController {
         ResponseBean<String> rb =null;
         try {
             String foodJson = foodStructOutputUtil.chatObj(query);
-            if(foodJson!=null){
+            if(foodJson != null){
                 System.out.println(foodJson);
                 rb = new ResponseBean<>(foodJson);
             }else {

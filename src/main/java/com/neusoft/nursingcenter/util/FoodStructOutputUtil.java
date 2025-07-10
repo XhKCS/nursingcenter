@@ -45,7 +45,7 @@ public class FoodStructOutputUtil {
 //			异常信息为：The template string is not valid
         String promptUserSpec = """
                 format: 根据用户的要求以纯文本输出一个食品的 json，包括6个字段：id, name（名称）, type（品类）, description（描述）, price（单价）, imageUrl（图片链接）；
-                其中 id 固定为 0；type为数组类型，可以包括 早餐/午餐/晚餐/甜品 这4种取值；
+                其中 id 固定为 0；type为字符串数组类型，可以包括 早餐/午餐/晚餐/甜品 这4种取值；
                 imageUrl 请从必应图片上按食品名称获取真实图片的url：https://cn.bing.com/images/search?q={name}，其中{name}是提取出的食品名称；
                 请不要包含任何多余的文字——包括 markdown 格式;
                 以下是输入和输出示例：

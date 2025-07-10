@@ -20,6 +20,6 @@ public interface UserMapper extends BaseMapper<User> {
 //    User getByName(String name);
 
     // 普通的修改不能修改密码
-    @Update("update * from user set account=#{e.account}, name=#{e.name}, phone_number=#{e.phoneNumber}, gender=#{e.gender}, email=#{e.email} where user_id=#{e.userId}")
+    @Update("update user set account=#{e.account}, name=#{e.name}, phone_number=#{e.phoneNumber}, gender=#{e.gender}, email=#{e.email} where user_id=#{e.userId}")
     int updateUser(@Param("e") User updatedUser);
 }
