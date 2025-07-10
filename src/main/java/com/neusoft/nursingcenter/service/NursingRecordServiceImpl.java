@@ -38,7 +38,7 @@ public class NursingRecordServiceImpl implements NursingRecordService{
         String description = (String) request.get("description");
         String nurseName = (String) request.get("nurseName");
         int customerId = (int) request.get("customerId");
-
+        System.out.println(nurseName);
         int programId = nursingProgramMapper.getByName(programName).getId();
         String nursePhone = userMapper.getByName(nurseName).getPhoneNumber();
 

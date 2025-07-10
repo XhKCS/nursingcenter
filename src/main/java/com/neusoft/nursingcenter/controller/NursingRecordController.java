@@ -133,6 +133,28 @@ public class NursingRecordController {
         return rb;
     }
 
+    @PostMapping("/deleteBatchByIds")
+    public ResponseBean<String> deleteBatchByIds(@RequestBody Map<String, Object> request) {
+        ResponseBean<String> rb = null;
+
+        List<Integer> ids = (List<Integer>) request.get("ids");
+        try {
+            for (Integer id : ids) {
+                NursingRecord record = nursingRecordMapper.selectById(id);
+                record.setDeleted(true);
+                int result = nursingRecordMapper.updateById(record);
+                if (result <= 0) {
+                    return new ResponseBean<>(500, "删除过程中失败");
+                }
+            }
+            rb = new ResponseBean<>("删除成功，共删除"+ids.size()+"条数据");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            rb = new ResponseBean<>(500, e.getMessage());
+        }
+        return rb;
+    }
+
 
     // 由于是逻辑删除，所以不能用以下方法进行批量删除
 //    @PostMapping("/deleteBatch")
