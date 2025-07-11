@@ -2,9 +2,12 @@ package com.neusoft.nursingcenter.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @TableName("nursing_program")
+@JsonPropertyOrder({"id", "programCode", "name", "price", "status", "executionPeriod", "executionTimes", "description", "isDeleted"}) // 指定属性的顺序
 public class NursingProgram {
     @TableId(value="id", type= IdType.AUTO)
     private Integer id;
@@ -23,6 +26,7 @@ public class NursingProgram {
 
     private String description;
 
+    @TableLogic
     private Boolean isDeleted; //是否已删除
 
     public NursingProgram() {}
@@ -103,11 +107,26 @@ public class NursingProgram {
         this.description = description;
     }
 
-    public Boolean getDeleted() {
+    public Boolean getIsDeleted() {
         return isDeleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setIsDeleted(Boolean deleted) {
         isDeleted = deleted;
+    }
+
+    @Override
+    public String toString() {
+        return "NursingProgram{" +
+                "id=" + id +
+                ", programCode='" + programCode + '\'' +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", status=" + status +
+                ", executionPeriod='" + executionPeriod + '\'' +
+                ", executionTimes=" + executionTimes +
+                ", description='" + description + '\'' +
+                ", isDeleted=" + isDeleted +
+                '}';
     }
 }

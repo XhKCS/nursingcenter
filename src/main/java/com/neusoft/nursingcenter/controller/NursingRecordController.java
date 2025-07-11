@@ -1,16 +1,13 @@
 package com.neusoft.nursingcenter.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.neusoft.nursingcenter.entity.*;
 import com.neusoft.nursingcenter.mapper.CustomerNursingServiceMapper;
 import com.neusoft.nursingcenter.mapper.NursingRecordMapper;
-import com.neusoft.nursingcenter.mapper.*;
 import com.neusoft.nursingcenter.service.NursingRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -102,7 +99,7 @@ public class NursingRecordController {
     public ResponseBean<Integer> delete(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
         NursingRecord nursingRecord = nursingRecordMapper.selectById(id);
-        nursingRecord.setDeleted(true);
+        nursingRecord.setIsDeleted(true);
         int result = nursingRecordMapper.updateById(nursingRecord);
         ResponseBean<Integer> rb =null;
         if(result > 0) {
@@ -119,7 +116,7 @@ public class NursingRecordController {
         ResponseBean<String> rb = null;
         try {
             for (NursingRecord record : recordList) {
-                record.setDeleted(true);
+                record.setIsDeleted(true);
                 int result = nursingRecordMapper.updateById(record);
                 if (result <= 0) {
                     return new ResponseBean<>(500, "删除过程中失败");

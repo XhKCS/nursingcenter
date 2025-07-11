@@ -7,7 +7,6 @@ import com.neusoft.nursingcenter.entity.NursingLevel;
 import com.neusoft.nursingcenter.mapper.*;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -15,16 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class CustomerServiceImpl implements CustomerService {
 	@Autowired
 	private CustomerMapper customerMapper;
-
 	@Autowired
 	private BedUsageRecordMapper bedUsageRecordMapper;
-
 	@Autowired
 	private BedMapper bedMapper;
-
 	@Autowired
 	private CustomerNursingServiceMapper customerNursingServiceMapper;
-
 	@Autowired
 	private NursingLevelMapper nursingLevelMapper;
 
@@ -39,7 +34,7 @@ public class CustomerServiceImpl implements CustomerService {
 			if (customer == null) {
 				return -1;
 			}
-			customer.setDeleted(true);
+			customer.setIsDeleted(true);
 			return customerMapper.updateById(customer);
 		}
 		// 先将对应床位状态更改为空闲
@@ -47,13 +42,13 @@ public class CustomerServiceImpl implements CustomerService {
 		usingBed.setStatus(0); //空闲状态
 		int res1 = bedMapper.updateById(usingBed);
 		// 将记录逻辑删除
-		currentRecord.setDeleted(true);
+		currentRecord.setIsDeleted(true);
 		int res2 = bedUsageRecordMapper.updateById(currentRecord);
 		if (res1 <= 0 || res2 <= 0) {
 			throw new RuntimeException("删除过程中失败");
 		}
 		Customer customer = customerMapper.selectById(customerId);
-		customer.setDeleted(true);
+		customer.setIsDeleted(true);
 		return customerMapper.updateById(customer);
 	}
 

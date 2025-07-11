@@ -8,10 +8,11 @@ import com.neusoft.nursingcenter.entity.PageResponseBean;
 import com.neusoft.nursingcenter.entity.ResponseBean;
 import com.neusoft.nursingcenter.mapper.NursingProgramMapper;
 import com.neusoft.nursingcenter.service.NursingProgramServiceImpl;
+import com.neusoft.nursingcenter.util.NursingProgramStructOutputUtil;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,9 @@ public class NursingProgramController {
 
     @Autowired
     private NursingProgramServiceImpl nursingProgramService;
+
+    @Resource
+    private NursingProgramStructOutputUtil nursingProgramStructOutputUtil;
 
     @PostMapping("/pageAll")
     public PageResponseBean<List<NursingProgram>> page(@RequestBody Map<String, Object> request) {
@@ -49,7 +53,9 @@ public class NursingProgramController {
 
     @PostMapping("/listAll")
     public ResponseBean<List<NursingProgram>> listAll() {
-        List<NursingProgram> programList = nursingProgramMapper.selectList(null);
+        QueryWrapper<NursingProgram> qw = new QueryWrapper<>();
+        qw.eq("is_deleted", 0);
+        List<NursingProgram> programList = nursingProgramMapper.selectList(qw);
 
         ResponseBean<List<NursingProgram>> rb = null;
         if (programList.size() > 0) {
@@ -154,7 +160,7 @@ public class NursingProgramController {
         if (check != null) {
             return new ResponseBean<>(500, "护理项目名称不能重复！");
         }
-        nursingProgram.setDeleted(false);
+        nursingProgram.setIsDeleted(false);
         int result = nursingProgramMapper.insert(nursingProgram);
         ResponseBean<String> rb = null;
 
@@ -177,7 +183,7 @@ public class NursingProgramController {
         if (check != null && check.getId() != updatedProgram.getId()) {
             return new ResponseBean<>(500, "护理项目名称不能重复！");
         }
-        updatedProgram.setDeleted(false); //修改不能够让项目被删除
+        updatedProgram.setIsDeleted(false); //修改不能够让项目被删除
         ResponseBean<String> rb = null;
         try {
             int result = nursingProgramService.updateProgram(updatedProgram);
@@ -225,6 +231,26 @@ public class NursingProgramController {
             rb = new ResponseBean<>("删除成功，共删除"+programList.size()+"条数据");
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            rb = new ResponseBean<>(500, e.getMessage());
+        }
+        return rb;
+    }
+
+    @PostMapping("/aiObj")
+    public ResponseBean<NursingProgram> aiCreateObj(@RequestBody Map<String, Object> request){
+        String query = (String)request.get("query");
+        ResponseBean<NursingProgram> rb =null;
+        try {
+            NursingProgram nursingProgram = nursingProgramStructOutputUtil.chatObj(query);
+            if(nursingProgram != null){
+                System.out.println(nursingProgram);
+                rb = new ResponseBean<>(nursingProgram);
+            }else {
+                rb = new ResponseBean<>(500,"No data");
+            }
+        } catch (Exception e) {
+            System.out.println("Exception happened: ");
+            e.printStackTrace();
             rb = new ResponseBean<>(500, e.getMessage());
         }
         return rb;

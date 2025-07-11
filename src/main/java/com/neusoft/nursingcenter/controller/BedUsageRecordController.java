@@ -12,7 +12,6 @@ import com.neusoft.nursingcenter.util.WebSocket;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import jakarta.annotation.Resource;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -166,7 +165,7 @@ public class BedUsageRecordController {
         if (bedUsageRecord == null) {
             return new ResponseBean<>(500, "不存在该id的记录");
         }
-        bedUsageRecord.setDeleted(true);
+        bedUsageRecord.setIsDeleted(true);
         int result = bedUsageRecordMapper.updateById(bedUsageRecord);
 
         ResponseBean<String> rb = null;

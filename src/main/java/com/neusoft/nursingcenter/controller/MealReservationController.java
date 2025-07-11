@@ -121,7 +121,7 @@ public class MealReservationController {
     public ResponseBean<Integer> delete(@RequestBody Map<String, Object> request) {
         int id = (int) request.get("id");
         MealReservation mealReservation = mealReservationMapper.selectById(id);
-        mealReservation.setDeleted(true);
+        mealReservation.setIsDeleted(true);
         int result = mealReservationMapper.updateById(mealReservation);
         ResponseBean<Integer> rb =null;
         if(result > 0) {
@@ -139,7 +139,7 @@ public class MealReservationController {
         int result =0;
         for (int id : ids){
             MealReservation mealReservation = mealReservationMapper.selectById(id);
-            mealReservation.setDeleted(true);
+            mealReservation.setIsDeleted(true);
             result += mealReservationMapper.updateById(mealReservation);
         }
 

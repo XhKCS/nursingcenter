@@ -23,7 +23,6 @@ public class MyInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        // TODO Auto-generated method stub
         System.out.println("访问过程经过了拦截器");
         if (request.getHeader("x-pass") != null) {
             String xPass = request.getHeader("x-pass");
@@ -50,8 +49,6 @@ public class MyInterceptor implements HandlerInterceptor {
                 Map<String, Object> map = om.readValue(json, Map.class);
                 if (map.containsKey("userId")) {
                     User user = om.readValue(json, User.class);
-//			        从令牌中截取到userId
-//			        String userIdStr=sentToken.substring(0, sentToken.indexOf(":"));
 //    			    再到redis中按照userId的格式取出相应令牌
                     String storedToken=rd.get("user-"+user.getUserId().toString());
                     System.out.println("storedToken: "+storedToken);
@@ -82,7 +79,6 @@ public class MyInterceptor implements HandlerInterceptor {
                 System.out.println(e);
                 PrintWriter pw=response.getWriter();
                 pw.print("invalid token");
-//                pw.print("Exception: "+e.getMessage());
 //				字符型输出流使用后需要关闭
                 pw.close();
                 return false;

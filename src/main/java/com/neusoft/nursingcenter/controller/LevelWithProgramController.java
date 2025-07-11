@@ -24,7 +24,7 @@ public class LevelWithProgramController {
     private LevelWithProgramService levelWithProgramService;
 
     @PostMapping("/pageProgramsByLevelId")
-    public PageResponseBean<List<NursingProgram>> page (@RequestBody Map<String, Object> request){
+    public PageResponseBean<List<NursingProgram>> pageProgramsByLevelId(@RequestBody Map<String, Object> request){
         int levelId = (int) request.get("levelId");
         String programName = (String) request.get("programName");
         int current = (int) request.get("current");

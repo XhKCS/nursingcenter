@@ -11,6 +11,6 @@ public interface RedisDao {
 
     //	从redis中读取数据的方法
     String get(String key);
-
+    //  删除键值对的方法
     boolean delete(String key);
 }

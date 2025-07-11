@@ -70,7 +70,7 @@ public class NursingProgramServiceImpl implements NursingProgramService{
             }
         }
         // 返回最终更新结果
-        nursingProgram.setDeleted(true);
+        nursingProgram.setIsDeleted(true);
         return nursingProgramMapper.updateById(nursingProgram);
     }
 

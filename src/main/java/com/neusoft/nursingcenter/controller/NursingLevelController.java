@@ -65,7 +65,6 @@ public class NursingLevelController {
     @PostMapping("/pageByStatus")
     public PageResponseBean<List<NursingLevel>> pageByStatus(@RequestBody Map<String, Object> request) {
         int status = (int) request.get("status");
-        // current和size如果用Long类型会报错，因为number自动被识别成Integer
         int current = (int) request.get("current"); //当前页面
         int size = (int) request.get("size"); //一页的行数
         // 筛选条件
