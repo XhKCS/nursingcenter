@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Slf4j
-@ServerEndpoint("/websocket/{userId}")  // 接口路径 ws://localhost:9000/webSocket/userId;
+@ServerEndpoint("/webSocket/{userId}")  // 接口路径 ws://localhost:9000/webSocket/userId;
 public class WebSocket {
 
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
