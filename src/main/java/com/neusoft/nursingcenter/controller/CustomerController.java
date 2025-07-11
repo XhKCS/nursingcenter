@@ -68,8 +68,8 @@ public class CustomerController {
 		this.redisDao = redisDao;
 	}
 
-	//	@Resource
-//	private WebSocket webSocket;
+	@Resource
+	private WebSocket webSocket;
 
 	@PostMapping("/login")
 	public ResponseBean<String> login(@RequestBody Map<String, Object> request, HttpServletRequest httpServletRequest) {
