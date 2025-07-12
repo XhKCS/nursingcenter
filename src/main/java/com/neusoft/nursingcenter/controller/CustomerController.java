@@ -12,6 +12,7 @@ import com.neusoft.nursingcenter.mapper.UserMapper;
 import com.neusoft.nursingcenter.redisdao.RedisDao;
 import com.neusoft.nursingcenter.service.CustomerService;
 import com.neusoft.nursingcenter.util.JWTTool;
+import com.neusoft.nursingcenter.util.NursingProgramStructOutputUtil;
 import com.neusoft.nursingcenter.util.WebSocket;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,6 +47,26 @@ public class CustomerController {
 
 	@Autowired
 	private RedisDao redisDao;
+
+	public void setCustomerMapper(CustomerMapper customerMapper) {
+		this.customerMapper = customerMapper;
+	}
+
+	public void setCustomerService(CustomerService customerService) {
+		this.customerService = customerService;
+	}
+
+	public void setNursingLevelMapper(NursingLevelMapper nursingLevelMapper) {
+		this.nursingLevelMapper = nursingLevelMapper;
+	}
+
+	public void setUserMapper(UserMapper userMapper) {
+		this.userMapper = userMapper;
+	}
+
+	public void setRedisDao(RedisDao redisDao) {
+		this.redisDao = redisDao;
+	}
 
 	@Resource
 	private WebSocket webSocket;
@@ -226,7 +247,7 @@ public class CustomerController {
 		return prb;
 	}
 
-	// 用于入住登记页的多条件组合的分页查询
+	// 用于客户的多条件组合的分页查询
 	// 组合条件：客户姓名、客户类型（自理老人 / 护理老人）
 	@PostMapping("/page")
 	public PageResponseBean<List<Customer>> page(@RequestBody Map<String, Object> request){
@@ -331,9 +352,9 @@ public class CustomerController {
 			System.out.println(e.getMessage());
 			rb = new ResponseBean<>(500, e.getMessage());
 		}
-		webSocket.sendAllMessage("Customer_UPDATE");
-		webSocket.sendAllMessage("Bed_UPDATE");
-		webSocket.sendAllMessage("BedUsageRecord_UPDATE");
+//		webSocket.sendAllMessage("Customer_UPDATE");
+//		webSocket.sendAllMessage("Bed_UPDATE");
+//		webSocket.sendAllMessage("BedUsageRecord_UPDATE");
 		return rb;
 	}
 
@@ -362,7 +383,7 @@ public class CustomerController {
 		} catch (Exception e) {
 			rb = new ResponseBean<>(500, e.getMessage());
 		}
-		webSocket.sendAllMessage("Customer_UPDATE");
+//		webSocket.sendAllMessage("Customer_UPDATE");
 		return rb;
 	}
 
@@ -388,7 +409,7 @@ public class CustomerController {
 		} catch (Exception e) {
 			rb = new ResponseBean<>(500, e.getMessage());
 		}
-		webSocket.sendAllMessage("Customer_UPDATE");
+//		webSocket.sendAllMessage("Customer_UPDATE");
 		return rb;
 	}
 
@@ -410,7 +431,7 @@ public class CustomerController {
 		}else {
 			rb = new ResponseBean<>(500,"护理级别设置失败");
 		}
-		webSocket.sendAllMessage("Customer_UPDATE");
+//		webSocket.sendAllMessage("Customer_UPDATE");
 		return rb;
 	}
 
@@ -432,7 +453,7 @@ public class CustomerController {
 		}else {
 			rb = new ResponseBean<>(500,"客户管家设置失败");
 		}
-		webSocket.sendAllMessage("Customer_UPDATE");
+//		webSocket.sendAllMessage("Customer_UPDATE");
 		return rb;
 	}
 
@@ -451,7 +472,7 @@ public class CustomerController {
 		}else {
 			rb = new ResponseBean<>(500,"移除失败");
 		}
-		webSocket.sendAllMessage("Customer_UPDATE");
+//		webSocket.sendAllMessage("Customer_UPDATE");
 		return rb;
 	}
 
@@ -471,7 +492,7 @@ public class CustomerController {
 			System.out.println(e.getMessage());
 			rb = new ResponseBean<>(500, e.getMessage());
 		}
-		webSocket.sendAllMessage("Customer_UPDATE");
+//		webSocket.sendAllMessage("Customer_UPDATE");
 		return rb;
 	}
 
@@ -494,9 +515,8 @@ public class CustomerController {
 			System.out.println(e.getMessage());
 			rb = new ResponseBean<>(500, e.getMessage());
 		}
-		webSocket.sendAllMessage("Customer_UPDATE");
+//		webSocket.sendAllMessage("Customer_UPDATE");
 		return rb;
 	}
-
 
 }

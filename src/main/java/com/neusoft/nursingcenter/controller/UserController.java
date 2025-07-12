@@ -61,7 +61,7 @@ public class UserController {
                 redisDao.set("user-"+dbUser.getUserId().toString(), token, JWTTool.calendarInterval, TimeUnit.SECONDS);
                 //	同时传递给前端一份
                 rb = new ResponseBean<>(token);
-//                httpServletRequest.getSession().setAttribute("user", dbUser);
+
             } catch (Exception e) {
                 System.out.println("Exception happened: " + e.getMessage());
                 rb = new ResponseBean<>(500, e.getMessage());
@@ -113,13 +113,11 @@ public class UserController {
                     User user = om.readValue(json, User.class);
                     System.out.println("退出登录的user："+user.toString());
                     redisDao.delete("user-"+user.getUserId().toString());
+                    rb = new ResponseBean<>("已退出登录");
                 }
-                else if (map.containsKey("customerId")) {
-                    Customer customer = om.readValue(json, Customer.class);
-                    System.out.println("退出登录的customer："+customer.toString());
-                    redisDao.delete("customer-"+customer.getCustomerId().toString());
+                else  {
+                    rb = new ResponseBean<>(500, "token对应的对象类型不是User");
                 }
-                rb = new ResponseBean<>("已退出登录");
             }
             else {
                 rb = new ResponseBean<>(500, "无相应令牌");

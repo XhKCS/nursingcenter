@@ -44,10 +44,10 @@ public class NursingRecordServiceImpl implements NursingRecordService{
 
         NursingRecord nursingRecord = new NursingRecord(0,customerId,customerName,programId,programCode,programName,description,nurseName,nursePhone,nursingTime,executionCount,false);
         Integer result = nursingRecordMapper.insert(nursingRecord);
-        System.out.println(customerId);
-        System.out.println(programCode);
+//        System.out.println(customerId);
+//        System.out.println(programCode);
         CustomerNursingService customerNursingService = customerNursingServiceMapper.getByCustomerIdAndProgramCode(customerId,programCode);
-        System.out.println(customerNursingService);
+//        System.out.println(customerNursingService);
         customerNursingService.setUsedCount(customerNursingService.getUsedCount()+executionCount);
 
         Integer result2 = customerNursingServiceMapper.updateById(customerNursingService);

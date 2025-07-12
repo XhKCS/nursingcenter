@@ -15,7 +15,6 @@ public class RedisDaoImpl implements RedisDao {
 
     @Override
     public void set(String key, String value) {
-        // TODO Auto-generated method stub
         ValueOperations vo= redisTemplate.opsForValue();
 //		向redis中存储键值对
         vo.set(key, value);
@@ -24,7 +23,6 @@ public class RedisDaoImpl implements RedisDao {
 
     @Override
     public String get(String key) {
-        // TODO Auto-generated method stub
         ValueOperations vo= redisTemplate.opsForValue();
 //        String val= vo.get(key).toString();
         String val=(String) vo.get(key);
@@ -33,7 +31,6 @@ public class RedisDaoImpl implements RedisDao {
 
     @Override
     public void set(String key, String value, long time, TimeUnit unit) {
-        // TODO Auto-generated method stub
         ValueOperations vo= redisTemplate.opsForValue();
 //		调用带过期时间的存储方法
         vo.set(key, value, time, unit);

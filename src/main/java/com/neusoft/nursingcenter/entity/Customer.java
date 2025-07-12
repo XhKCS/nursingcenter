@@ -2,6 +2,7 @@ package com.neusoft.nursingcenter.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 @TableName("customer")
@@ -41,6 +42,7 @@ public class Customer {
 
     private String password; //客户订餐系统的密码，默认是手机号后六位
 
+    @TableLogic
     private Boolean isDeleted; //是否已删除
 
     public Customer() {}
@@ -202,11 +204,11 @@ public class Customer {
         this.password = password;
     }
 
-    public Boolean getDeleted() {
+    public Boolean getIsDeleted() {
         return isDeleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setIsDeleted(Boolean deleted) {
         isDeleted = deleted;
     }
 
