@@ -139,6 +139,7 @@ public class NursingRecordController {
             for (Integer id : ids) {
                 NursingRecord record = nursingRecordMapper.selectById(id);
                 record.setIsDeleted(true);
+
                 int result = nursingRecordMapper.updateById(record);
                 if (result <= 0) {
                     return new ResponseBean<>(500, "删除过程中失败");

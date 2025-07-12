@@ -43,6 +43,7 @@ public class MealReservationController {
         qw.eq("is_deleted",isDeleted);
         qw.ge(!startTime.isEmpty(),"purchase_time",startTime);
         qw.le(!endTime.isEmpty(),"purchase_time",endTime);
+        qw.orderByDesc("purchase_time");
 
         IPage<MealReservation> page = new Page<>(current,size);
         IPage<MealReservation> result = mealReservationMapper.selectPage(page,qw);
@@ -65,6 +66,7 @@ public class MealReservationController {
 
         QueryWrapper<MealReservation> qw = new QueryWrapper<>();
         qw.eq("customer_id", customerId);
+        qw.orderByDesc("purchase_time");
 
         List<MealReservation> result = mealReservationMapper.selectList(qw);
 
