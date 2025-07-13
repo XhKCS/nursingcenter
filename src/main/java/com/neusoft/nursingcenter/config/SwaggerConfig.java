@@ -12,7 +12,7 @@ public class SwaggerConfig {
     OpenAPI openAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("接口文档标题")
+                        .title("NursingCenter接口文档")
                         .description("SpringBoot3 集成 Swagger3接口文档")
                         .version("v1"))
                 .externalDocs(new ExternalDocumentation()

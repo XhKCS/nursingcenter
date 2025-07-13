@@ -1,5 +1,5 @@
 # nursingcenter
-颐养中心后端 - 单体应用版本。该项目的微服务版本地址如下：
+颐养中心后端 - 单体应用版本。本项目的微服务版本地址如下：
 https://github.com/XhKCS/ms-nursingcenter.git
 
 ### 更新
