@@ -26,4 +26,6 @@ public interface CustomerMapper extends BaseMapper<Customer>{
 
     @Select("select * from customer where phone_number=#{phoneNumber} and is_deleted=0")
     Customer getByPhoneNumber(String phoneNumber);
+
+
 }

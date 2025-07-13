@@ -196,6 +196,7 @@ public class BedUsageRecordController {
         } else {
             rb = new ResponseBean<>(500, "添加失败");
         }
+        webSocket.sendAllMessage("BedUsageRecord_UPDATE");
         return rb;
     }
 

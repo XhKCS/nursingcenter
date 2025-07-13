@@ -1,5 +1,6 @@
 # nursingcenter
-颐养中心后端
+颐养中心后端 - 单体应用版本。该项目的微服务版本地址如下：
+https://github.com/XhKCS/ms-nursingcenter.git
 
 ### 更新
 #### WebSocket
@@ -14,7 +15,7 @@
 ## 前端请求方法
 请求端口统一为`9000`（8080端口容易被其他进程占用）；
 
-请求url统一采用**驼峰命名法**，如`http://localhost:9000/nursingLevel/pageByStatus`；
+请求url统一采用**驼峰命名法**，如 http://localhost:9000/nursingLevel/pageByStatus；
 
 请求方式全部为**post**，参数均为json形式；
 
