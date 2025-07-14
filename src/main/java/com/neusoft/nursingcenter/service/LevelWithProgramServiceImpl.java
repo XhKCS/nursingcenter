@@ -29,7 +29,7 @@ public class LevelWithProgramServiceImpl implements LevelWithProgramService {
         PageResponseBean<List<NursingProgram>> prb = null;
         // 检查该护理级别当前是否启用
         NursingLevel nursingLevel = nursingLevelMapper.selectById(levelId);
-        if (nursingLevel.getStatus() == 0) { //如果未启用就直接返回空
+        if (nursingLevel==null || nursingLevel.getStatus() == 0) { //如果未启用就直接返回空
             prb = new PageResponseBean<>(500, "No data");
             return prb;
         }
