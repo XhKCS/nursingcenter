@@ -154,4 +154,18 @@ public class MealReservationController {
 
         return rb;
     }
+
+    @PostMapping("/cancel")
+    public ResponseBean<Integer> cancel(@RequestBody Map<String, Object> request) {
+        int id = (int) request.get("id");
+        int result = mealReservationMapper.deleteById(id);
+        ResponseBean<Integer> rb =null;
+        if(result > 0) {
+            rb = new ResponseBean<>(result);
+        }else {
+            rb = new ResponseBean<>(500,"Fail to cancel");
+        }
+
+        return rb;
+    }
 }
