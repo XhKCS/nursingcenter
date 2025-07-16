@@ -26,7 +26,6 @@ public class NursingProgram {
 
     private String description;
 
-    @TableLogic
     private Boolean isDeleted; //是否已删除
 
     public NursingProgram() {}

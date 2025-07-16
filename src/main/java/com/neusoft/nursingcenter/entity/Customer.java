@@ -42,7 +42,6 @@ public class Customer {
 
     private String password; //客户订餐系统的密码，默认是手机号后六位
 
-    @TableLogic
     private Boolean isDeleted; //是否已删除
 
     public Customer() {}
